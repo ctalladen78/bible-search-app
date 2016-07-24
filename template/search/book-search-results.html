@@ -1,11 +1,10 @@
 <ion-view title="{{vm.bookId}} {{vm.chapId}}" id="page7" class=" " ng-controller="bookSearchResultsCtrl as vm">
     <ion-content padding="true" class="has-header">
-        <ion-list id="bookSearchResults-list5" class=" " >
-            <ion-item class="item-icon-right  " id="bookSearchResults-list-item16" ui-sref="menu.verseDetail">14 For God so loved the world...
+        <ion-list ng-init="vm.getVerses(vm.bookId, vm.chapId)" id="bookSearchResults-list5" class=" " >
+            <ion-item ng-repeat="ver in vm.verses" class="item-icon-right  " id="bookSearchResults-list-item16" ui-sref="menu.verseDetail({book:vm.bookId, chap:vm.chapId, verse:ver.verse})">{{ver.verse}} {{ver.text}}
                 <i class="icon ion-android-arrow-forward"></i>
             </ion-item>
-            <ion-item id="bookSearchResults-list-item17" class="  ">15 That we ought not condemn...</ion-item>
-            <ion-item id="bookSearchResults-list-item18" class="  ">16 When He shall return ...</ion-item>
+
         </ion-list>
     </ion-content>
 </ion-view>

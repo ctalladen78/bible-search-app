@@ -1,7 +1,7 @@
-<ion-view title="verse-detail" id="page6" class=" ">
+<ion-view title="{{vm.bookId}} {{vm.chapId}} : {{vm.verse}}" id="page6" class=" " ng-controller="verseDetailCtrl as vm">
     <ion-content padding="true" class="has-header">
         <div class="list card " id="verseDetail-card21">
-            <ion-item class="item-icon-right  " id="verseDetail-list-item19">14 For God so loved the world ...
+            <ion-item class="item-icon-right  " id="verseDetail-list-item19">{{vm.verseDetail.text}}
                 <i class="icon ion-android-star"></i>
             </ion-item>
         </div>

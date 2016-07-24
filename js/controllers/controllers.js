@@ -32,7 +32,15 @@ angular.module('app.controllers', [])
   var ctrl = this;
   ctrl.bookId = $stateParams.book;
   ctrl.chapId = $stateParams.chap;
-
+  ctrl.verses = [];
+  ctrl.getVerses = function(book, chap){
+    ctrl.verses = [
+      {"verse":14, "text": "For God so loved the world..."},
+      {"verse":15, "text": "That we ought not condemn..."},
+      {"verse":16, "text": "When He shall return ..."}
+    ];//DataService.getVerses(book,chap)
+    console.log('verse init');
+  }
 
   return ctrl;
 }])
@@ -50,11 +58,32 @@ angular.module('app.controllers', [])
 
 .controller('verseDetailCtrl', ['$scope','$stateParams', 'DataService', function($scope, $stateParams, DataService) {
   // using routeParams
+  var ctrl = this;
+  ctrl.bookId = $stateParams.book;
+  ctrl.chapId = $stateParams.chap;
+  ctrl.verse = $stateParams.verse;
+  ctrl.getVerseDetail = function(book, chap,verse){
+    ctrl.verseDetail = {"verse":14, "text": "For God so loved the world..."};  //DataService.getVerseDetail(book,chap,verse)
+    console.log('verse init');
+  }
+  ctrl.getVerseDetail(ctrl.bookId,ctrl.chapId,ctrl.verse);
 
+  return ctrl;
 }])
 
 .controller('editVerseCtrl', ['$scope','DataService', function($scope) {
-  // data-> a verse may only have one category
+  var ctrl = this;
+  // ctrl.categories = DataService.getCategories(); // return list of categories
+  // var data = DataService.getVerseDetail();
+  ctrl.data = {
+    favorite : true, // data.favorite
+    category : 'test', // data.category
+    book : 'test',
+    chapter : 10,
+    verse : 12,
+    text : 'test'
+  }
+  // data-> a verse may only have one category for now
   $scope.saveVerse = function(){}
 }])
 

@@ -1,0 +1,26 @@
+<ion-view title="search" id="page1" class=" " ng-controller="searchCtrl as vm">
+    <ion-content padding="true" class="has-header">
+        <form id="search-form1" class="list ">
+            <label class="item item-select " id="search-select1">
+                <span class="input-label">Book</span>
+                <select ng-init="vm.getBooks()" ng-model="vm.bookId" ng-options="book as book for book in vm.bookList" ng-change="vm.getChaps(vm.bookId)">
+                </select>
+            </label>
+            <div class="spacer" style="width: 300px; height: 63px;"></div>
+            <label class="item item-select " id="search-select2">
+                <span class="input-label">Chapter</span>
+                <select ng-model="vm.chapId" ng-options="ch as ch for ch in vm.chapList">
+                </select>
+            </label>
+            <button ng-disabled="(vm.bookId && vm.chapId) ? false: true" ui-sref="menu.bookSearchResults({book:vm.bookId,chap:vm.chapId})" id="search-button8" class=" button button-positive  button-block ">Verse search</button>
+
+        </form>
+        <form>
+            <label class="item item-input">
+                    <i class="icon ion-search placeholder-icon"></i>
+                    <input type="search" placeholder="Search Term" ng-model="vm.word">
+            </label>
+            <button ng-disabled="!vm.word" ui-sref="menu.wordSearchResults({term:vm.word})" id="search-button4" class=" button button-positive  button-block ">Word search</button>
+        </form>
+    </ion-content>
+</ion-view>

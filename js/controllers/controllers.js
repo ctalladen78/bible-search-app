@@ -27,6 +27,17 @@ angular.module('app.controllers', [])
   return ctrl;
 }])
 
+.controller('wordSearchResultsCtrl', ['$scope','$stateParams', 'DataService', function($scope, $stateParams, DataService) {
+  // using routeParams return list of verses containing query term
+  // may have to paginate
+  // highlight term
+  var ctrl = this;
+  ctrl.word = $stateParams.term;
+
+  // DataService.getWord(term) // return list of verse objects
+  return ctrl;
+}])
+
 .controller('bookSearchResultsCtrl', ['$scope','$stateParams', 'DataService', function($scope, $stateParams, DataService) {
   // using routeParams
   var ctrl = this;
@@ -38,53 +49,64 @@ angular.module('app.controllers', [])
       {"verse":14, "text": "For God so loved the world..."},
       {"verse":15, "text": "That we ought not condemn..."},
       {"verse":16, "text": "When He shall return ..."}
-    ];//DataService.getVerses(book,chap)
+    ];//DataService.bookSearch(book,chap) // return list of verse objects
     console.log('verse init');
   }
 
   return ctrl;
 }])
 
-.controller('wordSearchResultsCtrl', ['$scope','$stateParams', 'DataService', function($scope, $stateParams, DataService) {
-  // using routeParams return list of verses containing query term
-  // may have to paginate
-  // highlight term
-  var ctrl = this;
-  ctrl.word = $stateParams.term;
-
-
-  return ctrl;
-}])
-
-.controller('verseDetailCtrl', ['$scope','$stateParams', 'DataService', function($scope, $stateParams, DataService) {
+.controller('verseDetailCtrl', ['$scope','$stateParams', 'DataService','$state', function( $scope, $stateParams, DataService, $state) {
   // using routeParams
   var ctrl = this;
   ctrl.bookId = $stateParams.book;
   ctrl.chapId = $stateParams.chap;
   ctrl.verse = $stateParams.verse;
-  ctrl.getVerseDetail = function(book, chap,verse){
-    ctrl.verseDetail = {"verse":14, "text": "For God so loved the world..."};  //DataService.getVerseDetail(book,chap,verse)
-    console.log('verse init');
-  }
-  ctrl.getVerseDetail(ctrl.bookId,ctrl.chapId,ctrl.verse);
 
+  // ctrl.categories = DataService.getCategories(); // return list of categories
+  // ctrl.verseDetail = DataService.getVerseDetail();
+  ctrl.verseDetail = {
+    'like' : true, // data.favorite
+    'category' : 'test', // data.category
+    'book' : 'test',
+    'chapter' : 10,
+    'verse' : ctrl.verse,
+    'text' : 'Lorem ipsum dolor sit amet, nulla feugiat fabellas et eam, detraxit ocurreret expetendis mei cu. Id errem commodo cum, etiam dolorum prodesset est id. His facilisi appellantur te, ignota petentium accusamus has te. Usu an sonet ignota labore. Populo eligendi voluptatum at mel. Duo id intellegat repudiandae, inermis erroribus gubergren ex vis.'
+  }
+  // data-> a verse may only have one category for now
+  ctrl.saveVerse = function(){
+    // save verse
+    // DataService.saveVerse(ctrl.verseDetail)
+    // menu.bookSearchResults({book:vm.bookId,chap:vm.chapId})
+    $state.go("menu.bookSearchResults",{book:ctrl.bookId,chap:ctrl.chapId});
+  }
+  ctrl.addToCategory = function(){}
   return ctrl;
 }])
 
-.controller('editVerseCtrl', ['$scope','DataService', function($scope) {
+.controller('editVerseCtrl', ['$scope', '$stateParams','DataService','$state', function($scope, $stateParams, DataService,$state) {
   var ctrl = this;
+  ctrl.bookId = $stateParams.book;
+  ctrl.chapId = $stateParams.chap;
+  ctrl.verse = $stateParams.verse;
   // ctrl.categories = DataService.getCategories(); // return list of categories
-  // var data = DataService.getVerseDetail();
-  ctrl.data = {
-    favorite : true, // data.favorite
-    category : 'test', // data.category
-    book : 'test',
-    chapter : 10,
-    verse : 12,
-    text : 'test'
+  // ctrl.verseDetail = DataService.getVerseDetail();
+  ctrl.verseDetail = {
+    'favorite' : true, // data.favorite
+    'category' : 'test', // data.category
+    'book' : 'test',
+    'chapter' : 10,
+    'verse' : 12,
+    'text' : 'test'
   }
   // data-> a verse may only have one category for now
-  $scope.saveVerse = function(){}
+  ctrl.saveVerse = function(){
+    // save verse
+    // DataService.saveVerse(ctrl.verseDetail)
+    $state.go("menu.verseDetail",{book:ctrl.bookId, chap:ctrl.chapId, verse:ctrl.verse});
+  }
+  ctrl.addToCategory = function(){}
+  return ctrl;
 }])
 
 .controller('favoritesCtrl', ['$scope','$stateParams', 'DataService', function($scope, $stateParams, DataService) {
@@ -99,7 +121,7 @@ angular.module('app.controllers', [])
 
 }])
 
-.controller('addCategoryCtrl', ['$stateParams','$scope',function($scope) {
+.controller('addCategoryCtrl', ['$scope','$stateParams',function($scope, $stateParams) {
   // using routeParams write to db
 
 }])
@@ -109,7 +131,7 @@ angular.module('app.controllers', [])
 
 }])
 
-.controller('editCategoryCtrl', ['$stateParams','$scope',function($scope) {
+.controller('editCategoryCtrl', ['$stateParams','$scope',function($stateParams, $scope) {
   // using routeParams write to db
 
 }])

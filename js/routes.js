@@ -64,12 +64,6 @@ angular.module('app.routes', [])
     }
   })
 
-  .state('editVerse', {
-    url: '/edit/:book/:chap/:verse',
-    templateUrl: 'template/search/edit-verse.html',
-    controller: 'editVerseCtrl'
-  })
-
   .state('menu.verseDetail', {
     url: '/detail/:book/:chap/:verse',
     views: {
@@ -78,6 +72,13 @@ angular.module('app.routes', [])
         controller: 'verseDetailCtrl'
       }
     }
+  })
+
+  .state('editVerse', {
+    url: '/edit/:book/:chap/:verse',
+    templateUrl: 'template/search/edit-verse.html',
+    controller: 'editVerseCtrl'
+
   })
 
   .state('menu.categoryDetail', {

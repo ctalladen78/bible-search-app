@@ -2,9 +2,23 @@
     <ion-content padding="true" class="has-header">
         <div class="list card " id="verseDetail-card21">
             <ion-item class="item-icon-right  " id="verseDetail-list-item19">{{vm.verseDetail.text}}
-                <i class="icon ion-android-star"></i>
+                <i class="icon ion-android-star" ng-click="vm.verseDetail.like != vm.verseDetail.like"></i>
             </ion-item>
         </div>
-        <a ui-sref="editVerse" id="verseDetail-button6" class=" button button-positive  button-block ">Edit Verse</a>
+        <form id="editVerse-form2" class="list ">
+
+            <label class="item item-select " id="editVerse-select3">
+                <span class="input-label">Add to categories</span>
+                <select>
+                    <option>Jesus</option>
+                    <option>Paul</option>
+                    <option>John</option>
+                </select>
+            </label>
+        </form>
+        <!--
+        <a ui-sref="editVerse({book:vm.bookId, chap:vm.chapId, verse:vm.verse})" id="verseDetail-button6" class=" button button-positive  button-block ">Edit Verse</a>
+        -->
+        <button class=" button button-positive  button-block " ng-click="vm.saveVerse()">Save Changes</button>
     </ion-content>
 </ion-view>

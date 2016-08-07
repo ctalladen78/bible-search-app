@@ -1,6 +1,26 @@
 angular.module('app.controllers', [])
 
-.controller('searchCtrl', ['$scope','$stateParams', 'DataService', function(DataService, $stateParams, $scope) {
+.controller('bookIndexCtrl', ['$scope','$stateParams', 'DataService', function($scope, $stateParams, DataService){
+  var ctrl = this;
+
+  // ctrl.bookList = DataService.getBooks()
+  ctrl.bookList = ['Genesis','Psalms','John','Acts']; // DataService.getBooks()
+  return ctrl;
+}])
+.controller('chapterIndexCtrl',['$scope','$stateParams', 'DataService', function($scope, $stateParams, DataService){
+  var ctrl = this;
+  // ctrl.chapList = DataService.getChapters($stateParams.book)
+  ctrl.bookId = $stateParams.book;
+  ctrl.chapList = [
+    {"chapId":1, "heading": "test heading"},
+    {"chapId":2, "heading": "test heading"},
+    {"chapId":3, "heading": "test heading"},
+    {"chapId":4, "heading": "test heading"}
+    ];
+  console.log('getting chap for book: ',ctrl.bookId, 'length: ',ctrl.chapList.length);
+  return ctrl;
+}])
+.controller('searchCtrl', ['$scope','$stateParams', 'DataService', function($scope, $stateParams, DataService) {
   var ctrl = this;
   ctrl.word = '';
   ctrl.bookId = '';
@@ -12,16 +32,15 @@ angular.module('app.controllers', [])
     // populate Bible bookList
     ctrl.bookList = ['','Genesis','Psalms','John','Acts']; // DataService.getBooks()
   }
-  ctrl.getChaps = function(book){
-    // data -> return chaps from book
-    // DataService.getChaps(book)
+  ctrl.getChaps = function(){
+    // DataService.getChapters($stateParams.book)
     if(!ctrl.bookId){
       //flash error message to view
       console.log('bookId is empty');
       ctrl.chapList = [];
     }else{
-      ctrl.chapList = [1,2,3,4]; // DataService.getChaps(book)
-      console.log('getting chap for book: ',book, ctrl.chapList.length);
+      ctrl.chapList = [1,2,3,4]; // DataService.getChapters(book)
+      console.log('getting chap for book: ',ctrl.bookId, ctrl.chapList.length);
     }
   }
   return ctrl;
@@ -144,10 +163,9 @@ angular.module('app.controllers', [])
 .controller('categoriesCtrl', ['$scope','$stateParams','DataService', function($scope, $stateParams, DataService) {
   // data-> get all categories from db
   var ctrl = this;
-  // data-> return list of verses that are liked from db
   ctrl.category = '';
-  ctrl.getCategories = function(word){
-  // ctrl.verses = DataService.wordSearch(ctrl.word) // return list of verse objects
+  ctrl.getCategories = function(){
+  // ctrl.categories = DataService.getCategories() // return list of categories
     ctrl.categories = [
       'Jesus',
       'John',
@@ -158,13 +176,13 @@ angular.module('app.controllers', [])
   return ctrl;
 }])
 
-.controller('addCategoryCtrl', ['$scope','$stateParams',function($scope, $stateParams) {
-  // using routeParams write to db
+.controller('categoryDetailCtrl', ['$scope','$stateParams','DataService', function($scope, $stateParams, DataService){
+  // using routeParams
 
 }])
 
-.controller('categoryDetailCtrl', ['$scope','$stateParams','DataService', function($scope, $stateParams, DataService){
-  // using routeParams
+.controller('addCategoryCtrl', ['$scope','$stateParams',function($scope, $stateParams) {
+  // using routeParams write to db
 
 }])
 

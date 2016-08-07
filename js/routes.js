@@ -14,6 +14,24 @@ angular.module('app.routes', [])
     abstract:true
   })
 
+  .state('menu.bookIndex',{
+    url: '/book-index',
+    views: {
+      'side-menu21': {
+        templateUrl: 'template/bookIndex/bookIndex.html',
+        controller: 'bookIndexCtrl'
+      }
+    }
+  })
+  .state('menu.chapterIndex', {
+    url: '/chapter-index/:book',
+    views: {
+      'side-menu21':{
+        templateUrl: 'template/bookIndex/chapterIndex.html',
+        controller: 'chapterIndexCtrl'
+      }
+    }
+  })
   .state('menu.search', {
     url: '/search',
     views: {
@@ -111,7 +129,7 @@ angular.module('app.routes', [])
     }
   })
 
-$urlRouterProvider.otherwise('/menu/search')
+$urlRouterProvider.otherwise('/menu/book-index')
 
 
 

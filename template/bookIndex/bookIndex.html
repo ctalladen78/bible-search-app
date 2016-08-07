@@ -1,0 +1,10 @@
+<ion-view title="Book Index" id="bindexPage" class=" " ng-controller="bookIndexCtrl as vm">
+    <ion-content padding="true" class="has-header">
+        <ion-list  id="bookIndex" class=" " >
+            <ion-item ng-repeat="bk in vm.bookList" class="item-icon-right  " id="bookSearchResults-list-item16" ui-sref="menu.chapterIndex({book:bk})">{{bk}}
+                <i class="icon ion-android-arrow-forward"></i>
+            </ion-item>
+
+        </ion-list>
+    </ion-content>
+</ion-view>

@@ -1,14 +1,8 @@
-<ion-view title="{{vm.word}}" id="page4" class=" " ng-controller="wordSearchResultsCtrl as vm">
+<ion-view title="Search: {{vm.word}}" id="page4" class=" " ng-controller="wordSearchResultsCtrl as vm">
     <ion-content padding="true" class="has-header">
         <button id="wordSearchResults-button10" class=" button button-positive  button-block ">Save search as category</button>
-        <ion-list id="wordSearchResults-list2" class=" ">
-            <ion-item class="item-icon-right  " id="wordSearchResults-list-item7" ui-sref="menu.verseDetail">John 3 - 14
-                <i class="icon ion-android-arrow-forward"></i>
-            </ion-item>
-            <ion-item class="item-icon-right  " id="wordSearchResults-list-item8" ui-sref="menu.verseDetail">Genesis 1 - 3
-                <i class="icon ion-android-arrow-forward"></i>
-            </ion-item>
-            <ion-item class="item-icon-right  " id="wordSearchResults-list-item9" ui-sref="menu.verseDetail">Psalm 119 -1
+        <ion-list id="wordSearchResults-list2" class=" " ng-init="vm.getVerses(vm.word)">
+            <ion-item ng-repeat="ver in vm.verses" class="item-icon-right  " id="wordSearchResults-list-item7" ui-sref="menu.verseDetail({book:ver.book, chap:ver.chapter, verse:ver.verse})">{{ver.book}} {{ver.chapter}} : {{ver.verse}}
                 <i class="icon ion-android-arrow-forward"></i>
             </ion-item>
         </ion-list>

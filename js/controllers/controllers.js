@@ -33,8 +33,15 @@ angular.module('app.controllers', [])
   // highlight term
   var ctrl = this;
   ctrl.word = $stateParams.term;
-
-  // DataService.getWord(term) // return list of verse objects
+  ctrl.getVerses = function(word){
+  // ctrl.verses = DataService.wordSearch(ctrl.word) // return list of verse objects
+    ctrl.verses = [
+      {"book": "Isiah", "chapter":12, "like":"true","category":[],"verse":14, "text": "For God so loved the world..."},
+      {"book": "Hebrews", "chapter":33, "like":"true","category":[],"verse":15, "text": "That we ought not condemn..."},
+      {"book": "Revelations", "chapter":45, "like":"true","category":[],"verse":16, "text": "When He shall return ..."}
+    ];
+    console.log('verse init');
+  }
   return ctrl;
 }])
 
@@ -45,11 +52,12 @@ angular.module('app.controllers', [])
   ctrl.chapId = $stateParams.chap;
   ctrl.verses = [];
   ctrl.getVerses = function(book, chap){
+    // ctrl.verses = DataService.bookSearch(book,chap) // return list of verse detail objects
     ctrl.verses = [
-      {"verse":14, "text": "For God so loved the world..."},
-      {"verse":15, "text": "That we ought not condemn..."},
-      {"verse":16, "text": "When He shall return ..."}
-    ];//DataService.bookSearch(book,chap) // return list of verse objects
+      {"book": "Isiah", "chapter":12, "like":"true","category":[],"verse":14, "text": "For God so loved the world..."},
+      {"book": "Hebrews", "chapter":33, "like":"true","category":[],"verse":15, "text": "That we ought not condemn..."},
+      {"book": "Revelations", "chapter":45, "like":"true","category":[],"verse":16, "text": "When He shall return ..."}
+    ];
     console.log('verse init');
   }
 
@@ -62,9 +70,16 @@ angular.module('app.controllers', [])
   ctrl.bookId = $stateParams.book;
   ctrl.chapId = $stateParams.chap;
   ctrl.verse = $stateParams.verse;
-
+  ctrl.selectedCategory = '';
   // ctrl.categories = DataService.getCategories(); // return list of categories
-  // ctrl.verseDetail = DataService.getVerseDetail();
+  ctrl.getCategories = function(){
+    ctrl.categories = [
+      'Jesus',
+      'Paul',
+      'John'
+    ];
+  }
+  // ctrl.verseDetail = DataService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse);
   ctrl.verseDetail = {
     'like' : true, // data.favorite
     'category' : 'test', // data.category
@@ -78,6 +93,7 @@ angular.module('app.controllers', [])
     // save verse
     // DataService.saveVerse(ctrl.verseDetail)
     // menu.bookSearchResults({book:vm.bookId,chap:vm.chapId})
+    // TODO just go back to last page
     $state.go("menu.bookSearchResults",{book:ctrl.bookId,chap:ctrl.chapId});
   }
   ctrl.addToCategory = function(){}
@@ -110,15 +126,36 @@ angular.module('app.controllers', [])
 }])
 
 .controller('favoritesCtrl', ['$scope','$stateParams', 'DataService', function($scope, $stateParams, DataService) {
-  $scope.favorites = [];
+  var ctrl = this;
   // data-> return list of verses that are liked from db
-
+  ctrl.word = $stateParams.term;
+  ctrl.getVerses = function(word){
+  // ctrl.verses = DataService.wordSearch(ctrl.word) // return list of verse objects
+    ctrl.verses = [
+      {"book": "Isiah", "chapter":12, "like":"true","category":[],"verse":14, "text": "For God so loved the world..."},
+      {"book": "Hebrews", "chapter":33, "like":"true","category":[],"verse":15, "text": "That we ought not condemn..."},
+      {"book": "Revelations", "chapter":45, "like":"true","category":[],"verse":16, "text": "When He shall return ..."}
+    ];
+    console.log('favorites init');
+  }
+  return ctrl;
 }])
 
 .controller('categoriesCtrl', ['$scope','$stateParams','DataService', function($scope, $stateParams, DataService) {
-  $scope.categories =[];
   // data-> get all categories from db
-
+  var ctrl = this;
+  // data-> return list of verses that are liked from db
+  ctrl.category = '';
+  ctrl.getCategories = function(word){
+  // ctrl.verses = DataService.wordSearch(ctrl.word) // return list of verse objects
+    ctrl.categories = [
+      'Jesus',
+      'John',
+      'Paul'
+    ];
+    console.log('categories init');
+  }
+  return ctrl;
 }])
 
 .controller('addCategoryCtrl', ['$scope','$stateParams',function($scope, $stateParams) {

@@ -1,9 +1,14 @@
-<ion-view title="edit-category" id="page10" class=" ">
+<ion-view title="edit-category" id="page10" class=" " ng-controller="categoriesCtrl as vm">
     <ion-content padding="true" class="has-header">
         <form id="editCategory-form4" class="list ">
-            <label class="item item-input " id="editCategory-input4">
-                <span class="input-label">category-name</span>
-                <input type="text" placeholder="">
+            <label class="item item-select " id="search-select1">
+                <span class="input-label">Category</span>
+                <select ng-init="vm.getCategories()" ng-model="vm.category" ng-options="cat as cat for cat in vm.categories" >
+                </select>
+            </label>
+            <label class="item item-input">
+                <!--TODO show a delete button when category is selected -->
+                <input  type="text" ng-model="vm.category" value="{{vm.category}}">
             </label>
         </form>
         <a ui-sref="menu.categories" id="editCategory-button15" class=" button button-positive  button-block ">Save</a>

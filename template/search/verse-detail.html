@@ -1,7 +1,8 @@
 <ion-view title="{{vm.bookId}} {{vm.chapId}} : {{vm.verse}}" id="page6" class=" " ng-controller="verseDetailCtrl as vm">
     <ion-content padding="true" class="has-header">
-        <div class="list card " id="verseDetail-card21">
-            <ion-item class="item-icon-right  " id="verseDetail-list-item19">{{vm.verseDetail.text}}
+        <div class="card item-text-wrap" id="verseDetail-card21">
+            <ion-item class="item-icon-right " id="verseDetail-list-item19">
+                <p>{{vm.verseDetail.text}}</p>
                 <i class="icon ion-android-star" ng-click="vm.verseDetail.like != vm.verseDetail.like"></i>
             </ion-item>
         </div>
@@ -9,10 +10,8 @@
 
             <label class="item item-select " id="editVerse-select3">
                 <span class="input-label">Add to categories</span>
-                <select>
-                    <option>Jesus</option>
-                    <option>Paul</option>
-                    <option>John</option>
+                <select ng-init="vm.getCategories()" ng-model="vm.selectedCategory" ng-options="cat as cat for cat in vm.categories">
+
                 </select>
             </label>
         </form>

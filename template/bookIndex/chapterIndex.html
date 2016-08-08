@@ -1,15 +1,10 @@
-<ion-view title="Chapter Index" id="cindexPage" class=" ">
+<ion-view title="Chapter Index" id="cindexPage" class=" " ng-controller="chapterIndexCtrl as vm">
     <ion-content padding="true" class="has-header">
-        <ion-list id="favorites-list3" class=" ">
-            <ion-item class="item-icon-right  " id="favorites-list-item10" ui-sref="menu.verseDetail">John 3 - 16
+        <ion-list  id="chapList-list5" class=" " >
+            <ion-item ng-repeat="ch in vm.chapList" class="item-icon-right  " id="chapList-list-item16" ui-sref="menu.bookSearchResults({book:vm.bookId,chap:ch.chapId})">{{ch.chapId}} {{ch.heading}}
                 <i class="icon ion-android-arrow-forward"></i>
             </ion-item>
-            <ion-item class="item-icon-right  " id="favorites-list-item11" ui-sref="menu.verseDetail">Exodus 1 - 1
-                <i class="icon ion-android-arrow-forward"></i>
-            </ion-item>
-            <ion-item class="item-icon-right  " id="favorites-list-item12" ui-sref="menu.verseDetail">Psalm 119 - 1
-                <i class="icon ion-android-arrow-forward"></i>
-            </ion-item>
+
         </ion-list>
     </ion-content>
 </ion-view>

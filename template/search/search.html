@@ -9,7 +9,7 @@
             <div class="spacer" style="width: 300px; height: 63px;"></div>
             <label class="item item-select " id="search-select2">
                 <span class="input-label">Chapter</span>
-                <select ng-model="vm.chapId" ng-options="ch as ch for ch in vm.chapList">
+                <select ng-model="vm.chapId" ng-options="ch as ch.chapId for ch in vm.chapList">
                 </select>
             </label>
             <button ng-disabled="(vm.bookId && vm.chapId) ? false: true" ui-sref="menu.bookSearchResults({book:vm.bookId,chap:vm.chapId})" id="search-button8" class=" button button-positive  button-block ">Verse search</button>

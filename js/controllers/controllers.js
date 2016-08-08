@@ -7,19 +7,21 @@ angular.module('app.controllers', [])
   ctrl.bookList = ['Genesis','Psalms','John','Acts']; // DataService.getBooks()
   return ctrl;
 }])
+
 .controller('chapterIndexCtrl',['$scope','$stateParams', 'DataService', function($scope, $stateParams, DataService){
   var ctrl = this;
   // ctrl.chapList = DataService.getChapters($stateParams.book)
   ctrl.bookId = $stateParams.book;
   ctrl.chapList = [
-    {"chapId":1, "heading": "test heading"},
-    {"chapId":2, "heading": "test heading"},
-    {"chapId":3, "heading": "test heading"},
-    {"chapId":4, "heading": "test heading"}
+    {"chapId":1, "heading": "Creation & Recreation"},
+    {"chapId":2, "heading": "The Fall of Man"},
+    {"chapId":3, "heading": "Cain Murders Abel"},
+    {"chapId":4, "heading": "The Flood"}
     ];
   console.log('getting chap for book: ',ctrl.bookId, 'length: ',ctrl.chapList.length);
   return ctrl;
 }])
+
 .controller('searchCtrl', ['$scope','$stateParams', 'DataService', function($scope, $stateParams, DataService) {
   var ctrl = this;
   ctrl.word = '';
@@ -33,13 +35,17 @@ angular.module('app.controllers', [])
     ctrl.bookList = ['','Genesis','Psalms','John','Acts']; // DataService.getBooks()
   }
   ctrl.getChaps = function(){
-    // DataService.getChapters($stateParams.book)
     if(!ctrl.bookId){
-      //flash error message to view
-      console.log('bookId is empty');
-      ctrl.chapList = [];
+      console.log('no books selected');
+      ctrl.chapList = [];    // DataService.getChapters(ctrl.bookId)
     }else{
-      ctrl.chapList = [1,2,3,4]; // DataService.getChapters(book)
+      // ctrl.chapList = DataService.getChapters(ctrl.bookId)
+      ctrl.chapList = [
+    {"chapId":1, "heading": "The Tower of Babel"},
+    {"chapId":2, "heading": "Slavery in Egypt"},
+    {"chapId":3, "heading": "The Burning Bush"},
+    {"chapId":4, "heading": "The Ten Plagues"}
+    ];
       console.log('getting chap for book: ',ctrl.bookId, ctrl.chapList.length);
     }
   }

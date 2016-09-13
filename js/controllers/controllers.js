@@ -1,5 +1,5 @@
 angular.module('app.controllers', [])
-
+// index component
 .controller('bookIndexCtrl', ['$scope','$stateParams', 'DataService', function($scope, $stateParams, DataService){
   var ctrl = this;
 
@@ -7,7 +7,7 @@ angular.module('app.controllers', [])
   ctrl.bookList = ['Genesis','Psalms','John','Acts']; // DataService.getBooks()
   return ctrl;
 }])
-
+// chapter list
 .controller('chapterIndexCtrl',['$scope','$stateParams', 'DataService', function($scope, $stateParams, DataService){
   var ctrl = this;
   // ctrl.chapList = DataService.getChapters($stateParams.book)
@@ -21,7 +21,7 @@ angular.module('app.controllers', [])
   console.log('getting chap for book: ',ctrl.bookId, 'length: ',ctrl.chapList.length);
   return ctrl;
 }])
-
+// search component
 .controller('searchCtrl', ['$scope','$stateParams', 'DataService', function($scope, $stateParams, DataService) {
   var ctrl = this;
   ctrl.word = '';
@@ -51,7 +51,7 @@ angular.module('app.controllers', [])
   }
   return ctrl;
 }])
-
+//
 .controller('wordSearchResultsCtrl', ['$scope','$stateParams', 'DataService', function($scope, $stateParams, DataService) {
   // using routeParams return list of verses containing query term
   // may have to paginate
@@ -88,7 +88,7 @@ angular.module('app.controllers', [])
 
   return ctrl;
 }])
-
+// verse detail
 .controller('verseDetailCtrl', ['$scope','$stateParams', 'DataService','$state', function( $scope, $stateParams, DataService, $state) {
   // using routeParams
   var ctrl = this;
@@ -124,7 +124,7 @@ angular.module('app.controllers', [])
   ctrl.addToCategory = function(){}
   return ctrl;
 }])
-
+// edit verse
 .controller('editVerseCtrl', ['$scope', '$stateParams','DataService','$state', function($scope, $stateParams, DataService,$state) {
   var ctrl = this;
   ctrl.bookId = $stateParams.book;
@@ -149,7 +149,7 @@ angular.module('app.controllers', [])
   ctrl.addToCategory = function(){}
   return ctrl;
 }])
-
+// favorites master list page
 .controller('favoritesCtrl', ['$scope','$stateParams', 'DataService', function($scope, $stateParams, DataService) {
   var ctrl = this;
   // data-> return list of verses that are liked from db
@@ -165,7 +165,7 @@ angular.module('app.controllers', [])
   }
   return ctrl;
 }])
-
+// categories master list
 .controller('categoriesCtrl', ['$scope','$stateParams','DataService', function($scope, $stateParams, DataService) {
   // data-> get all categories from db
   var ctrl = this;
@@ -181,17 +181,17 @@ angular.module('app.controllers', [])
   }
   return ctrl;
 }])
-
+// category detail is a list of verses
 .controller('categoryDetailCtrl', ['$scope','$stateParams','DataService', function($scope, $stateParams, DataService){
   // using routeParams
 
 }])
-
+// add new empty category
 .controller('addCategoryCtrl', ['$scope','$stateParams',function($scope, $stateParams) {
   // using routeParams write to db
 
 }])
-
+// rename existing category
 .controller('editCategoryCtrl', ['$stateParams','$scope',function($stateParams, $scope) {
   // using routeParams write to db
 

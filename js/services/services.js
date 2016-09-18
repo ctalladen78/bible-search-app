@@ -1,9 +1,15 @@
 angular.module('app.services', [])
 
-.factory('DataService', [function(){
+.factory('DbService', [function(){
   // TODO: using pouchdb operations
   return{
-    all : function(){}
+    initDB : initDB,
+    getChapter : getChapter,
+    getVerse : getVerse,
+    editVerse : editVerse,
+    getFavoriteList : getFavoriteList,
+    getCategoryList : getCategoryList,
+    getCategory : getCategory
   }
   // populate db from api endpoint
   function initDB(){
@@ -23,11 +29,11 @@ angular.module('app.services', [])
 
   }
   // return a list of verses given favorites id
-  function getFavorites(favID){
+  function getFavoriteList(favID){
 
   }
   // return a list of categories
-  function getCategories(){
+  function getCategoryList(){
 
   }
   // return a list of verses given categories id

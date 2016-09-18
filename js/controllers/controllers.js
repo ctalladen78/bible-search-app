@@ -1,16 +1,16 @@
 angular.module('app.controllers', [])
 // index component
-.controller('bookIndexCtrl', ['$scope','$stateParams', 'DataService', function($scope, $stateParams, DataService){
+.controller('bookIndexCtrl', ['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService){
   var ctrl = this;
 
-  // ctrl.bookList = DataService.getBooks()
-  ctrl.bookList = ['Genesis','Psalms','John','Acts']; // DataService.getBooks()
+  // ctrl.bookList = DbService.getBooks()
+  ctrl.bookList = ['Genesis','Psalms','John','Acts']; // DbService.getBooks()
   return ctrl;
 }])
 // chapter list
-.controller('chapterIndexCtrl',['$scope','$stateParams', 'DataService', function($scope, $stateParams, DataService){
+.controller('chapterIndexCtrl',['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService){
   var ctrl = this;
-  // ctrl.chapList = DataService.getChapters($stateParams.book)
+  // ctrl.chapList = DbService.getChapters($stateParams.book)
   ctrl.bookId = $stateParams.book;
   ctrl.chapList = [
     {"chapId":1, "heading": "Creation & Recreation"},
@@ -22,7 +22,7 @@ angular.module('app.controllers', [])
   return ctrl;
 }])
 // search component
-.controller('searchCtrl', ['$scope','$stateParams', 'DataService', function($scope, $stateParams, DataService) {
+.controller('searchCtrl', ['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService) {
   var ctrl = this;
   ctrl.word = '';
   ctrl.bookId = '';
@@ -32,14 +32,14 @@ angular.module('app.controllers', [])
 
   ctrl.getBooks = function(){
     // populate Bible bookList
-    ctrl.bookList = ['','Genesis','Psalms','John','Acts']; // DataService.getBooks()
+    ctrl.bookList = ['','Genesis','Psalms','John','Acts']; // DbService.getBooks()
   }
   ctrl.getChaps = function(){
     if(!ctrl.bookId){
       console.log('no books selected');
-      ctrl.chapList = [];    // DataService.getChapters(ctrl.bookId)
+      ctrl.chapList = [];    // DbService.getChapters(ctrl.bookId)
     }else{
-      // ctrl.chapList = DataService.getChapters(ctrl.bookId)
+      // ctrl.chapList = DbService.getChapters(ctrl.bookId)
       ctrl.chapList = [
     {"chapId":1, "heading": "The Tower of Babel"},
     {"chapId":2, "heading": "Slavery in Egypt"},
@@ -52,14 +52,14 @@ angular.module('app.controllers', [])
   return ctrl;
 }])
 //
-.controller('wordSearchResultsCtrl', ['$scope','$stateParams', 'DataService', function($scope, $stateParams, DataService) {
+.controller('wordSearchResultsCtrl', ['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService) {
   // using routeParams return list of verses containing query term
   // may have to paginate
   // highlight term
   var ctrl = this;
   ctrl.word = $stateParams.term;
   ctrl.getVerses = function(word){
-  // ctrl.verses = DataService.wordSearch(ctrl.word) // return list of verse objects
+  // ctrl.verses = DbService.wordSearch(ctrl.word) // return list of verse objects
     ctrl.verses = [
       {"book": "Isiah", "chapter":12, "like":"true","category":[],"verse":14, "text": "For God so loved the world..."},
       {"book": "Hebrews", "chapter":33, "like":"true","category":[],"verse":15, "text": "That we ought not condemn..."},
@@ -70,14 +70,14 @@ angular.module('app.controllers', [])
   return ctrl;
 }])
 
-.controller('bookSearchResultsCtrl', ['$scope','$stateParams', 'DataService', function($scope, $stateParams, DataService) {
+.controller('bookSearchResultsCtrl', ['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService) {
   // using routeParams
   var ctrl = this;
   ctrl.bookId = $stateParams.book;
   ctrl.chapId = $stateParams.chap;
   ctrl.verses = [];
   ctrl.getVerses = function(book, chap){
-    // ctrl.verses = DataService.bookSearch(book,chap) // return list of verse detail objects
+    // ctrl.verses = DbService.bookSearch(book,chap) // return list of verse detail objects
     ctrl.verses = [
       {"book": "Isiah", "chapter":12, "like":"true","category":[],"verse":14, "text": "For God so loved the world..."},
       {"book": "Hebrews", "chapter":33, "like":"true","category":[],"verse":15, "text": "That we ought not condemn..."},
@@ -89,14 +89,14 @@ angular.module('app.controllers', [])
   return ctrl;
 }])
 // verse detail
-.controller('verseDetailCtrl', ['$scope','$stateParams', 'DataService','$state', function( $scope, $stateParams, DataService, $state) {
+.controller('verseDetailCtrl', ['$scope','$stateParams', 'DbService','$state', function( $scope, $stateParams, DbService, $state) {
   // using routeParams
   var ctrl = this;
   ctrl.bookId = $stateParams.book;
   ctrl.chapId = $stateParams.chap;
   ctrl.verse = $stateParams.verse;
   ctrl.selectedCategory = '';
-  // ctrl.categories = DataService.getCategories(); // return list of categories
+  // ctrl.categories = DbService.getCategoryList(); // return list of categories
   ctrl.getCategories = function(){
     ctrl.categories = [
       'Jesus',
@@ -104,7 +104,7 @@ angular.module('app.controllers', [])
       'John'
     ];
   }
-  // ctrl.verseDetail = DataService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse);
+  // ctrl.verseDetail = DbService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse);
   ctrl.verseDetail = {
     'like' : true, // data.favorite
     'category' : 'test', // data.category
@@ -116,7 +116,7 @@ angular.module('app.controllers', [])
   // data-> a verse may only have one category for now
   ctrl.saveVerse = function(){
     // save verse
-    // DataService.saveVerse(ctrl.verseDetail)
+    // DbService.saveVerse(ctrl.verseDetail)
     // menu.bookSearchResults({book:vm.bookId,chap:vm.chapId})
     // TODO just go back to last page
     $state.go("menu.bookSearchResults",{book:ctrl.bookId,chap:ctrl.chapId});
@@ -125,13 +125,13 @@ angular.module('app.controllers', [])
   return ctrl;
 }])
 // edit verse
-.controller('editVerseCtrl', ['$scope', '$stateParams','DataService','$state', function($scope, $stateParams, DataService,$state) {
+.controller('editVerseCtrl', ['$scope', '$stateParams','DbService','$state', function($scope, $stateParams, DbService,$state) {
   var ctrl = this;
   ctrl.bookId = $stateParams.book;
   ctrl.chapId = $stateParams.chap;
   ctrl.verse = $stateParams.verse;
-  // ctrl.categories = DataService.getCategories(); // return list of categories
-  // ctrl.verseDetail = DataService.getVerseDetail();
+  // ctrl.categories = DbService.getCategoryList(); // return list of categories
+  // ctrl.verseDetail = DbService.getVerseDetail();
   ctrl.verseDetail = {
     'favorite' : true, // data.favorite
     'category' : 'test', // data.category
@@ -143,19 +143,19 @@ angular.module('app.controllers', [])
   // data-> a verse may only have one category for now
   ctrl.saveVerse = function(){
     // save verse
-    // DataService.saveVerse(ctrl.verseDetail)
+    // DbService.saveVerse(ctrl.verseDetail)
     $state.go("menu.verseDetail",{book:ctrl.bookId, chap:ctrl.chapId, verse:ctrl.verse});
   }
   ctrl.addToCategory = function(){}
   return ctrl;
 }])
 // favorites master list page
-.controller('favoritesCtrl', ['$scope','$stateParams', 'DataService', function($scope, $stateParams, DataService) {
+.controller('favoritesCtrl', ['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService) {
   var ctrl = this;
   // data-> return list of verses that are liked from db
   ctrl.word = $stateParams.term;
   ctrl.getVerses = function(word){
-  // ctrl.verses = DataService.wordSearch(ctrl.word) // return list of verse objects
+  // ctrl.verses = DbService.getFavoriteList(ctrl.word) // return list of verse objects
     ctrl.verses = [
       {"book": "Isiah", "chapter":12, "like":"true","category":[],"verse":14, "text": "For God so loved the world..."},
       {"book": "Hebrews", "chapter":33, "like":"true","category":[],"verse":15, "text": "That we ought not condemn..."},
@@ -166,12 +166,12 @@ angular.module('app.controllers', [])
   return ctrl;
 }])
 // categories master list
-.controller('categoriesCtrl', ['$scope','$stateParams','DataService', function($scope, $stateParams, DataService) {
+.controller('categoriesCtrl', ['$scope','$stateParams','DbService', function($scope, $stateParams, DbService) {
   // data-> get all categories from db
   var ctrl = this;
   ctrl.category = '';
   ctrl.getCategories = function(){
-  // ctrl.categories = DataService.getCategories() // return list of categories
+  // ctrl.categories = DbService.getCategoryList() // return list of categories
     ctrl.categories = [
       'Jesus',
       'John',
@@ -182,7 +182,7 @@ angular.module('app.controllers', [])
   return ctrl;
 }])
 // category detail is a list of verses
-.controller('categoryDetailCtrl', ['$scope','$stateParams','DataService', function($scope, $stateParams, DataService){
+.controller('categoryDetailCtrl', ['$scope','$stateParams','DbService', function($scope, $stateParams, DbService){
   // using routeParams
 
 }])

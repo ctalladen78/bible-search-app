@@ -84,36 +84,7 @@ var psalmsUrl = 'https://getbible.net/json?text='+books[18]+'&v='+version+'&call
 
 
 angular.module('app.services')
-// TODO: for reference only archive this block of code
-.factory('ctrl',['$scope', 'getData', '$http', 'db', function($scope, getData, $http,db){
 
-  //$scope.bible = [];// array of verse objects
-  //db.getInfo;
-
-  // TODO use ionic infinite scroll api to manage what shows in vm 'feed pattern'
-  // google: ionic infinite scroll, mcgivery
-  bibleScraper.getBook(psalmsUrl).then(function(data){
-    $scope.bible = data;//append or push
-    console.log('%%% bible scope object: ',$scope.bible)
-
-  })
-  // infinite scroll functionality
-  // see: http://ionicframework.com/docs/api/directive/ionInfiniteScroll/
-  $scope.loadMore = function() {
-    /*
-    $http.get('/more-items').success(function(items) {
-      useItems(items);
-      $scope.$broadcast('scroll.infiniteScrollComplete');
-    });
-    */
-    //$scope.$broadcast('scroll.infiniteScrollComplete');
-
-  }
-  // stop infinite scroll when no more data is available
-  $scope.moreDataCanBeLoaded = function(){
-    return true;
-  }
-}])
 /*
 TODO using asynchronous pattern do:
 1. make a final results array
@@ -166,4 +137,34 @@ google: promise all tutorial, html5rocks, toptal
       return book;
     }
 
+}])
+// TODO: for reference only archive this block of code
+.factory('ctrl',['$scope', 'getData', '$http', 'db', function($scope, getData, $http,db){
+
+  //$scope.bible = [];// array of verse objects
+  //db.getInfo;
+
+  // TODO use ionic infinite scroll api to manage what shows in vm 'feed pattern'
+  // google: ionic infinite scroll, mcgivery
+  bibleScraper.getBook(psalmsUrl).then(function(data){
+    $scope.bible = data;//append or push
+    console.log('%%% bible scope object: ',$scope.bible)
+
+  })
+  // infinite scroll functionality
+  // see: http://ionicframework.com/docs/api/directive/ionInfiniteScroll/
+  $scope.loadMore = function() {
+    /*
+    $http.get('/more-items').success(function(items) {
+      useItems(items);
+      $scope.$broadcast('scroll.infiniteScrollComplete');
+    });
+    */
+    //$scope.$broadcast('scroll.infiniteScrollComplete');
+
+  }
+  // stop infinite scroll when no more data is available
+  $scope.moreDataCanBeLoaded = function(){
+    return true;
+  }
 }]);

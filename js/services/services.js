@@ -1,6 +1,6 @@
 angular.module('app.services', [])
 
-.factory('DbService', ['bibleScraper', function(bibleScraper){
+.factory('DbService', ['bibleScraper', '$q', function(bibleScraper,$q){
   // TODO: using pouchdb operations
   var db;
   return{
@@ -10,7 +10,8 @@ angular.module('app.services', [])
     editVerse : editVerse,
     getFavoriteList : getFavoriteList,
     getCategoryList : getCategoryList,
-    getCategory : getCategory
+    getCategory : getCategory,
+    destroyDB : destroyDB
   }
 
   // populate db from api endpoint
@@ -27,18 +28,20 @@ angular.module('app.services', [])
     bibleScraper.getBookUngrouped(psalmsUrl).then(function(data){
       // data is an array of objects
       // push data into pouchdb
-      /*
-      forEach(data, function(i){
+
+      data.forEach(function(i){
         var tempDoc = {};
         var id = Math.uuid;
-        tempDoc.book = i.book
-        tempDoc.chapter = i.chapter
-        tempDoc.verse = i.verse
-        tempDoc.text = i.text
-        tempDoc.version = i.version
+        tempDoc.book = i.book;
+        tempDoc.chapter = i.chapter;
+        tempDoc.verse = i.verse;
+        tempDoc.text = i.text;
+        tempDoc.version = i.version;
+        //console.log(tempDoc)
+        $q.when(db.put(tempDoc));
       })
-      */
-      console.log('%%% bible psalms object: ',data)
+
+      //console.log('%%% bible psalms object: ',data)
     });
   }
   // return a list of verses given book id, chapter id
@@ -64,6 +67,10 @@ angular.module('app.services', [])
   // return a list of verses given categories id
   function getCategory(catID){
 
+  }
+  // clear db
+  function destroyDB(){
+    db.destroy().then(function() { console.log('ALL YOUR BASE ARE BELONG TO US') });
   }
 }])
 

@@ -1,7 +1,8 @@
 angular.module('app.services', [])
 
-.factory('DbService', [function(){
+.factory('DbService', ['bibleScraper', function(bibleScraper){
   // TODO: using pouchdb operations
+  var db;
   return{
     initDB : initDB,
     getChapter : getChapter,
@@ -11,10 +12,34 @@ angular.module('app.services', [])
     getCategoryList : getCategoryList,
     getCategory : getCategory
   }
+
   // populate db from api endpoint
   function initDB(){
       // instantiate DB
-      // populate db
+    db =  new PouchDB('pouchdb', {adapter: 'websql'});
+    window.PouchDB = PouchDB; // required by fauxton debugger
+    console.log('%%%%%% pouchdb exists: ',db);
+
+    db.info().then(
+      console.log.bind(console));
+    // populate db
+    var psalmsUrl = 'https://getbible.net/json?text=psalms&v='+version+'&callback=JSON_CALLBACK';
+    bibleScraper.getBookUngrouped(psalmsUrl).then(function(data){
+      // data is an array of objects
+      // push data into pouchdb
+      /*
+      forEach(data, function(i){
+        var tempDoc = {};
+        var id = Math.uuid;
+        tempDoc.book = i.book
+        tempDoc.chapter = i.chapter
+        tempDoc.verse = i.verse
+        tempDoc.text = i.text
+        tempDoc.version = i.version
+      })
+      */
+      console.log('%%% bible psalms object: ',data)
+    });
   }
   // return a list of verses given book id, chapter id
   function getChapter(bookID, chapID){

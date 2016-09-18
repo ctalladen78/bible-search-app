@@ -1,8 +1,7 @@
-angular.module('app.controllers', [])
+angular.module('app.controllers', ['app.services'])
 // index component
 .controller('bookIndexCtrl', ['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService){
   var ctrl = this;
-
   // ctrl.bookList = DbService.getBooks()
   ctrl.bookList = ['Genesis','Psalms','John','Acts']; // DbService.getBooks()
   return ctrl;
@@ -21,7 +20,7 @@ angular.module('app.controllers', [])
   console.log('getting chap for book: ',ctrl.bookId, 'length: ',ctrl.chapList.length);
   return ctrl;
 }])
-// search component
+// dropdown search component
 .controller('searchCtrl', ['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService) {
   var ctrl = this;
   ctrl.word = '';
@@ -51,7 +50,7 @@ angular.module('app.controllers', [])
   }
   return ctrl;
 }])
-//
+// word search component
 .controller('wordSearchResultsCtrl', ['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService) {
   // using routeParams return list of verses containing query term
   // may have to paginate
@@ -69,7 +68,7 @@ angular.module('app.controllers', [])
   }
   return ctrl;
 }])
-
+// search results master list
 .controller('bookSearchResultsCtrl', ['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService) {
   // using routeParams
   var ctrl = this;
@@ -124,7 +123,7 @@ angular.module('app.controllers', [])
   ctrl.addToCategory = function(){}
   return ctrl;
 }])
-// edit verse
+// edit verse detail
 .controller('editVerseCtrl', ['$scope', '$stateParams','DbService','$state', function($scope, $stateParams, DbService,$state) {
   var ctrl = this;
   ctrl.bookId = $stateParams.book;
@@ -149,7 +148,7 @@ angular.module('app.controllers', [])
   ctrl.addToCategory = function(){}
   return ctrl;
 }])
-// favorites master list page
+// favorites master list
 .controller('favoritesCtrl', ['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService) {
   var ctrl = this;
   // data-> return list of verses that are liked from db

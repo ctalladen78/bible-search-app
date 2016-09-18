@@ -83,15 +83,16 @@ var psalmsUrl = 'https://getbible.net/json?text='+books[18]+'&v='+version+'&call
 //var jeremiahUrl = 'https://getbible.net/json?text='+books[23]+'&v='+version+'&callback=JSON_CALLBACK';
 
 
-angular.module('myApp')
-.controller('ctrl',['$scope', 'getData', '$http', 'db', function($scope, getData, $http,db){
+angular.module('app.services')
+// TODO: for reference only archive this block of code
+.factory('ctrl',['$scope', 'getData', '$http', 'db', function($scope, getData, $http,db){
 
   //$scope.bible = [];// array of verse objects
   //db.getInfo;
 
   // TODO use ionic infinite scroll api to manage what shows in vm 'feed pattern'
   // google: ionic infinite scroll, mcgivery
-  getData.getBook(psalmsUrl).then(function(data){
+  bibleScraper.getBook(psalmsUrl).then(function(data){
     $scope.bible = data;//append or push
     console.log('%%% bible scope object: ',$scope.bible)
 
@@ -124,9 +125,9 @@ TODO using asynchronous pattern do:
 google: promise all tutorial, html5rocks, toptal
 */
 // map data into the object components
-.factory('getData',[ '$q', '$http', function($q, $http){
+.factory('bibleScraper',[ '$q', '$http', function($q, $http){
   return {
-    'getBook': function(url){
+    'getBookGrouped': function(url){
       var promise = $http.jsonp(url).then(function(response){
         // TODO: loop through the books list and set books into pouch db or bibleCache
         // google: ode to code group and display data with underscore and angularjs
@@ -137,6 +138,12 @@ google: promise all tutorial, html5rocks, toptal
         });
         //console.log('%%%% grouped object', obj);
         return obj;
+      });
+      return promise;
+    },
+    'getBookUngrouped' : function(url){
+      var promise = $http.jsonp(url).then(function(response){
+        return packageBook(response.data);
       });
       return promise;
     }

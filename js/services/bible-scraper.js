@@ -2,7 +2,7 @@
 // makes get request to getbible.net/api
 // create json file to seed the database
 // see: tutlane.com/tutorial/angularjs/angularjs-http-jsonp-service-method-example
-// TODO: there is an error with github cdn http://stackoverflow.com/questions/17341122/link-and-execute-external-javascript-file-hosted-on-github
+// there is an error with github cdn http://stackoverflow.com/questions/17341122/link-and-execute-external-javascript-file-hosted-on-github
 /*
 References:
 1. getbible.net/api

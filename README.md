@@ -10,6 +10,10 @@
 
 To use this, either create a new ionic project using the ionic node.js utility, or copy and paste this into an existing Cordova project and download a release of Ionic separately.
 
+### launch from cloud9
+`ionic serve -p $PORT -nolivereload`
+
+
 ### With the Ionic tool:
 
 Take the name after `ionic-starter-`, and that is the name of the template to be used when using the `ionic start` command below:

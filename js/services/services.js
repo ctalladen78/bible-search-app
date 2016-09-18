@@ -23,21 +23,21 @@ angular.module('app.services', [])
 
     db.info().then(
       console.log.bind(console));
-    // populate db
+    // TODO populate db with test data
     var psalmsUrl = 'https://getbible.net/json?text=psalms&v='+version+'&callback=JSON_CALLBACK';
     bibleScraper.getBookUngrouped(psalmsUrl).then(function(data){
       // data is an array of objects
       // push data into pouchdb
-
-      data.forEach(function(i){
+        data.forEach(function(i){
         var tempDoc = {};
-        var id = Math.uuid;
+        var tempid = ''+i.book+i.chapter+i.verse+i.version;
+        tempDoc.id = tempid;
         tempDoc.book = i.book;
         tempDoc.chapter = i.chapter;
         tempDoc.verse = i.verse;
         tempDoc.text = i.text;
         tempDoc.version = i.version;
-        //console.log(tempDoc)
+        console.log(tempDoc)
         $q.when(db.put(tempDoc));
       })
 

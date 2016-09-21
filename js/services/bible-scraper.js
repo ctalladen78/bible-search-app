@@ -1,4 +1,3 @@
-// TODO TODO TODO
 // makes get request to getbible.net/api
 // create json file to seed the database
 // see: tutlane.com/tutorial/angularjs/angularjs-http-jsonp-service-method-example

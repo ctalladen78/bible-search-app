@@ -10,6 +10,8 @@ angular.module('app.controllers', ['app.services'])
 .controller('chapterIndexCtrl',['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService){
   var ctrl = this;
   // ctrl.chapList = DbService.getChapters($stateParams.book)
+    DbService.getChapter();
+
   ctrl.bookId = $stateParams.book;
   ctrl.chapList = [
     {"chapId":1, "heading": "Creation & Recreation"},

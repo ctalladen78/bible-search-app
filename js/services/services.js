@@ -3,7 +3,9 @@ angular.module('app.services', [])
 .factory('DbService', ['bibleScraper', '$q', function(bibleScraper,$q){
   // DONE: using pouchdb operations
   var db;
+  var docs = [];
   return{
+    docs : docs,
     initDB : initDB,
     getChapter : getChapter,
     getVerse : getVerse,
@@ -17,7 +19,10 @@ angular.module('app.services', [])
   // populate db from api endpoint
   function initDB(){
       // instantiate DB
-    db =  new PouchDB('mypouchdb', {adapter: 'websql'});
+    db =  new PouchDB('mypouchdb', {
+      adapter: 'websql',
+      skip_setup: true
+    });
     window.PouchDB = PouchDB; // required by fauxton debugger
     console.log('%%%%%% pouchdb exists: ',db);
 
@@ -53,46 +58,59 @@ angular.module('app.services', [])
       //console.log('%%% bible psalms object: ',data)
     });
 
+    fetchInitialDocs();
+    // create empty favorites list
+    // maybe seed it with John 3:16
     initFavorites();
   }
 
+  // initialize the docs cache with db
+  function fetchInitialDocs(){
+    $q.when(db.allDocs({include_docs:true}))
+    .then(function(res){
+      docs = res.rows.map(function(row){return row.doc;});
+    })
+  }
+  // apply db changes to docs cache
   function reactToChanges() {
-  db.changes({live: true, since: 'now', include_docs: true}).on('change', function (change) {
-    if (change.deleted) {
-      // change.id holds the deleted id
-      onDeleted(change.id);
-    } else { // updated/inserted
-      // change.doc holds the new doc
-      onUpdatedOrInserted(change.doc);
-    }
-    renderDocs();
-  }).on('error', console.log.bind(console));
-}
-function onDeleted(id) {
-  var index = binarySearch(docs, id);
-  var doc = docs[index];
-  if (doc && doc._id === id) {
-    docs.splice(index, 1);
+    db.changes({live: true,
+      since: 'now', include_docs: true}).on('change', function (change) {
+      if (change.deleted) {
+        // change.id holds the deleted id
+        onDeleted(change.id);
+      } else { // updated/inserted
+        // change.doc holds the new doc
+        onUpdatedOrInserted(change.doc);
+      }
+      renderDocs();
+    }).on('error', console.log.bind(console));
   }
-}
 
-function onUpdatedOrInserted(newDoc) {
-  var index = binarySearch(docs, newDoc._id);
-  var doc = docs[index];
-  if (doc && doc._id === newDoc._id) { // update
-    docs[index] = newDoc;
-  } else { // insert
-    docs.splice(index, 0, newDoc);
+  function onDeleted(id) {
+    var index = binarySearch(docs, id);
+    var doc = docs[index];
+    if (doc && doc._id === id) {
+      docs.splice(index, 1);
+    }
   }
-}
-function binarySearch(arr, docId) {
-  var low = 0, high = arr.length, mid;
-  while (low < high) {
-    mid = (low + high) >>> 1; // faster version of Math.floor((low + high) / 2)
-    arr[mid]._id < docId ? low = mid + 1 : high = mid
+
+  function onUpdatedOrInserted(newDoc) {
+    var index = binarySearch(docs, newDoc._id);
+    var doc = docs[index];
+    if (doc && doc._id === newDoc._id) { // update
+      docs[index] = newDoc;
+    } else { // insert
+      docs.splice(index, 0, newDoc);
+    }
   }
-  return low;
-}
+  function binarySearch(arr, docId) {
+    var low = 0, high = arr.length, mid;
+    while (low < high) {
+      mid = (low + high) >>> 1; // faster version of Math.floor((low + high) / 2)
+      arr[mid]._id < docId ? low = mid + 1 : high = mid
+    }
+    return low;
+  }
   // initialize favorites category as empty list so that it is ready to
   // have verses
   function initFavorites(){
@@ -100,11 +118,7 @@ function binarySearch(arr, docId) {
   }
   // return a list of verses given book id, chapter id
   function getChapter(bookID, chapID){
-    // TODO alldocs log all values
-    $q.when(db.allDocs({include_docs:true}))
-    .then(function(docs){
-      return console.log(docs.rows);
-    })
+
   }
   // return a verse detail
   function getVerse(bookID, chapID, verseID){
@@ -125,6 +139,18 @@ function binarySearch(arr, docId) {
   // return a list of verses given categories id
   function getCategory(catID){
 
+  }
+  // do a join one category to many verse
+  // see: http://stackoverflow.com/questions/1674089/what-is-the-idiomatic-way-to-implement-foreign-keys-in-couchdb
+  function addCategory(name){
+    var categoryName = '';
+    // !! means truthy
+    if(!name){
+       categoryName = Date.toDateString();
+    }
+    else{
+      categoryName = name;
+    }
   }
   // clear db
   function destroyDB(){

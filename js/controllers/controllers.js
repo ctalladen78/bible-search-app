@@ -1,9 +1,19 @@
 angular.module('app.controllers', ['app.services'])
 // index component
-.controller('bookIndexCtrl', ['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService){
+.controller('bookIndexCtrl', ['$scope','$stateParams', 'DbService','$q', function($scope, $stateParams, DbService, $q){
   var ctrl = this;
-  // ctrl.bookList = DbService.getBooks()
-  ctrl.bookList = ['Genesis','Psalms','John','Acts']; // DbService.getBooks()
+   DbService.getDocs().then(function(res){
+    ctrl.bookList = res;
+    console.log('%%% bookList: ', ctrl.bookList);
+   })
+  //ctrl.bookList = $q.when(_.map(DbService.getBooks(), 'book'))
+  //.then(function(res){
+  //  console.log('%%%% booklist: ',res)
+
+  //})
+  console.log('%%%% test: ',ctrl.bookList)
+
+  //ctrl.bookList = ['Genesis','Psalms','John','Acts']; // DbService.getBooks()
   return ctrl;
 }])
 // chapter list
@@ -144,7 +154,7 @@ angular.module('app.controllers', ['app.services'])
   // data-> a verse may only have one category for now
   ctrl.saveVerse = function(){
     // save verse
-    // DbService.saveVerse(ctrl.verseDetail)
+    // DbService.editVerse(ctrl.verseDetail)
     $state.go("menu.verseDetail",{book:ctrl.bookId, chap:ctrl.chapId, verse:ctrl.verse});
   }
   ctrl.addToCategory = function(){}

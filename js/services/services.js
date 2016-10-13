@@ -3,17 +3,21 @@ angular.module('app.services', [])
 .factory('DbService', ['bibleScraper', '$q', function(bibleScraper,$q){
   // DONE: using pouchdb operations
   var db;
-  var docs = [];
+  var docs = []; // TODO will this be exposed to controller?
+  var categoryList = [];
   return{
     docs : docs,
     initDB : initDB,
+    getDocs : getDocs,
+    getBooks : getBooks,
     getChapter : getChapter,
     getVerse : getVerse,
     editVerse : editVerse,
     getFavoriteList : getFavoriteList,
     getCategoryList : getCategoryList,
     getCategory : getCategory,
-    destroyDB : destroyDB
+    destroyDB : destroyDB,
+    renderDocs : renderDocs
   }
 
   // populate db from api endpoint
@@ -24,68 +28,76 @@ angular.module('app.services', [])
       skip_setup: true
     });
     window.PouchDB = PouchDB; // required by fauxton debugger
-    console.log('%%%%%% pouchdb exists: ',db);
+    //console.log('%%%%%% pouchdb exists: ',db);
 
-    db.info().then(
-      console.log.bind(console));
+    db.info().then(console.log.bind(console));
     // DONE populate db with test data
     var version = 'akjv'; // kjv, korean, web, etc
-    var psalmsUrl = 'https://getbible.net/json?text=psalms&v='+version+'&callback=JSON_CALLBACK';
-        var ezraUrl = 'https://getbible.net/json?text=ezra&v='+version+'&callback=JSON_CALLBACK';
+    var book = 'ezra';
 
-    bibleScraper.getBookUngrouped(ezraUrl).then(function(data){
-      // data is an array of objects
+    bibleScraper.scrapeBookUngrouped(book, version)
+    .then(function(result){
       // push data into pouchdb
-        data.forEach(function(i){
-          var tempDoc = {};
-          var tempid = ''+i.book+i.chapter+i.verse+i.version;
-          tempDoc._id = tempid;
-          tempDoc.book = i.book;
-          tempDoc.chapter = i.chapter;
-          tempDoc.verse = i.verse;
-          tempDoc.text = i.text;
-          tempDoc.version = i.version;
-          // TODO: categories
-          // TODO: categories.favorites (list of verses in favorites category)
-          // TODO: add/edit/delete categories
-          $q.when(db.put(tempDoc).then(function(doc){
-            console.log('successfully put doc', doc._id)
-          }, function(){
-            console.log('failed put doc', doc._id)
-          }));
-      })
-
-      //console.log('%%% bible psalms object: ',data)
-    });
-
-    fetchInitialDocs();
+      db.bulkDocs(result);
+    })
+    //.then(getDocs());
+    //console.log('%%% bible psalms object: ',data)
     // create empty favorites list
     // maybe seed it with John 3:16
-    initFavorites();
+    //initFavorites();
   }
 
-  // initialize the docs cache with db
-  function fetchInitialDocs(){
-    $q.when(db.allDocs({include_docs:true}))
+  // return the synced docs cache with db
+  function getDocs(){
+    return $q.when(db.allDocs({include_docs:true}))
     .then(function(res){
       docs = res.rows.map(function(row){return row.doc;});
+      var obj = {}; // nested object of arrays grouped by chapter
+      obj = _.groupBy(docs, function(i){
+        return i.chapter;
+      })
+      // sort ascending by i.verse
+      for(var key in obj){
+        if(obj.hasOwnProperty(key)){
+          obj[key].sort(function(a,b){
+            return a.verse - b.verse;
+          })
+        }//developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+      }
+      //console.log('%%%% grouped object', obj);
+      return obj;
     })
+    .then(syncToChanges)  // BUG not returning docs
+    .then(renderDocs)
+    .catch(console.log.bind(console));
   }
   // apply db changes to docs cache
-  function reactToChanges() {
-    db.changes({live: true,
-      since: 'now', include_docs: true}).on('change', function (change) {
-      if (change.deleted) {
-        // change.id holds the deleted id
-        onDeleted(change.id);
-      } else { // updated/inserted
-        // change.doc holds the new doc
-        onUpdatedOrInserted(change.doc);
-      }
-      renderDocs();
-    }).on('error', console.log.bind(console));
+  // this is done whenever we need to sync the cache with db
+  function syncToChanges() {
+    return $q.when(
+      db.changes({
+        live: true,
+        since: 'now',
+        include_docs: true
+      }).on('change', function (change) {
+        if (change.deleted) {
+          // change.id holds the deleted id
+          onDeleted(change.id);
+        } else { // updated/inserted
+          // change.doc holds the new doc
+          onUpdatedOrInserted(change.doc);
+        }
+      })
+    .on('error', console.log.bind(console))
+    )
+    .then(function(){return docs;});
   }
 
+  function renderDocs(){
+    console.log('%%% render docs: ',JSON.stringify(docs, null, 4));
+    //console.log(JSON.stringify(categoryList, null, 4));
+    return docs;
+  }
   function onDeleted(id) {
     var index = binarySearch(docs, id);
     var doc = docs[index];
@@ -103,6 +115,7 @@ angular.module('app.services', [])
       docs.splice(index, 0, newDoc);
     }
   }
+  // return index of docId
   function binarySearch(arr, docId) {
     var low = 0, high = arr.length, mid;
     while (low < high) {
@@ -116,9 +129,13 @@ angular.module('app.services', [])
   function initFavorites(){
     // add favorites category to db
   }
+  // return a list of books
+  function getBooks(){
+    return _.map(getDocs(),'books');
+  }
   // return a list of verses given book id, chapter id
   function getChapter(bookID, chapID){
-
+    // filter docs using bookID, chapID
   }
   // return a verse detail
   function getVerse(bookID, chapID, verseID){
@@ -134,23 +151,27 @@ angular.module('app.services', [])
   }
   // return a list of categories
   function getCategoryList(){
-
+    //categoryList = db.query(category)
   }
   // return a list of verses given categories id
   function getCategory(catID){
 
   }
-  // do a join one category to many verse
+  // TODO: do a join one category to many verse
   // see: http://stackoverflow.com/questions/1674089/what-is-the-idiomatic-way-to-implement-foreign-keys-in-couchdb
-  function addCategory(name){
-    var categoryName = '';
-    // !! means truthy
-    if(!name){
-       categoryName = Date.toDateString();
-    }
-    else{
-      categoryName = name;
-    }
+  function addCategory(catName){
+    return $q.when(function(name){
+      var cat = {};
+      // !! means truthy(not falsy), ! means falsy(not true ie null,undefined, empty)
+      if(!name){
+         cat.categoryName = Date.toDateString();
+      }
+      else{
+        cat._id = new Date();
+        cat.categoryName = name;
+      }
+      return cat;
+    }).then(function(res){db.put(res);})
   }
   // clear db
   function destroyDB(){

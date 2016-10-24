@@ -92,6 +92,9 @@ angular.module('app.services')
         return packageBook(response.data);
       });
       return promise;
+    },
+    'getLocalTestBooks' : function(book, ver){
+      return $http.get('./test.json').then(function(res){console.log('%%% get test db', res); return res})
     }
   }
   // returns a list of verses

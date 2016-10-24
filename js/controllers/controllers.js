@@ -4,14 +4,12 @@ angular.module('app.controllers', ['app.services'])
   var ctrl = this;
    DbService.getDocs().then(function(res){
     ctrl.bookList = res;
-    console.log('%%% bookList: ', ctrl.bookList);
+    console.log('%%% ctrl bookList: ', ctrl.bookList);
    })
   //ctrl.bookList = $q.when(_.map(DbService.getBooks(), 'book'))
   //.then(function(res){
   //  console.log('%%%% booklist: ',res)
-
   //})
-  console.log('%%%% test: ',ctrl.bookList)
 
   //ctrl.bookList = ['Genesis','Psalms','John','Acts']; // DbService.getBooks()
   return ctrl;
@@ -23,6 +21,7 @@ angular.module('app.controllers', ['app.services'])
     DbService.getChapter();
 
   ctrl.bookId = $stateParams.book;
+  // query
   ctrl.chapList = [
     {"chapId":1, "heading": "Creation & Recreation"},
     {"chapId":2, "heading": "The Fall of Man"},

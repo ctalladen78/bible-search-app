@@ -16,8 +16,7 @@ angular.module('app.services', [])
     getFavoriteList : getFavoriteList,
     getCategoryList : getCategoryList,
     getCategory : getCategory,
-    destroyDB : destroyDB,
-    renderDocs : renderDocs
+    destroyDB : destroyDB
   }
 
   // populate db from api endpoint
@@ -34,11 +33,24 @@ angular.module('app.services', [])
     // DONE populate db with test data
     var version = 'akjv'; // kjv, korean, web, etc
     var book = 'ezra';
-
+    /*
     bibleScraper.scrapeBookUngrouped(book, version)
     .then(function(result){
       // push data into pouchdb
       db.bulkDocs(result);
+    })
+    */
+    bibleScraper.getLocalTestBooks(book, version)
+    .then(function(result){
+  //    console.log('%%% local docs:', result.data.bible)
+      return db.bulkDocs(result.data.bible)
+       .then(function(res){
+         console.log('%%% db bulkdocs: ',res)
+         return res
+       })
+    })
+    .then(function(result){
+      console.log('%%% init db:', result)
     })
     //.then(getDocs());
     //console.log('%%% bible psalms object: ',data)
@@ -53,9 +65,11 @@ angular.module('app.services', [])
     .then(function(res){
       docs = res.rows.map(function(row){return row.doc;});
       var obj = {}; // nested object of arrays grouped by chapter
+
       obj = _.groupBy(docs, function(i){
         return i.chapter;
       })
+
       // sort ascending by i.verse
       for(var key in obj){
         if(obj.hasOwnProperty(key)){
@@ -65,10 +79,10 @@ angular.module('app.services', [])
         }//developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
       }
       //console.log('%%%% grouped object', obj);
-      return obj;
+      docs = obj;
+      console.log('%%%% get docs: ',docs)
     })
-    .then(syncToChanges)  // BUG not returning docs
-    .then(renderDocs)
+    .then(syncToChanges)
     .catch(console.log.bind(console));
   }
   // apply db changes to docs cache
@@ -90,14 +104,10 @@ angular.module('app.services', [])
       })
     .on('error', console.log.bind(console))
     )
-    .then(function(){return docs;});
+    //.then(function(){return docs;});
   }
 
-  function renderDocs(){
-    console.log('%%% render docs: ',JSON.stringify(docs, null, 4));
-    //console.log(JSON.stringify(categoryList, null, 4));
-    return docs;
-  }
+  // remove from cache
   function onDeleted(id) {
     var index = binarySearch(docs, id);
     var doc = docs[index];
@@ -105,17 +115,17 @@ angular.module('app.services', [])
       docs.splice(index, 1);
     }
   }
-
+  // helper: sync db & docs cache on change
   function onUpdatedOrInserted(newDoc) {
     var index = binarySearch(docs, newDoc._id);
     var doc = docs[index];
     if (doc && doc._id === newDoc._id) { // update
       docs[index] = newDoc;
-    } else { // insert
+    } else { // insert newDoc
       docs.splice(index, 0, newDoc);
     }
   }
-  // return index of docId
+  // helper: return index of docId
   function binarySearch(arr, docId) {
     var low = 0, high = arr.length, mid;
     while (low < high) {
@@ -178,4 +188,3 @@ angular.module('app.services', [])
     db.destroy().then(function() { console.log('ALL YOUR BASE ARE BELONG TO US') });
   }
 }])
-

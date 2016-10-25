@@ -26,7 +26,7 @@ angular.module('app.services', [])
       adapter: 'websql',
       skip_setup: true
     });
-    window.PouchDB = PouchDB; // required by fauxton debugger
+    //window.PouchDB = PouchDB; // required by fauxton debugger
     //console.log('%%%%%% pouchdb exists: ',db);
 
     db.info().then(console.log.bind(console));
@@ -40,20 +40,19 @@ angular.module('app.services', [])
       db.bulkDocs(result);
     })
     */
-    bibleScraper.getLocalTestBooks(book, version)
-    .then(function(result){
-  //    console.log('%%% local docs:', result.data.bible)
-      return db.bulkDocs(result.data.bible)
-       .then(function(res){
-         console.log('%%% db bulkdocs: ',res)
-         return res
-       })
-    })
-    .then(function(result){
-      console.log('%%% init db:', result)
-    })
-    //.then(getDocs());
-    //console.log('%%% bible psalms object: ',data)
+    return $q.when(bibleScraper.getLocalTestBooks(book, version)
+        .then(function(result){
+      //    console.log('%%% local docs:', result.data.bible)
+        return db.bulkDocs(result.data.bible)
+         .then(function(res){
+           console.log('%%% db bulkdocs: ',res)
+           return res
+         })
+      })
+      .then(function(result){
+        console.log('%%% init db:', result)
+      })
+  )
     // create empty favorites list
     // maybe seed it with John 3:16
     //initFavorites();
@@ -61,29 +60,31 @@ angular.module('app.services', [])
 
   // return the synced docs cache with db
   function getDocs(){
-    return $q.when(db.allDocs({include_docs:true}))
-    .then(function(res){
-      docs = res.rows.map(function(row){return row.doc;});
-      var obj = {}; // nested object of arrays grouped by chapter
+    return $q.when(
+      db.allDocs({include_docs:true})
+        .then(function(res){
+          docs = res.rows.map(function(row){return row.doc;});
+            var obj = {}; // nested object of arrays grouped by chapter
 
-      obj = _.groupBy(docs, function(i){
-        return i.chapter;
-      })
-
-      // sort ascending by i.verse
-      for(var key in obj){
-        if(obj.hasOwnProperty(key)){
-          obj[key].sort(function(a,b){
-            return a.verse - b.verse;
+          obj = _.groupBy(docs, function(i){
+            return i.chapter;
           })
-        }//developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
-      }
-      //console.log('%%%% grouped object', obj);
-      docs = obj;
-      console.log('%%%% get docs: ',docs)
-    })
-    .then(syncToChanges)
-    .catch(console.log.bind(console));
+
+          // sort ascending by i.verse
+          for(var key in obj){
+            if(obj.hasOwnProperty(key)){
+              obj[key].sort(function(a,b){
+                return a.verse - b.verse;
+              })
+            }//developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+          }
+          //console.log('%%%% grouped object', obj);
+          docs = obj;
+          console.log('%%%% get docs: ',docs)
+        })
+        .then(syncToChanges())
+        .catch(console.log.bind(console))
+    );
   }
   // apply db changes to docs cache
   // this is done whenever we need to sync the cache with db
@@ -93,16 +94,19 @@ angular.module('app.services', [])
         live: true,
         since: 'now',
         include_docs: true
-      }).on('change', function (change) {
+      })
+      .on('change', function(change) {
         if (change.deleted) {
           // change.id holds the deleted id
+          console.log('%%% deleting:', change.deleted);
           onDeleted(change.id);
         } else { // updated/inserted
           // change.doc holds the new doc
+          console.log('%%% updating: ', change.doc);
           onUpdatedOrInserted(change.doc);
         }
       })
-    .on('error', console.log.bind(console))
+      .on('error', console.log.bind(console))
     )
     //.then(function(){return docs;});
   }
@@ -141,7 +145,7 @@ angular.module('app.services', [])
   }
   // return a list of books
   function getBooks(){
-    return _.map(getDocs(),'books');
+    return _.map(docs,'books');
   }
   // return a list of verses given book id, chapter id
   function getChapter(bookID, chapID){

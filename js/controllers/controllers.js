@@ -3,13 +3,10 @@ angular.module('app.controllers', ['app.services'])
 .controller('bookIndexCtrl', ['$scope','$stateParams', 'DbService','$q', function($scope, $stateParams, DbService, $q){
   var ctrl = this;
    DbService.getDocs().then(function(res){
-    ctrl.bookList = res;
+    console.log('%%%% get docs from ctrl: ', res) 
+    ctrl.bookList = DbService.getBooks();
     console.log('%%% ctrl bookList: ', ctrl.bookList);
    })
-  //ctrl.bookList = $q.when(_.map(DbService.getBooks(), 'book'))
-  //.then(function(res){
-  //  console.log('%%%% booklist: ',res)
-  //})
 
   //ctrl.bookList = ['Genesis','Psalms','John','Acts']; // DbService.getBooks()
   return ctrl;

@@ -1,2 +1,3 @@
 #ignore lib directory
 lib/
+bower_components/

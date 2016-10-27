@@ -1,3 +1,4 @@
 #ignore lib directory
 lib/
 bower_components/
+index.html

@@ -79,7 +79,7 @@ angular.module('app.services', [])
             }//developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
           }
           //console.log('%%%% grouped object', obj);
-          docs = obj;
+          docs = obj[1];
           console.log('%%%% get docs: ',docs)
         })
         .then(syncToChanges())
@@ -102,7 +102,6 @@ angular.module('app.services', [])
           onDeleted(change.id);
         } else { // updated/inserted
           // change.doc holds the new doc
-          console.log('%%% updating: ', change.doc);
           onUpdatedOrInserted(change.doc);
         }
       })
@@ -123,9 +122,11 @@ angular.module('app.services', [])
   function onUpdatedOrInserted(newDoc) {
     var index = binarySearch(docs, newDoc._id);
     var doc = docs[index];
-    if (doc && doc._id === newDoc._id) { // update
+    if (!!doc && doc._id === newDoc._id) { // update
+      console.log('%%% updating: ', doc._id, '  ',newDoc._id);
       docs[index] = newDoc;
     } else { // insert newDoc
+      console.log('%%% adding: ', doc);
       docs.splice(index, 0, newDoc);
     }
   }
@@ -145,7 +146,8 @@ angular.module('app.services', [])
   }
   // return a list of books
   function getBooks(){
-    return _.map(docs,'books');
+    //return _.map(docs,'books');
+    return docs;
   }
   // return a list of verses given book id, chapter id
   function getChapter(bookID, chapID){

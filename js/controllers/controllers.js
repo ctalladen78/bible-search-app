@@ -3,7 +3,6 @@ angular.module('app.controllers', ['app.services'])
 .controller('bookIndexCtrl', ['$scope','$stateParams', 'DbService','$q', function($scope, $stateParams, DbService, $q){
   var ctrl = this;
    DbService.getDocs().then(function(res){
-    console.log('%%%% get docs from ctrl: ', res) 
     ctrl.bookList = DbService.getBooks();
     console.log('%%% ctrl bookList: ', ctrl.bookList);
    })

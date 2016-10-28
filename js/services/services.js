@@ -78,11 +78,14 @@ angular.module('app.services', [])
               })
             }//developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
           }
-          //console.log('%%%% grouped object', obj);
+          //console.log('%%%% grouped object', obj[1]);
           docs = obj[1];
-          console.log('%%%% get docs: ',docs)
         })
-        .then(syncToChanges())
+        .then(function(){
+          syncToChanges();
+          return docs;
+        }
+      )
         .catch(console.log.bind(console))
     );
   }
@@ -107,7 +110,6 @@ angular.module('app.services', [])
       })
       .on('error', console.log.bind(console))
     )
-    //.then(function(){return docs;});
   }
 
   // remove from cache

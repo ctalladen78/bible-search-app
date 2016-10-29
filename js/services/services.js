@@ -1,10 +1,11 @@
 angular.module('app.services', [])
 
 .factory('DbService', ['bibleScraper', '$q', function(bibleScraper,$q){
-  // DONE: using pouchdb operations
+
   var db;
-  var docs = []; // TODO will this be exposed to controller?
+  var docs = [];
   var categoryList = [];
+
   return{
     docs : docs,
     initDB : initDB,
@@ -29,8 +30,22 @@ angular.module('app.services', [])
     //window.PouchDB = PouchDB; // required by fauxton debugger
     //console.log('%%%%%% pouchdb exists: ',db);
 
-    db.info().then(console.log.bind(console));
-    // DONE populate db with test data
+    db.info(function(err, info){
+      if(info.doc_count === 0){
+        populateTest();
+      }
+    })
+    .then(console.log.bind(console))
+    // db exists
+    .then(function(){
+      console.log('%%% db exists');
+    })
+    // db not initialized
+    .catch(function(){
+      console.log('%%% db does not exist')
+      populateTest();
+    })
+    //  populate db with test data
     var version = 'akjv'; // kjv, korean, web, etc
     var book = 'ezra';
     /*
@@ -40,24 +55,21 @@ angular.module('app.services', [])
       db.bulkDocs(result);
     })
     */
-    return $q.when(bibleScraper.getLocalTestBooks(book, version)
-        .then(function(result){
-      //    console.log('%%% local docs:', result.data.bible)
-        return db.bulkDocs(result.data.bible)
-         .then(function(res){
-           console.log('%%% db bulkdocs: ',res)
-           return res
-         })
-      })
-      .then(function(result){
-        console.log('%%% init db:', result)
-      })
-  )
-    // create empty favorites list
+        // create empty favorites list
     // maybe seed it with John 3:16
     //initFavorites();
   }
-
+  function populateTest(){
+    return $q.when(
+        bibleScraper.getLocalTestBooks()
+        .then(function(result){
+            return db.bulkDocs(result.data.bible)
+        })
+        .then(function(result){
+          console.log('%%% init db:', result)
+        })
+      )
+  }
   // return the synced docs cache with db
   function getDocs(){
     return $q.when(
@@ -84,8 +96,7 @@ angular.module('app.services', [])
         .then(function(){
           syncToChanges();
           return docs;
-        }
-      )
+        })
         .catch(console.log.bind(console))
     );
   }
@@ -108,8 +119,12 @@ angular.module('app.services', [])
           onUpdatedOrInserted(change.doc);
         }
       })
+      .on('complete', function(arg){
+        console.log('%%%% changes complete', arg)
+      })
       .on('error', console.log.bind(console))
     )
+    //.then(function(){ console.log('%%% test')})
   }
 
   // remove from cache

@@ -1,9 +1,13 @@
 angular.module('app.controllers', ['app.services'])
-// index component
+
+// home splash page component
+.controller('homeCtrl', ['$scope','$stateParams', 'DbService','$q', function($scope, $stateParams, DbService, $q){
+  
+}])
+// book index component
 .controller('bookIndexCtrl', ['$scope','$stateParams', 'DbService','$q', function($scope, $stateParams, DbService, $q){
   var ctrl = this;
    DbService.getDocs().then(function(res){
-    // ctrl.bookList = DbService.getBooks();
     ctrl.bookList = res
     console.log('%%% ctrl bookList: ', ctrl.bookList);
    })

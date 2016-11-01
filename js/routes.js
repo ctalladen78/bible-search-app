@@ -129,7 +129,7 @@ angular.module('app.routes', [])
         templateUrl: 'template/categories/edit-category.html',
         controller: 'editCategoryCtrl'
       }
-    }
+      }
   })
 
 $urlRouterProvider.otherwise('/menu/home')

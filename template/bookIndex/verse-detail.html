@@ -1,9 +1,13 @@
-<ion-view title="{{vm.bookId}} {{vm.chapId}} : {{vm.verse}}" id="page6" class=" " ng-controller="verseDetailCtrl as vm">
+<ion-view hide-nav-bar="false" title="{{vm.bookId}} {{vm.chapId}} : {{vm.verse}}" id="page6" class=" " ng-controller="verseDetailCtrl as vm">
+  <ion-nav-buttons side="secondary">
+    <button>
+    <i class="icon ion-android-star" ng-click="vm.verseDetail.like != vm.verseDetail.like"></i>
+  </button>
+  </ion-nav-buttons>
     <ion-content padding="true" class="has-header">
         <div class="card item-text-wrap" id="verseDetail-card21">
             <ion-item class="item-icon-right " id="verseDetail-list-item19">
                 <p>{{vm.verseDetail.text}}</p>
-                <i class="icon ion-android-star" ng-click="vm.verseDetail.like != vm.verseDetail.like"></i>
             </ion-item>
         </div>
         <form id="editVerse-form2" class="list ">

@@ -19,7 +19,7 @@ angular.module('app.services', [])
     getCategory : getCategory,
     destroyDB : destroyDB
   }
-
+// https://www.npmjs.com/package/angular-file-upload
   // populate db from api endpoint
   function initDB(){
       // instantiate DB
@@ -29,9 +29,11 @@ angular.module('app.services', [])
     });
 
     db.info(function(err, info){
+      // count objects in bible.json
       if(info.doc_count === 0){
         populateTest();
       }
+      // if partial count then run diff algorithm
     })
     .then(console.log.bind(console))
     // db exists

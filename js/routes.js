@@ -89,7 +89,7 @@ angular.module('app.routes', [])
     url: '/detail/:book/:chap/:verse',
     views: {
       'side-menu21': {
-        templateUrl: 'template/search/verse-detail.html',
+        templateUrl: 'template/bookIndex/verse-detail.html',
         controller: 'verseDetailCtrl'
       }
     }
@@ -97,7 +97,7 @@ angular.module('app.routes', [])
 
   .state('editVerse', {
     url: '/edit/:book/:chap/:verse',
-    templateUrl: 'template/search/edit-verse.html',
+    templateUrl: 'template/bookIndex/edit-verse.html',
     controller: 'editVerseCtrl'
 
   })

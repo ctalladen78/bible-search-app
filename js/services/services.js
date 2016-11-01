@@ -63,7 +63,14 @@ angular.module('app.services', [])
     return $q.when(
         bibleScraper.getLocalTestBooks()
         .then(function(result){
-            return db.bulkDocs(result.data.bible)
+            var bibleLength = Object.keys(result.bible).length
+            //console.log(JSON.parse(result.bible[0]).bookList)
+            for(var i=0;i<bibleLength;i++){
+              console.log(JSON.parse(result.bible[i]).bookList)
+              db.bulkDocs(JSON.parse(result.bible[i]).bookList)
+            }
+
+//            return db.bulkDocs(result)
         })
         .then(function(result){
           console.log('%%% init db:', result)

@@ -94,7 +94,11 @@ angular.module('app.services')
       return promise;
     },
     'getLocalTestBooks' : function(book, ver){
-      return $http.get('./test.json').then(function(res){console.log('%%% get test db', res); return res})
+      return $http.get('./test.json')
+      .then(function(res){
+        //console.log(res.data)
+        return res.data
+      })
     }
   }
   // returns a list of verses

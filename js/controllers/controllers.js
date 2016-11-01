@@ -2,24 +2,22 @@ angular.module('app.controllers', ['app.services'])
 
 // home splash page component
 .controller('homeCtrl', ['$scope','$stateParams', 'DbService','$q', function($scope, $stateParams, DbService, $q){
-  
+
 }])
 // book index component
 .controller('bookIndexCtrl', ['$scope','$stateParams', 'DbService','$q', function($scope, $stateParams, DbService, $q){
   var ctrl = this;
-   DbService.getDocs().then(function(res){
+   DbService.getBooks().then(function(res){
     ctrl.bookList = res
     console.log('%%% ctrl bookList: ', ctrl.bookList);
    })
-
-  //ctrl.bookList = ['Genesis','Psalms','John','Acts']; // DbService.getBooks()
   return ctrl;
 }])
 // chapter list
 .controller('chapterIndexCtrl',['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService){
   var ctrl = this;
   // ctrl.chapList = DbService.getChapters($stateParams.book)
-    DbService.getChapter();
+    DbService.getChapterList();
 
   ctrl.bookId = $stateParams.book;
   // query
@@ -43,7 +41,7 @@ angular.module('app.controllers', ['app.services'])
 
   ctrl.getBooks = function(){
     // populate Bible bookList
-    ctrl.bookList = ['','Genesis','Psalms','John','Acts']; // DbService.getBooks()
+    ctrl.bookList = ['','Genesis','Psalms','John','Acts']; // DbService.getBookList()
   }
   ctrl.getChaps = function(){
     if(!ctrl.bookId){

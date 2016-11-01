@@ -11,8 +11,8 @@ angular.module('app.services', [])
     initDB : initDB,
     getDocs : getDocs,
     getBooks : getBooks,
-    getChapter : getChapter,
-    getVerse : getVerse,
+    getChapterList : getChapterList,
+    getVerseList : getVerseList,
     editVerse : editVerse,
     getFavoriteList : getFavoriteList,
     getCategoryList : getCategoryList,
@@ -169,17 +169,33 @@ angular.module('app.services', [])
     // add favorites category to db
   }
   // return a list of books
+  // TODO make sure the list of books are unique
   function getBooks(){
-    //return _.map(docs,'books');
-    return docs;
+    return $q.when(getDocs()).then(function(res){
+      var bookList = _.map(res, function(item){
+        return item.book
+      })
+      return bookList
+    })
   }
   // return a list of verses given book id, chapter id
-  function getChapter(bookID, chapID){
+  function getChapterList(bookID){
     // filter docs using bookID, chapID
+      return $q.when(getDocs()).then(function(res){
+        console.log('%%% get chapters', bookID, res)
+        var chapterList = _.map(res, function(item){
+          return item.book.chapterList
+      })
+    })
   }
   // return a verse detail
-  function getVerse(bookID, chapID, verseID){
-
+  function getVerseList(bookID, chapID){
+    return $q.when(getDocs()).then(function(res){
+        console.log('%%% get book', bookID, '%%% chapter', chapID)
+        var chapterList = _.map(res, function(item){
+          return item.book.chapterList.verseList
+      })
+    })
   }
   // save verse
   function editVerse(verseObj){

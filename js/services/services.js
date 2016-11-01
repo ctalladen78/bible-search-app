@@ -27,8 +27,6 @@ angular.module('app.services', [])
       adapter: 'websql',
       skip_setup: true
     });
-    //window.PouchDB = PouchDB; // required by fauxton debugger
-    //console.log('%%%%%% pouchdb exists: ',db);
 
     db.info(function(err, info){
       if(info.doc_count === 0){

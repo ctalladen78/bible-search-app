@@ -1,4 +1,6 @@
 #ignore lib directory
 lib/
 bower_components/
-index.html
+/index.html
+/test.json
+/bible.json

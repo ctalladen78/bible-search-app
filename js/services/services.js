@@ -66,7 +66,7 @@ angular.module('app.services', [])
             var bibleLength = Object.keys(result.bible).length
             //console.log(JSON.parse(result.bible[0]).bookList)
             for(var i=0;i<bibleLength;i++){
-              console.log(JSON.parse(result.bible[i]).bookList)
+              //console.log(JSON.parse(result.bible[i]).bookList)
               db.bulkDocs(JSON.parse(result.bible[i]).bookList)
             }
 
@@ -83,7 +83,7 @@ angular.module('app.services', [])
       db.allDocs({include_docs:true})
         .then(function(res){
           docs = res.rows.map(function(row){return row.doc;});
-            var obj = {}; // nested object of arrays grouped by chapter
+          var obj = {}; // nested object of arrays grouped by chapter
 
           obj = _.groupBy(docs, function(i){
             return i.chapter;
@@ -169,7 +169,9 @@ angular.module('app.services', [])
     // add favorites category to db
   }
   // return a list of books
-  // TODO make sure the list of books are unique
+  // TODO test that the list of books are unique
+  // TODO test that list of books are in cardinal order
+  // TODO test that scope does not get a copy of the database
   function getBooks(){
     return $q.when(getDocs()).then(function(res){
       var bookList = _.map(res, function(item){
@@ -181,20 +183,28 @@ angular.module('app.services', [])
   // return a list of verses given book id, chapter id
   function getChapterList(bookID){
     // filter docs using bookID, chapID
-      return $q.when(getDocs()).then(function(res){
-        console.log('%%% get chapters', bookID, res)
-        var chapterList = _.map(res, function(item){
-          return item.book.chapterList
+    return $q.when(getDocs()).then(function(res){
+      var chapterObjList = _.filter(res, function(i){
+        // returns all verses
+        return i.book === bookID
       })
+      console.log('%%% get chapters', bookID, chapterObjList)
+      var chapterList = _.map(chapterObjList, function(i){
+        return i.chapter
+        // should return just an array with chapter numbers
+      })
+      return _.uniq(chapterList)
     })
   }
   // return a verse detail
   function getVerseList(bookID, chapID){
     return $q.when(getDocs()).then(function(res){
-        console.log('%%% get book', bookID, '%%% chapter', chapID)
-        var chapterList = _.map(res, function(item){
-          return item.book.chapterList.verseList
+        //console.log('%%% get book', bookID, '%%% chapter', chapID)
+      var chapterObjList = _.filter(res, function(i){
+        // returns all verses
+        return i.book === bookID
       })
+      return chapterObjList
     })
   }
   // save verse

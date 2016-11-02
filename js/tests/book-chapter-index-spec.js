@@ -9,4 +9,20 @@
 
 // when book/chapter/verse-index is called
 // verse index controller should call db.getVerses
-// scope.verseList = db.getVerses 
+// scope.verseList = db.getVerses
+
+/*
+model object
+{bible:[
+  bookName:string
+  bookList: [
+    {
+    book:string,
+    version: string,
+    chapter: number,
+    verse: number,
+    text: bigstring
+    }
+  ]
+]}
+*/

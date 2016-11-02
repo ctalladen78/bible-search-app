@@ -16,18 +16,76 @@ angular.module('app.controllers', ['app.services'])
 // chapter list
 .controller('chapterIndexCtrl',['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService){
   var ctrl = this;
-  // ctrl.chapList = DbService.getChapters($stateParams.book)
-    DbService.getChapterList();
-
   ctrl.bookId = $stateParams.book;
-  // query
-  ctrl.chapList = [
-    {"chapId":1, "heading": "Creation & Recreation"},
-    {"chapId":2, "heading": "The Fall of Man"},
-    {"chapId":3, "heading": "Cain Murders Abel"},
-    {"chapId":4, "heading": "The Flood"}
+  DbService.getChapterList($stateParams.book).then(function(res){
+    console.log('%%% ctrl chapter list: ', res);
+    ctrl.chapList = res
+    // TODO how are parameters being passed to child page?
+    // TODO there is a bug all the chapters are 1
+    // TODO there is a memory leak because of large data set
+  })
+
+  return ctrl;
+}])
+// verse detail
+.controller('verseDetailCtrl', ['$scope','$stateParams', 'DbService','$state', function( $scope, $stateParams, DbService, $state) {
+  // using routeParams
+  var ctrl = this;
+  ctrl.bookId = $stateParams.book;
+  ctrl.chapId = $stateParams.chap;
+  ctrl.verse = $stateParams.verse;
+  ctrl.selectedCategory = '';
+  // ctrl.categories = DbService.getCategoryList(); // return list of categories
+  ctrl.getCategories = function(){
+    ctrl.categories = [
+      'Jesus',
+      'Paul',
+      'John'
     ];
-  console.log('getting chap for book: ',ctrl.bookId, 'length: ',ctrl.chapList.length);
+  }
+  // ctrl.verseDetail = DbService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse);
+  ctrl.verseDetail = {
+    'like' : true, // data.favorite
+    'category' : 'test', // data.category
+    'book' : 'test',
+    'chapter' : 10,
+    'verse' : ctrl.verse,
+    'text' : 'Lorem ipsum dolor sit amet, nulla feugiat fabellas et eam, detraxit ocurreret expetendis mei cu. Id errem commodo cum, etiam dolorum prodesset est id. His facilisi appellantur te, ignota petentium accusamus has te. Usu an sonet ignota labore. Populo eligendi voluptatum at mel. Duo id intellegat repudiandae, inermis erroribus gubergren ex vis.'
+  }
+  // data-> a verse may only have one category for now
+  ctrl.saveVerse = function(){
+    // save verse
+    // DbService.saveVerse(ctrl.verseDetail)
+    // menu.bookSearchResults({book:vm.bookId,chap:vm.chapId})
+    // TODO just go back to last page
+    $state.go("menu.bookSearchResults",{book:ctrl.bookId,chap:ctrl.chapId});
+  }
+  ctrl.addToCategory = function(){}
+  return ctrl;
+}])
+// edit verse detail
+.controller('editVerseCtrl', ['$scope', '$stateParams','DbService','$state', function($scope, $stateParams, DbService,$state) {
+  var ctrl = this;
+  ctrl.bookId = $stateParams.book;
+  ctrl.chapId = $stateParams.chap;
+  ctrl.verse = $stateParams.verse;
+  // ctrl.categories = DbService.getCategoryList(); // return list of categories
+  // ctrl.verseDetail = DbService.getVerseDetail();
+  ctrl.verseDetail = {
+    'favorite' : true, // data.favorite
+    'category' : 'test', // data.category
+    'book' : 'test',
+    'chapter' : 10,
+    'verse' : 12,
+    'text' : 'test'
+  }
+  // data-> a verse may only have one category for now
+  ctrl.saveVerse = function(){
+    // save verse
+    // DbService.editVerse(ctrl.verseDetail)
+    $state.go("menu.verseDetail",{book:ctrl.bookId, chap:ctrl.chapId, verse:ctrl.verse});
+  }
+  ctrl.addToCategory = function(){}
   return ctrl;
 }])
 // dropdown search component
@@ -97,67 +155,7 @@ angular.module('app.controllers', ['app.services'])
 
   return ctrl;
 }])
-// verse detail
-.controller('verseDetailCtrl', ['$scope','$stateParams', 'DbService','$state', function( $scope, $stateParams, DbService, $state) {
-  // using routeParams
-  var ctrl = this;
-  ctrl.bookId = $stateParams.book;
-  ctrl.chapId = $stateParams.chap;
-  ctrl.verse = $stateParams.verse;
-  ctrl.selectedCategory = '';
-  // ctrl.categories = DbService.getCategoryList(); // return list of categories
-  ctrl.getCategories = function(){
-    ctrl.categories = [
-      'Jesus',
-      'Paul',
-      'John'
-    ];
-  }
-  // ctrl.verseDetail = DbService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse);
-  ctrl.verseDetail = {
-    'like' : true, // data.favorite
-    'category' : 'test', // data.category
-    'book' : 'test',
-    'chapter' : 10,
-    'verse' : ctrl.verse,
-    'text' : 'Lorem ipsum dolor sit amet, nulla feugiat fabellas et eam, detraxit ocurreret expetendis mei cu. Id errem commodo cum, etiam dolorum prodesset est id. His facilisi appellantur te, ignota petentium accusamus has te. Usu an sonet ignota labore. Populo eligendi voluptatum at mel. Duo id intellegat repudiandae, inermis erroribus gubergren ex vis.'
-  }
-  // data-> a verse may only have one category for now
-  ctrl.saveVerse = function(){
-    // save verse
-    // DbService.saveVerse(ctrl.verseDetail)
-    // menu.bookSearchResults({book:vm.bookId,chap:vm.chapId})
-    // TODO just go back to last page
-    $state.go("menu.bookSearchResults",{book:ctrl.bookId,chap:ctrl.chapId});
-  }
-  ctrl.addToCategory = function(){}
-  return ctrl;
-}])
-// edit verse detail
-.controller('editVerseCtrl', ['$scope', '$stateParams','DbService','$state', function($scope, $stateParams, DbService,$state) {
-  var ctrl = this;
-  ctrl.bookId = $stateParams.book;
-  ctrl.chapId = $stateParams.chap;
-  ctrl.verse = $stateParams.verse;
-  // ctrl.categories = DbService.getCategoryList(); // return list of categories
-  // ctrl.verseDetail = DbService.getVerseDetail();
-  ctrl.verseDetail = {
-    'favorite' : true, // data.favorite
-    'category' : 'test', // data.category
-    'book' : 'test',
-    'chapter' : 10,
-    'verse' : 12,
-    'text' : 'test'
-  }
-  // data-> a verse may only have one category for now
-  ctrl.saveVerse = function(){
-    // save verse
-    // DbService.editVerse(ctrl.verseDetail)
-    $state.go("menu.verseDetail",{book:ctrl.bookId, chap:ctrl.chapId, verse:ctrl.verse});
-  }
-  ctrl.addToCategory = function(){}
-  return ctrl;
-}])
+
 // favorites master list
 .controller('favoritesCtrl', ['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService) {
   var ctrl = this;

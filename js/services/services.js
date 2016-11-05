@@ -16,7 +16,6 @@ angular.module('app.services', [])
     editVerse : editVerse,
     getFavoriteList : getFavoriteList,
     getCategoryList : getCategoryList,
-    getCategory : getCategory,
     destroyDB : destroyDB
   }
 // https://www.npmjs.com/package/angular-file-upload
@@ -215,8 +214,11 @@ angular.module('app.services', [])
     var verseObj = $http.get('./test.json').then(function(res){
       var chaps =_.filter(res.data, function(i){return i.book === bookID})
       var verses = _.filter(chaps, function(j){return j.chapter === parseInt(chapID)})
+      var vid = bookID+'-'+chapID+'-'+verseID
+      // var verseObj = db.query(vid)
       var verseObj = _.map(verses,function(k){
         var obj = {}
+        obj.vid = k.vid
         obj.book = k.book
         obj.version = k.version
         obj.chapter = k.chapter
@@ -225,55 +227,73 @@ angular.module('app.services', [])
         obj.like = k.like
         obj[last-read-date] = k[last-read-date]
         obj[read-count] = k[read-count]
-        //obj.categories = k.categories
+        obj.categories = getCategoryList(k.vid)
         return obj;
       })
     })
-    temp.verseDetail = {
-      like : true, // TODO bookmark feature
-      category : ['test1','test2'] // TODO data.category
-      book : 'test',
-      chapter : 10,
-      verse : ctrl.verse,
-      text : ctrl.text,
-      last-read-date :2014-01-14 // TODO reading history feature
-    }
-
+    console.log('%%% get verse obj', verseObj)
   }
-  // save verse
-  function editVerse(verseObj){
+  // user likes/unlikes this verse
+  function toggleFavorites(vid){
+    db.query(vid).then(function(obj){
+      obj.like = !obj.like
+      return obj
+    })
+    .then(function(obj){
+      db.put(obj)
+      syncToChanges()
+    })
+  }
+  // how to count reading history accurately
+  // depending on which verse user is reading
+  function updateReadingHistory(){
 
   }
   // return a list of verses given favorites id
-  function getFavoriteList(favID){
-
+  // this is for the favorites page
+  function getfavoritelist(favid){
+    var favList = _.filter(docs, function(i){return i.like === true})
+    console.log('%%% favList', favList)
+    return favList
   }
-  // return a list of categories
-  function getCategoryList(){
+  function updateCategory(vid, catName){
+
+    syncToChanges()
+  }
+  function deleteCategory(vid, catName){
+    syncToChanges()
+  }
+  // return a list of verses given verse id
+  function getCategoryList(vid){
     //categoryList = db.query(category)
-  }
-  // return a list of verses given categories id
-  function getCategory(catID){
+    var allCats = _.filter(docs, function(i){return i.alias === 'category'})
+    var catList = _.filter(docs, function(i){return i.vid === vid})
+    console.log('%%% category of ',vid, catList)
+    return catList
 
   }
-  // TODO: do a join one category to many verse
+  // TODO model category object
+  // {alias, cid, vid, catlist = []}
   // see: http://stackoverflow.com/questions/1674089/what-is-the-idiomatic-way-to-implement-foreign-keys-in-couchdb
-  function addCategory(catName){
-    return $q.when(function(name){
-      var cat = {};
-      // !! means truthy(not falsy), ! means falsy(not true ie null,undefined, empty)
-      if(!name){
-         cat.categoryName = Date.toDateString();
-      }
-      else{
-        cat._id = new Date();
-        cat.categoryName = name;
-      }
-      return cat;
-    }).then(function(res){db.put(res);})
+  function addCategory(vid, catName){
+    return $q.when(
+      db.get(cid)
+      .then(function(obj){
+        // !! means truthy(not falsy), ! means falsy(not true ie null,undefined, empty)
+        if(!catName){
+         catName = Date.toDateString(); // default category is today's date
+        }
+        else{
+          catName = catName;
+        }
+        obj.catlist.push(catName)
+        return obj;
+        })
+      .then(function(obj){
+        db.put(obj);
+        syncToChanges()
+      })
+    })
   }
-  // clear db
-  function destroyDB(){
-    db.destroy().then(function() { console.log('ALL YOUR BASE ARE BELONG TO US') });
-  }
+
 }])

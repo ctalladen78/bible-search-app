@@ -1,7 +1,11 @@
 <ion-view title="Chapter Index" id="cindexPage" class=" " ng-controller="chapterIndexCtrl as vm">
     <ion-content padding="true" class="has-header">
         <ion-list  id="chapList-list5" class=" " >
-            <ion-item ng-repeat="ch in vm.chapList" class="item-icon-right  " id="chapList-list-item16" ui-sref="menu.bookSearchResults({book:vm.bookId,chap:ch.chapId})">{{ch.chapId}} {{ch.heading}}
+            <!-- passing parameters -->
+            <ion-item ng-repeat="ch in vm.chapList" class="item-icon-right  "
+            id="chapList-list-item16"
+            ui-sref="menu.bookSearchResults({book:vm.bookId,chap:ch.chapter})">
+                {{ch.chapter}} {{ch.chapterheading}}
                 <i class="icon ion-android-arrow-forward"></i>
             </ion-item>
 

@@ -9,7 +9,7 @@ angular.module('app.controllers', ['app.services'])
   var ctrl = this;
    DbService.getBooks().then(function(res){
     ctrl.bookList = res
-    console.log('%%% ctrl bookList: ', ctrl.bookList);
+    //console.log('%%% ctrl bookList: ', ctrl.bookList);
    })
   return ctrl;
 }])
@@ -18,13 +18,31 @@ angular.module('app.controllers', ['app.services'])
   var ctrl = this;
   ctrl.bookId = $stateParams.book;
   DbService.getChapterList($stateParams.book).then(function(res){
-    console.log('%%% ctrl chapter list: ', res);
+//    ctrl.chapList = _.map(res, function(i){return i.chapterheading})
     ctrl.chapList = res
+    console.log('%%% ctrl chapter list: ', ctrl.chapList);
+    // TODO need to sort by chapter
     // TODO how are parameters being passed to child page?
     // TODO there is a bug all the chapters are 1
     // TODO there is a memory leak because of large data set
   })
 
+  return ctrl;
+}])
+// verse list search results master list
+.controller('bookSearchResultsCtrl', ['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService) {
+  // using routeParams
+  var ctrl = this;
+  ctrl.bookId = $stateParams.book;
+  ctrl.chapId = $stateParams.chap;
+  ctrl.verses = [];
+  ctrl.getVerses = function(book, chap){
+    // ctrl.verses = DbService.bookSearch(book,chap) // return list of verse detail objects
+    DbService.getVerseList(book, chap).then(function(res){
+    console.log('%%% verselist', res)
+      ctrl.verses = res
+    })
+  }
   return ctrl;
 }])
 // verse detail
@@ -43,19 +61,12 @@ angular.module('app.controllers', ['app.services'])
       'John'
     ];
   }
-  // ctrl.verseDetail = DbService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse);
-  ctrl.verseDetail = {
-    'like' : true, // data.favorite
-    'category' : 'test', // data.category
-    'book' : 'test',
-    'chapter' : 10,
-    'verse' : ctrl.verse,
-    'text' : 'Lorem ipsum dolor sit amet, nulla feugiat fabellas et eam, detraxit ocurreret expetendis mei cu. Id errem commodo cum, etiam dolorum prodesset est id. His facilisi appellantur te, ignota petentium accusamus has te. Usu an sonet ignota labore. Populo eligendi voluptatum at mel. Duo id intellegat repudiandae, inermis erroribus gubergren ex vis.'
-  }
+  ctrl.verseDetail = DbService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse);
+
   // data-> a verse may only have one category for now
   ctrl.saveVerse = function(){
     // save verse
-    // DbService.saveVerse(ctrl.verseDetail)
+    DbService.saveVerse(ctrl.verseDetail)
     // menu.bookSearchResults({book:vm.bookId,chap:vm.chapId})
     // TODO just go back to last page
     $state.go("menu.bookSearchResults",{book:ctrl.bookId,chap:ctrl.chapId});
@@ -136,25 +147,7 @@ angular.module('app.controllers', ['app.services'])
   }
   return ctrl;
 }])
-// search results master list
-.controller('bookSearchResultsCtrl', ['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService) {
-  // using routeParams
-  var ctrl = this;
-  ctrl.bookId = $stateParams.book;
-  ctrl.chapId = $stateParams.chap;
-  ctrl.verses = [];
-  ctrl.getVerses = function(book, chap){
-    // ctrl.verses = DbService.bookSearch(book,chap) // return list of verse detail objects
-    ctrl.verses = [
-      {"book": "Isiah", "chapter":12, "like":"true","category":[],"verse":14, "text": "For God so loved the world..."},
-      {"book": "Hebrews", "chapter":33, "like":"true","category":[],"verse":15, "text": "That we ought not condemn..."},
-      {"book": "Revelations", "chapter":45, "like":"true","category":[],"verse":16, "text": "When He shall return ..."}
-    ];
-    console.log('verse init');
-  }
 
-  return ctrl;
-}])
 
 // favorites master list
 .controller('favoritesCtrl', ['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService) {

@@ -1,6 +1,6 @@
 angular.module('app.services', [])
 
-.factory('DbService', ['bibleScraper', '$q', function(bibleScraper,$q){
+.factory('DbService', ['bibleScraper', '$q', '$http', function(bibleScraper,$q, $http){
 
   var db;
   var docs = [];
@@ -173,39 +173,72 @@ angular.module('app.services', [])
   // TODO test that list of books are in cardinal order
   // TODO test that scope does not get a copy of the database
   function getBooks(){
-    return $q.when(getDocs()).then(function(res){
-      var bookList = _.map(res, function(item){
-        return item.book
-      })
-      return bookList
+    var bookList = $http.get('./test.json').then(function(res){
+      console.log(res.data)
+      return _.map(res.data, function(r){ return r.book})
     })
+    return bookList // read from test.json
+
   }
   // return a list of verses given book id, chapter id
   function getChapterList(bookID){
     // filter docs using bookID, chapID
-    return $q.when(getDocs()).then(function(res){
-      var chapterObjList = _.filter(res, function(i){
-        // returns all verses
-        return i.book === bookID
+    var chapList = $http.get('./test.json').then(function(res){
+      return _.map(_.filter(res.data, function(i){return i.book === bookID}),function(j){
+        var obj = {}
+        obj.chapter = j.chapter;
+        obj.chapterheading = j["chapter-heading"];
+        //console.log(obj)
+        return obj;
       })
-      console.log('%%% get chapters', bookID, chapterObjList)
-      var chapterList = _.map(chapterObjList, function(i){
-        return i.chapter
-        // should return just an array with chapter numbers
-      })
-      return _.uniq(chapterList)
     })
+    return chapList
+
   }
-  // return a verse detail
+  // return list of verse objects
   function getVerseList(bookID, chapID){
-    return $q.when(getDocs()).then(function(res){
-        //console.log('%%% get book', bookID, '%%% chapter', chapID)
-      var chapterObjList = _.filter(res, function(i){
-        // returns all verses
-        return i.book === bookID
+    var verseList = $http.get('./test.json').then(function(res){
+      var chaps =_.filter(res.data, function(i){return i.book === bookID})
+      var verses = _.filter(chaps, function(j){return j.chapter === parseInt(chapID)})
+      return _.map(verses,function(k){
+        var obj = {}
+        obj.verse = k.verse;
+        obj.text = k.text
+        return obj;
       })
-      return chapterObjList
     })
+    //console.log('%%% verselist', verseList)
+    return verseList
+  }
+  // return verse detail objects
+  function getVerseDetail(bookID, chapID, verseID){
+    var verseObj = $http.get('./test.json').then(function(res){
+      var chaps =_.filter(res.data, function(i){return i.book === bookID})
+      var verses = _.filter(chaps, function(j){return j.chapter === parseInt(chapID)})
+      var verseObj = _.map(verses,function(k){
+        var obj = {}
+        obj.book = k.book
+        obj.version = k.version
+        obj.chapter = k.chapter
+        obj.verse = k.verse;
+        obj.text = k.text
+        obj.like = k.like
+        obj[last-read-date] = k[last-read-date]
+        obj[read-count] = k[read-count]
+        //obj.categories = k.categories
+        return obj;
+      })
+    })
+    temp.verseDetail = {
+      like : true, // TODO bookmark feature
+      category : ['test1','test2'] // TODO data.category
+      book : 'test',
+      chapter : 10,
+      verse : ctrl.verse,
+      text : ctrl.text,
+      last-read-date :2014-01-14 // TODO reading history feature
+    }
+
   }
   // save verse
   function editVerse(verseObj){

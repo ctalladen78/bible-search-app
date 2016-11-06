@@ -6,5 +6,8 @@ bower_components/
 /bible.json
 /static-old-testament.json
 /static-new-testament.json
+<<<<<<< HEAD
 # wisdom books: job, psalms, proverb, ecclesiastes, song of songs
+=======
+>>>>>>> 143db05ec3f83b5446281a83f4b2acfd7dd99d7a
 /static-wisdom.json

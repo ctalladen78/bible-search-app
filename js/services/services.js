@@ -299,9 +299,16 @@ angular.module('app.services', [])
       })
     )
 <<<<<<< HEAD
+<<<<<<< HEAD
     }
 =======
 }
 >>>>>>> TODO merge editverse.html and versedetail.html into editverse.html modal template
+=======
+}
+=======
+    }
+>>>>>>> 143db05ec3f83b5446281a83f4b2acfd7dd99d7a
+>>>>>>> 5a26e492d6e09cd100ee717b2d720e78f3533834
 
 }])

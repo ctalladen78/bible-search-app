@@ -1,7 +1,11 @@
-<ion-view title="Edit {{vm.bookId}} {{vm.chapId}} {{vm.verse}}" id="page5" class=" " ng-controller="editVerseCtrl as vm">
+<ion-modal-view  id="page5" class=" " ng-controller="editVerseCtrl as vm">
+  <ion-header-bar title="Edit {{vm.bookId}} {{vm.chapId}} {{vm.verse}}">
+
+</ion-header-bar>
     <ion-content padding="true" class="has-header">
         <form id="editVerse-form2" class="list ">
-            <ion-toggle toggle-class="toggle-positive" id="editVerse-toggle1" class=" ">Like/Unlike</ion-toggle>
+            <ion-toggle toggle-class="toggle-positive"
+            id="editVerse-toggle1" class=" ">Like/Unlike</ion-toggle>
             <label class="item item-select " id="editVerse-select3">
                 <span class="input-label">Add to categories</span>
                 <select>
@@ -11,7 +15,11 @@
                 </select>
             </label>
         </form>
-        <a ng-click="vm.saveVerse()" id="editVerse-button7" class=" button button-positive  button-block ">Save</a>
-        <a ui-sref="menu.verseDetail({book:vm.bookId, chap:vm.chapId, verse:vm.verse})" id="editVerse-button9" class=" button button-positive  button-block ">Cancel</a>
+        <!-- save verse-->
+        <a ng-click="vm.saveVerse()" id="editVerse-button7"
+        class=" button button-positive  button-block ">Save</a>
+        <!-- cancel -->
+        <a ui-sref="menu.verseDetail({book:vm.bookId, chap:vm.chapId, verse:vm.verse})"
+        id="editVerse-button9" class=" button button-positive  button-block ">Cancel</a>
     </ion-content>
-</ion-view>
+</ion-modal-view>

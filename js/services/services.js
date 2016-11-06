@@ -233,6 +233,10 @@ angular.module('app.services', [])
     })
     console.log('%%% get verse obj', verseObj)
   }
+  // save verse detail
+  function saveVerse(verseObj){
+
+  }
   // user likes/unlikes this verse
   function toggleFavorites(vid){
     db.query(vid).then(function(obj){
@@ -294,6 +298,10 @@ angular.module('app.services', [])
         syncToChanges();
       })
     )
+<<<<<<< HEAD
     }
+=======
+}
+>>>>>>> TODO merge editverse.html and versedetail.html into editverse.html modal template
 
 }])

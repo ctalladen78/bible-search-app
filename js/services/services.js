@@ -13,10 +13,8 @@ angular.module('app.services', [])
     getBooks : getBooks,
     getChapterList : getChapterList,
     getVerseList : getVerseList,
-    editVerse : editVerse,
     getFavoriteList : getFavoriteList,
-    getCategoryList : getCategoryList,
-    destroyDB : destroyDB
+    getCategoryList : getCategoryList
   }
 // https://www.npmjs.com/package/angular-file-upload
   // populate db from api endpoint
@@ -233,6 +231,10 @@ angular.module('app.services', [])
     })
     console.log('%%% get verse obj', verseObj)
   }
+  // save verse detail
+  function saveVerse(verseObj){
+
+  }
   // user likes/unlikes this verse
   function toggleFavorites(vid){
     db.query(vid).then(function(obj){
@@ -251,7 +253,7 @@ angular.module('app.services', [])
   }
   // return a list of verses given favorites id
   // this is for the favorites page
-  function getfavoritelist(favid){
+  function getFavoriteList(favid){
     var favList = _.filter(docs, function(i){return i.like === true})
     console.log('%%% favList', favList)
     return favList
@@ -293,7 +295,7 @@ angular.module('app.services', [])
         db.put(obj);
         syncToChanges()
       })
-    })
-  }
+    )
+}
 
 }])

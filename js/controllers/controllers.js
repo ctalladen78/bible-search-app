@@ -75,13 +75,14 @@ angular.module('app.controllers', ['app.services'])
   return ctrl;
 }])
 // edit verse detail
-.controller('editVerseCtrl', ['$scope', '$stateParams','DbService','$state', function($scope, $stateParams, DbService,$state) {
+.controller('editVerseCtrl', ['$scope', '$stateParams','DbService','$state','$ionicModal', function($scope, $stateParams, DbService,$state, $ionicModal) {
   var ctrl = this;
   ctrl.bookId = $stateParams.book;
   ctrl.chapId = $stateParams.chap;
   ctrl.verse = $stateParams.verse;
-  // ctrl.categories = DbService.getCategoryList(); // return list of categories
-  // ctrl.verseDetail = DbService.getVerseDetail();
+  ctrl.categories = DbService.getCategoryList(); // return list of categories
+  ctrl.verseDetail = DbService.getVerseDetail();
+  /*
   ctrl.verseDetail = {
     'favorite' : true, // data.favorite
     'category' : 'test', // data.category
@@ -90,10 +91,18 @@ angular.module('app.controllers', ['app.services'])
     'verse' : 12,
     'text' : 'test'
   }
+  */
+  $ionicModal.fromTemplateUrl('edit-verse.html',{
+    scope: $scope,
+    animation: 'slide-in-up'
+  }).then(function(modal){
+    $scope.modal = modal
+  })
   // data-> a verse may only have one category for now
   ctrl.saveVerse = function(){
     // save verse
-    // DbService.editVerse(ctrl.verseDetail)
+    DbService.saveVerse(ctrl.verseDetail)
+    $scope.modal.hide()
     $state.go("menu.verseDetail",{book:ctrl.bookId, chap:ctrl.chapId, verse:ctrl.verse});
   }
   ctrl.addToCategory = function(){}

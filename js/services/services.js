@@ -13,10 +13,8 @@ angular.module('app.services', [])
     getBooks : getBooks,
     getChapterList : getChapterList,
     getVerseList : getVerseList,
-    editVerse : editVerse,
     getFavoriteList : getFavoriteList,
-    getCategoryList : getCategoryList,
-    destroyDB : destroyDB
+    getCategoryList : getCategoryList
   }
 // https://www.npmjs.com/package/angular-file-upload
   // populate db from api endpoint
@@ -172,9 +170,9 @@ angular.module('app.services', [])
   // TODO test that list of books are in cardinal order
   // TODO test that scope does not get a copy of the database
   function getBooks(){
-    var bookList = $http.get('./test.json').then(function(res){
+    var bookList = $http.get('./static-old-testament.json').then(function(res){
       console.log(res.data)
-      return _.map(res.data, function(r){ return r.book})
+      return _.uniq(_.map(res.data, function(r){ return r.book}))
     })
     return bookList // read from test.json
 
@@ -182,11 +180,11 @@ angular.module('app.services', [])
   // return a list of verses given book id, chapter id
   function getChapterList(bookID){
     // filter docs using bookID, chapID
-    var chapList = $http.get('./test.json').then(function(res){
+    var chapList = $http.get('./static-old-testament.json').then(function(res){
       return _.map(_.filter(res.data, function(i){return i.book === bookID}),function(j){
         var obj = {}
         obj.chapter = j.chapter;
-        obj.chapterheading = j["chapter-heading"];
+        obj.chapterheading = j["chapterheading"];
         //console.log(obj)
         return obj;
       })
@@ -196,7 +194,8 @@ angular.module('app.services', [])
   }
   // return list of verse objects
   function getVerseList(bookID, chapID){
-    var verseList = $http.get('./test.json').then(function(res){
+    //var verseList = getDocs()
+    var verseList = $http.get('./static-old-testament.json').then(function(res){
       var chaps =_.filter(res.data, function(i){return i.book === bookID})
       var verses = _.filter(chaps, function(j){return j.chapter === parseInt(chapID)})
       return _.map(verses,function(k){
@@ -211,7 +210,8 @@ angular.module('app.services', [])
   }
   // return verse detail objects
   function getVerseDetail(bookID, chapID, verseID){
-    var verseObj = $http.get('./test.json').then(function(res){
+    // TODO db.query(docs, bookID, chapID, verseID)
+    var verseObj = $http.get('./static-names.json').then(function(res){
       var chaps =_.filter(res.data, function(i){return i.book === bookID})
       var verses = _.filter(chaps, function(j){return j.chapter === parseInt(chapID)})
       var vid = bookID+'-'+chapID+'-'+verseID
@@ -251,7 +251,7 @@ angular.module('app.services', [])
   }
   // return a list of verses given favorites id
   // this is for the favorites page
-  function getfavoritelist(favid){
+  function getFavoriteList(favid){
     var favList = _.filter(docs, function(i){return i.like === true})
     console.log('%%% favList', favList)
     return favList
@@ -291,9 +291,9 @@ angular.module('app.services', [])
         })
       .then(function(obj){
         db.put(obj);
-        syncToChanges()
+        syncToChanges();
       })
-    })
-  }
+    )
+    }
 
 }])

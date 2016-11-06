@@ -52,7 +52,6 @@ var books = [
   'mark',
   'luke',
   'john',
-  'revelations',
   'acts',
   'romans',
   '1corinthians',
@@ -74,7 +73,8 @@ var books = [
   '1john',
   '2john',
   '3john',
-  'jude'
+  'jude',
+  'revelation',
 ];
 
 var version = 'akjv';

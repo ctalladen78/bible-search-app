@@ -4,3 +4,6 @@ bower_components/
 /index.html
 /test.json
 /bible.json
+/static-old-testament.json
+/static-new-testament.json
+/static-wisdom.json

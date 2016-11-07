@@ -46,7 +46,7 @@ angular.module('app.controllers', ['app.services'])
   return ctrl;
 }])
 // verse detail
-.controller('verseDetailCtrl', ['$scope','$stateParams', 'DbService','$state', function( $scope, $stateParams, DbService, $state) {
+.controller('verseDetailCtrl', ['$scope','$stateParams', 'DbService','$state','$ionicModal', function( $scope, $stateParams, DbService, $state, $ionicModal) {
   // using routeParams
   var ctrl = this;
   ctrl.bookId = $stateParams.book;
@@ -61,37 +61,6 @@ angular.module('app.controllers', ['app.services'])
       'John'
     ];
   }
-  ctrl.verseDetail = DbService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse);
-
-  // data-> a verse may only have one category for now
-  ctrl.saveVerse = function(){
-    // save verse
-    DbService.saveVerse(ctrl.verseDetail)
-    // menu.bookSearchResults({book:vm.bookId,chap:vm.chapId})
-    // TODO just go back to last page
-    $state.go("menu.bookSearchResults",{book:ctrl.bookId,chap:ctrl.chapId});
-  }
-  ctrl.addToCategory = function(){}
-  return ctrl;
-}])
-// edit verse detail
-.controller('editVerseCtrl', ['$scope', '$stateParams','DbService','$state','$ionicModal', function($scope, $stateParams, DbService,$state, $ionicModal) {
-  var ctrl = this;
-  ctrl.bookId = $stateParams.book;
-  ctrl.chapId = $stateParams.chap;
-  ctrl.verse = $stateParams.verse;
-  ctrl.categories = DbService.getCategoryList(); // return list of categories
-  ctrl.verseDetail = DbService.getVerseDetail();
-  /*
-  ctrl.verseDetail = {
-    'favorite' : true, // data.favorite
-    'category' : 'test', // data.category
-    'book' : 'test',
-    'chapter' : 10,
-    'verse' : 12,
-    'text' : 'test'
-  }
-  */
   $ionicModal.fromTemplateUrl('edit-verse.html',{
     scope: $scope,
     animation: 'slide-in-up'
@@ -99,15 +68,20 @@ angular.module('app.controllers', ['app.services'])
     $scope.modal = modal
   })
   // data-> a verse may only have one category for now
+  ctrl.verseDetail = DbService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse);
+
+  // data-> a verse may only have one category for now
   ctrl.saveVerse = function(){
     // save verse
     DbService.saveVerse(ctrl.verseDetail)
     $scope.modal.hide()
-    $state.go("menu.verseDetail",{book:ctrl.bookId, chap:ctrl.chapId, verse:ctrl.verse});
+    // redirect to prior page
+    $state.go("menu.bookSearchResults",{book:ctrl.bookId,chap:ctrl.chapId});
   }
   ctrl.addToCategory = function(){}
   return ctrl;
 }])
+
 // dropdown search component
 .controller('searchCtrl', ['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService) {
   var ctrl = this;

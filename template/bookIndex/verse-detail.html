@@ -1,4 +1,7 @@
-<ion-view hide-nav-bar="false" title="{{vm.bookId}} {{vm.chapId}} : {{vm.verse}}" id="page6" class=" " ng-controller="verseDetailCtrl as vm">
+<ion-modal-view hide-nav-bar="false" title="{{vm.bookId}} {{vm.chapId}} : {{vm.verse}}" id="page6" class=" " ng-controller="verseDetailCtrl as vm">
+  <ion-header-bar title="Edit {{vm.bookId}} {{vm.chapId}} {{vm.verse}}">
+
+</ion-header-bar>
   <ion-nav-buttons side="secondary">
     <button>
     <i class="icon ion-android-star" ng-click="vm.verseDetail.like != vm.verseDetail.like"></i>
@@ -21,8 +24,13 @@
                 </select>
             </label>
         </form>
-        <!-- save changes to verse object-->
+        <!-- save changes to verse object
         <a ui-sref="editVerse({book:vm.bookId, chap:vm.chapId, verse:vm.verse})" id="verseDetail-button6" class=" button button-positive  button-block ">Edit Verse</a>
-        <button class=" button button-positive  button-block " ng-click="vm.saveVerse()">Save Changes</button>
+      -->
+        <button class=" button button-positive  button-block "
+        ng-click="vm.saveVerse()">Save Changes</button>
+        <!-- redirect back to verse list page-->
+<a ui-sref="menu.bookSearchResults({book:vm.bookId, chap:vm.chapId, verse:vm.verse})"
+        id="editVerse-button9" class=" button button-positive  button-block ">Cancel</a>
     </ion-content>
-</ion-view>
+</ion-modal-view>

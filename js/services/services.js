@@ -13,6 +13,7 @@ angular.module('app.services', [])
     getBooks : getBooks,
     getChapterList : getChapterList,
     getVerseList : getVerseList,
+    getVerseDetail : getVerseDetail,
     getFavoriteList : getFavoriteList,
     getCategoryList : getCategoryList
   }
@@ -170,7 +171,7 @@ angular.module('app.services', [])
   // TODO test that list of books are in cardinal order
   // TODO test that scope does not get a copy of the database
   function getBooks(){
-    var bookList = $http.get('./static-old-testament.json').then(function(res){
+    var bookList = $http.get('./static-new-testament.json').then(function(res){
       console.log(res.data)
       return _.uniq(_.map(res.data, function(r){ return r.book}))
     })
@@ -180,7 +181,7 @@ angular.module('app.services', [])
   // return a list of verses given book id, chapter id
   function getChapterList(bookID){
     // filter docs using bookID, chapID
-    var chapList = $http.get('./static-old-testament.json').then(function(res){
+    var chapList = $http.get('./static-new-testament.json').then(function(res){
       return _.map(_.filter(res.data, function(i){return i.book === bookID}),function(j){
         var obj = {}
         obj.chapter = j.chapter;
@@ -195,23 +196,30 @@ angular.module('app.services', [])
   // return list of verse objects
   function getVerseList(bookID, chapID){
     //var verseList = getDocs()
-    var verseList = $http.get('./static-old-testament.json').then(function(res){
+    var verseList = $http.get('./static-new-testament.json').then(function(res){
       var chaps =_.filter(res.data, function(i){return i.book === bookID})
       var verses = _.filter(chaps, function(j){return j.chapter === parseInt(chapID)})
+      // db.query
+      var arr = [{verse : 11, text: "LoremLoremLoremLorem"},
+      {verse : 11, text: "LoremLoremLoremLorem"}]
+      return arr
+      /*
       return _.map(verses,function(k){
         var obj = {}
         obj.verse = k.verse;
         obj.text = k.text
         return obj;
       })
+      */
     })
-    //console.log('%%% verselist', verseList)
+    console.log('%%% verselist', verseList)
     return verseList
   }
   // return verse detail objects
   function getVerseDetail(bookID, chapID, verseID){
     // TODO db.query(docs, bookID, chapID, verseID)
-    var verseObj = $http.get('./static-names.json').then(function(res){
+    var verseObj = $http.get('./static-names.json')
+    .then(function(res){
       var chaps =_.filter(res.data, function(i){return i.book === bookID})
       var verses = _.filter(chaps, function(j){return j.chapter === parseInt(chapID)})
       var vid = bookID+'-'+chapID+'-'+verseID
@@ -230,6 +238,7 @@ angular.module('app.services', [])
         obj.categories = getCategoryList(k.vid)
         return obj;
       })
+      return verseObj
     })
     console.log('%%% get verse obj', verseObj)
   }
@@ -298,17 +307,5 @@ angular.module('app.services', [])
         syncToChanges();
       })
     )
-<<<<<<< HEAD
-<<<<<<< HEAD
     }
-=======
-}
->>>>>>> TODO merge editverse.html and versedetail.html into editverse.html modal template
-=======
-}
-=======
-    }
->>>>>>> 143db05ec3f83b5446281a83f4b2acfd7dd99d7a
->>>>>>> 5a26e492d6e09cd100ee717b2d720e78f3533834
-
 }])

@@ -94,14 +94,14 @@ angular.module('app.routes', [])
       }
     }
   })
-
+/*
   .state('editVerse', {
     url: '/edit/:book/:chap/:verse',
     templateUrl: 'template/bookIndex/edit-verse.html',
     controller: 'editVerseCtrl'
 
   })
-
+*/
   .state('menu.categoryDetail', {
     url: '/:categoryId',
     views: {

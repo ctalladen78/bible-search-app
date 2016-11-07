@@ -2,11 +2,13 @@
   <ion-header-bar title="Edit {{vm.bookId}} {{vm.chapId}} {{vm.verse}}">
 
 </ion-header-bar>
+  <ion-nav-bar>
   <ion-nav-buttons side="secondary">
     <button>
     <i class="icon ion-android-star" ng-click="vm.verseDetail.like != vm.verseDetail.like"></i>
   </button>
   </ion-nav-buttons>
+</ion-nav-bar>
     <ion-content padding="true" class="has-header">
       {{vm.verseDetail.like}}
         <div class="card item-text-wrap" id="verseDetail-card21">

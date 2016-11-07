@@ -1,0 +1,35 @@
+[
+  {
+    "type" : "category",
+    "vid" : "genesis-1-1",
+    "cid" : 1979-11-11-1234,
+    "catlist": ["cat1", "cat2"]
+  },
+  {
+    "type" : "category",
+    "vid" : "psalms-1-2",
+    "cid" : 1980-11-11-1235,
+    "catlist": ["cat3"]
+  },
+  {
+    "vid" : "genesis-1-1",
+    "book":"genesis",
+    "chapter" : 1,
+    "verse" : 1,
+    "text" : "gen ch1v1 Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+  },
+  {
+    "vid" : "psalms-1-2",
+    "book":"psalms",
+    "chapter" : 1,
+    "verse" : 2,
+    "text" : "gen ch1v2 Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+  },
+  {
+    "vid" : "exodus-1-1",
+    "book":"exodus",
+    "chapter" : 1,
+    "verse" : 1,
+    "text" : "exo ch1v1 Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+  }
+]

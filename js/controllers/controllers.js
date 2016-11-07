@@ -61,16 +61,19 @@ angular.module('app.controllers', ['app.services'])
       'John'
     ];
   }
-  $ionicModal.fromTemplateUrl('edit-verse.html',{
+  // TODO how to open modal
+  $ionicModal.fromTemplateUrl('../template/bookIndex/verse-detail.html',{
     scope: $scope,
     animation: 'slide-in-up'
   }).then(function(modal){
     $scope.modal = modal
   })
-  // data-> a verse may only have one category for now
-  ctrl.verseDetail = DbService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse);
 
-  // data-> a verse may only have one category for now
+   DbService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse)
+  .then(function(res){
+    ctrl.verseDetail = res.data
+  })
+
   ctrl.saveVerse = function(){
     // save verse
     DbService.saveVerse(ctrl.verseDetail)
@@ -78,6 +81,8 @@ angular.module('app.controllers', ['app.services'])
     // redirect to prior page
     $state.go("menu.bookSearchResults",{book:ctrl.bookId,chap:ctrl.chapId});
   }
+  
+  // data-> a verse may only have one category for now
   ctrl.addToCategory = function(){}
   return ctrl;
 }])

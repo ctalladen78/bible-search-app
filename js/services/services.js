@@ -218,7 +218,7 @@ angular.module('app.services', [])
   // return verse detail objects
   function getVerseDetail(bookID, chapID, verseID){
     // TODO db.query(docs, bookID, chapID, verseID)
-    var verseObj = $http.get('./static-names.json')
+    var verseObj = $http.get('./test.json')
     .then(function(res){
       var chaps =_.filter(res.data, function(i){return i.book === bookID})
       var verses = _.filter(chaps, function(j){return j.chapter === parseInt(chapID)})
@@ -240,7 +240,7 @@ angular.module('app.services', [])
       })
       return verseObj
     })
-    console.log('%%% get verse obj', verseObj)
+    console.log('%%% get verse obj', verseObj.data)
   }
   // save verse detail
   function saveVerse(verseObj){

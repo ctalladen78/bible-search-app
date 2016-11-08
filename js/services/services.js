@@ -25,13 +25,17 @@ angular.module('app.services', [])
       adapter: 'websql',
       skip_setup: true
     });
-
+    console.log('%%% checking db for consistency')
     db.info(function(err, info){
       // count objects in bible.json
       if(info.doc_count === 0){
         populateTest();
       }
       // if partial count then run diff algorithm
+      // TODO bug db is not updating syncing to changes during refresh
+      else{
+        syncToChanges()
+      }
     })
     .then(console.log.bind(console))
     // db exists
@@ -46,14 +50,8 @@ angular.module('app.services', [])
     //  populate db with test data
     var version = 'akjv'; // kjv, korean, web, etc
     var book = 'ezra';
-    /*
-    bibleScraper.scrapeBookUngrouped(book, version)
-    .then(function(result){
-      // push data into pouchdb
-      db.bulkDocs(result);
-    })
-    */
-        // create empty favorites list
+
+    // create empty favorites and categories
     // maybe seed it with John 3:16
     //initFavorites();
   }
@@ -61,17 +59,11 @@ angular.module('app.services', [])
     return $q.when(
         bibleScraper.getLocalTestBooks()
         .then(function(result){
-            var bibleLength = Object.keys(result.bible).length
-            //console.log(JSON.parse(result.bible[0]).bookList)
-            for(var i=0;i<bibleLength;i++){
-              //console.log(JSON.parse(result.bible[i]).bookList)
-              db.bulkDocs(JSON.parse(result.bible[i]).bookList)
-            }
-
-//            return db.bulkDocs(result)
+            var bibleLength = Object.keys(result).length
+            db.bulkDocs(result)
         })
         .then(function(result){
-          console.log('%%% init db:', result)
+          console.log('%%% init db:', result.data)
         })
       )
   }
@@ -129,7 +121,6 @@ angular.module('app.services', [])
       })
       .on('error', console.log.bind(console))
     )
-    //.then(function(){ console.log('%%% test')})
   }
 
   // remove from cache
@@ -167,14 +158,11 @@ angular.module('app.services', [])
     // add favorites category to db
   }
   // return a list of books
-  // TODO test that the list of books are unique
-  // TODO test that list of books are in cardinal order
-  // TODO test that scope does not get a copy of the database
   function getBooks(){
     var bookList = $http.get('./static-new-testament.json').then(function(res){
-      console.log(res.data)
       return _.uniq(_.map(res.data, function(r){ return r.book}))
     })
+      //console.log(bookList.data)
     return bookList // read from test.json
 
   }
@@ -195,30 +183,33 @@ angular.module('app.services', [])
   }
   // return list of verse objects
   function getVerseList(bookID, chapID){
-    //var verseList = getDocs()
-    var verseList = $http.get('./static-new-testament.json').then(function(res){
-      var chaps =_.filter(res.data, function(i){return i.book === bookID})
+    // best practice use allDocs instead() of query()
+    var verseList = getDocs()
+    .then(function(res){
+      console.log('%%% get docs', res)
+      var chaps =_.filter(res, function(i){return i.book === bookID})
       var verses = _.filter(chaps, function(j){return j.chapter === parseInt(chapID)})
-      // db.query
+      /*
       var arr = [{verse : 11, text: "LoremLoremLoremLorem"},
       {verse : 11, text: "LoremLoremLoremLorem"}]
       return arr
-      /*
+      */
+      console.log('%%% verses', verses)
       return _.map(verses,function(k){
         var obj = {}
         obj.verse = k.verse;
         obj.text = k.text
         return obj;
       })
-      */
+
     })
-    console.log('%%% verselist', verseList)
+    console.log('%%% verselist', verseList.data)
     return verseList
   }
   // return verse detail objects
   function getVerseDetail(bookID, chapID, verseID){
-    // TODO db.query(docs, bookID, chapID, verseID)
-    var verseObj = $http.get('./test.json')
+    //var verseObj = $http.get('./test.json')
+    var verseObj = getDocs()
     .then(function(res){
       var chaps =_.filter(res.data, function(i){return i.book === bookID})
       var verses = _.filter(chaps, function(j){return j.chapter === parseInt(chapID)})
@@ -244,11 +235,18 @@ angular.module('app.services', [])
   }
   // save verse detail
   function saveVerse(verseObj){
-
+    /*
+    db.get(verseObj).then(function(res){
+      db.put(verseObj)
+    })
+    */
+  })
   }
   // user likes/unlikes this verse
   function toggleFavorites(vid){
-    db.query(vid).then(function(obj){
+    /*
+    db.query(vid)
+    .then(function(obj){
       obj.like = !obj.like
       return obj
     })
@@ -256,6 +254,7 @@ angular.module('app.services', [])
       db.put(obj)
       syncToChanges()
     })
+    */
   }
   // how to count reading history accurately
   // depending on which verse user is reading
@@ -269,12 +268,30 @@ angular.module('app.services', [])
     console.log('%%% favList', favList)
     return favList
   }
-  function updateCategory(vid, catName){
-
-    syncToChanges()
+  function updateCategory(vid, oldCatName,newCatName){
+    /*
+    db.get(cat.cid where cat.vid === vid)
+    .then(function(res){
+      res.catlist.map(function(i){
+        if(i.catName === oldCatName){
+          i.catName = newCatName
+        }
+      })
+      return res
+    })
+    .then(function(i){db.put(res)})
+    .then(function(){
+      syncToChanges()
+    })
+    */
   }
   function deleteCategory(vid, catName){
-    syncToChanges()
+    //db.get(vid).then(function(res){db.delete(vid)})
+    /*
+    .then(function(){
+      syncToChanges()
+    })
+    */
   }
   // return a list of verses given verse id
   function getCategoryList(vid){
@@ -285,8 +302,6 @@ angular.module('app.services', [])
     return catList
 
   }
-  // TODO model category object
-  // {alias, cid, vid, catlist = []}
   // see: http://stackoverflow.com/questions/1674089/what-is-the-idiomatic-way-to-implement-foreign-keys-in-couchdb
   function addCategory(vid, catName){
     return $q.when(

@@ -96,7 +96,7 @@ angular.module('app.services')
     'getLocalTestBooks' : function(book, ver){
       return $http.get('./test.json')
       .then(function(res){
-        //console.log(res.data)
+        console.log('%%% initializing', res.data)
         return res.data
       })
     }

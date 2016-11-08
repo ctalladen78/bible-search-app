@@ -6,14 +6,15 @@
             <!-- ui-sref passes parameters to next page-->
             <ion-item ng-repeat="ver in vm.verses"
             class="item-icon-right  "
-            id="bookSearchResults-list-item16"
-            ui-sref="menu.verseDetail({book:vm.bookId, chap:vm.chapId, verse:ver.verse})">
+            id="bookSearchResults-list-item16">
             <div>
               <!-- TODO put verse and icon on same heading section-->
               <span>
                 {{ver.verse}}
-                <i class="icon ion-android-arrow-forward"></i>
               </span>
+              <a ui-sref="menu.verseDetail({book:vm.bookId, chap:vm.chapId, verse:ver.verse})">
+                <ion-icon name="menu"></ion-icon>
+              </a>
               </div>
               <div>
              <p>{{ver.text}}</p>

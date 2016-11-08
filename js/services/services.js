@@ -240,7 +240,6 @@ angular.module('app.services', [])
       db.put(verseObj)
     })
     */
-  })
   }
   // user likes/unlikes this verse
   function toggleFavorites(vid){

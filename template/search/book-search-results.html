@@ -2,26 +2,27 @@
     <ion-content padding="true" class="has-header">
         <ion-list ng-init="vm.getVerses(vm.bookId, vm.chapId)"
         id="bookSearchResults-list5" class=" " >
-        <div class="item-text-wrap">
             <!-- ui-sref passes parameters to next page-->
-            <ion-item ng-repeat="ver in vm.verses"
-            class="item-icon-right  "
+            <div ng-repeat="ver in vm.verses"
+            class="item-text-wrap  "
             id="bookSearchResults-list-item16">
-            <div>
+            <div class="item ">
               <!-- TODO put verse and icon on same heading section-->
-              <span>
+              <!--
+              <a class="item-icon-right"
+              ui-sref="menu.verseDetail({book:vm.bookId, chap:vm.chapId, verse:ver.verse})">
+            -->
+            <a class="item-icon-right" ng-click="vm.openModal(ver.verse)"
+                <span class="item-note">
                 {{ver.verse}}
-              </span>
-              <a ui-sref="menu.verseDetail({book:vm.bookId, chap:vm.chapId, verse:ver.verse})">
-                <ion-icon name="menu"></ion-icon>
+                </span>
+                <i  class="icon ion-more"></i>
               </a>
-              </div>
-              <div>
+            </div>
+              <div class="item">
              <p>{{ver.text}}</p>
            </div>
-            </ion-item>
-          </div>
-
+         </div>
         </ion-list>
     </ion-content>
 </ion-view>

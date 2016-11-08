@@ -43,6 +43,9 @@ angular.module('app.controllers', ['app.services'])
       ctrl.verses = res
     })
   }
+  ctrl.openModal = function(verse){
+    console.log('%% open modal with', ctrl.bookId, ctrl.chapId, verse)
+  }
   return ctrl;
 }])
 // verse detail
@@ -81,7 +84,7 @@ angular.module('app.controllers', ['app.services'])
     // redirect to prior page
     $state.go("menu.bookSearchResults",{book:ctrl.bookId,chap:ctrl.chapId});
   }
-  
+
   // data-> a verse may only have one category for now
   ctrl.addToCategory = function(){}
   return ctrl;

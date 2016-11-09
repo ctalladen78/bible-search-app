@@ -32,7 +32,7 @@
         <button class=" button button-positive  button-block "
         ng-click="vm.saveVerse()">Save Changes</button>
         <!-- redirect back to verse list page-->
-<a ui-sref="menu.bookSearchResults({book:vm.bookId, chap:vm.chapId, verse:vm.verse})"
-        id="editVerse-button9" class=" button button-positive  button-block ">Cancel</a>
+        <a id="editVerse-button9" ng-click="vm.cancel()"
+        class=" button button-positive  button-block ">Cancel</a>
     </ion-content>
 </ion-modal-view>

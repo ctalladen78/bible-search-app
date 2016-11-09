@@ -15,7 +15,10 @@ angular.module('app.services', [])
     getVerseList : getVerseList,
     getVerseDetail : getVerseDetail,
     getFavoriteList : getFavoriteList,
-    getCategoryList : getCategoryList
+    getCategoryList : getCategoryList,
+    getAllCategoryList : getAllCategoryList,
+    saveVerse : saveVerse
+
   }
 // https://www.npmjs.com/package/angular-file-upload
   // populate db from api endpoint
@@ -73,8 +76,10 @@ angular.module('app.services', [])
       db.allDocs({include_docs:true})
         .then(function(res){
           docs = res.rows.map(function(row){return row.doc;});
+          console.log('%%% all docs', docs)
           var obj = {}; // nested object of arrays grouped by chapter
 
+          /*
           obj = _.groupBy(docs, function(i){
             return i.chapter;
           })
@@ -89,6 +94,7 @@ angular.module('app.services', [])
           }
           //console.log('%%%% grouped object', obj[1]);
           docs = obj[1];
+          */
         })
         .then(function(){
           syncToChanges();
@@ -189,11 +195,7 @@ angular.module('app.services', [])
       console.log('%%% get docs', res)
       var chaps =_.filter(res, function(i){return i.book === bookID})
       var verses = _.filter(chaps, function(j){return j.chapter === parseInt(chapID)})
-      /*
-      var arr = [{verse : 11, text: "LoremLoremLoremLorem"},
-      {verse : 11, text: "LoremLoremLoremLorem"}]
-      return arr
-      */
+
       console.log('%%% verses', verses)
       return _.map(verses,function(k){
         var obj = {}
@@ -203,43 +205,33 @@ angular.module('app.services', [])
       })
 
     })
-    console.log('%%% verselist', verseList.data)
     return verseList
   }
   // return verse detail objects
   function getVerseDetail(bookID, chapID, verseID){
-    //var verseObj = $http.get('./test.json')
     var verseObj = getDocs()
     .then(function(res){
-      var chaps =_.filter(res.data, function(i){return i.book === bookID})
+
+      //bookID = "Matthew",chapID =1
+      console.log('%%% get verse detail', bookID, chapID, verseID)
+      var chaps =_.filter(res, function(i){return i.book === bookID})
       var verses = _.filter(chaps, function(j){return j.chapter === parseInt(chapID)})
-      var vid = bookID+'-'+chapID+'-'+verseID
+      console.log('%%% get verses', verses)
       // var verseObj = db.query(vid)
-      var verseObj = _.map(verses,function(k){
-        var obj = {}
-        obj.vid = k.vid
-        obj.book = k.book
-        obj.version = k.version
-        obj.chapter = k.chapter
-        obj.verse = k.verse;
-        obj.text = k.text
-        obj.like = k.like
-        obj[last-read-date] = k[last-read-date]
-        obj[read-count] = k[read-count]
-        obj.categories = getCategoryList(k.vid)
-        return obj;
-      })
+      var verseObj = _.filter(verses,function(k){return k.verse === verseID })
+      verseObj.catList = getCategoryList(verseObj.vid)
       return verseObj
     })
-    console.log('%%% get verse obj', verseObj.data)
+    return verseObj
   }
-  // save verse detail
+  // TODO save verse detail
   function saveVerse(verseObj){
     /*
     db.get(verseObj).then(function(res){
       db.put(verseObj)
     })
     */
+    return $q.when(true)
   }
   // user likes/unlikes this verse
   function toggleFavorites(vid){
@@ -293,14 +285,30 @@ angular.module('app.services', [])
     */
   }
   // return a list of verses given verse id
+  // this is for displaying what categories associated to verse
   function getCategoryList(vid){
-    //categoryList = db.query(category)
-    var allCats = _.filter(docs, function(i){return i.alias === 'category'})
+    var allCats = _.filter(docs, function(i){return i.type === 'category'})
     var catList = _.filter(docs, function(i){return i.vid === vid})
-    console.log('%%% category of ',vid, catList)
+    console.log('%%% category list of ',vid, catList)
     return catList
 
   }
+  // return all categories for selection
+  function getAllCategoryList(){
+    var catList = getDocs()
+    .then(function(res){
+      console.log('%%% get docs ', res)
+      var list = _.filter(res, function(i){return i.type === 'category'})
+      console.log('%%% get all categories ', list)
+    })
+    return catList
+  }
+
+  function addVerseToCategory(vid, catName){
+    //TODO filter docs with catName
+    //TODO add vid to vidList
+  }
+
   // see: http://stackoverflow.com/questions/1674089/what-is-the-idiomatic-way-to-implement-foreign-keys-in-couchdb
   function addCategory(vid, catName){
     return $q.when(

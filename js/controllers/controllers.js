@@ -21,72 +21,85 @@ angular.module('app.controllers', ['app.services'])
 //    ctrl.chapList = _.map(res, function(i){return i.chapterheading})
     ctrl.chapList = res
     console.log('%%% ctrl chapter list: ', ctrl.chapList);
-    // TODO need to sort by chapter
-    // TODO how are parameters being passed to child page?
-    // TODO there is a bug all the chapters are 1
     // TODO there is a memory leak because of large data set
   })
 
   return ctrl;
 }])
 // verse list search results master list
-.controller('bookSearchResultsCtrl', ['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService) {
+.controller('bookSearchResultsCtrl', ['$scope','$stateParams', 'DbService','$ionicModal','$state', function($scope, $stateParams, DbService, $ionicModal, $state) {
   // using routeParams
   var ctrl = this;
-  ctrl.bookId = $stateParams.book;
-  ctrl.chapId = $stateParams.chap;
+  $scope.bookId = $stateParams.book;
+  $scope.chapId = $stateParams.chap;
+  ctrl.bookId = $scope.bookId
+  ctrl.chapId = $scope.chapId
+
   ctrl.verses = [];
   ctrl.getVerses = function(book, chap){
-    // ctrl.verses = DbService.bookSearch(book,chap) // return list of verse detail objects
     DbService.getVerseList(book, chap).then(function(res){
     console.log('%%% verselist', res)
       ctrl.verses = res
     })
   }
+
   ctrl.openModal = function(verse){
-    console.log('%% open modal with', ctrl.bookId, ctrl.chapId, verse)
+    //console.log('%% open modal with', $scope.bookId, $scope.chapId, verse)
+    $scope.verse = verse
+    // TODO how to open modal
+    $ionicModal.fromTemplateUrl('../template/bookIndex/verse-detail.html',{
+      scope: $scope,
+      animation: 'slide-in-up'
+    })
+    .then(function(modal){ $scope.modal = modal })
+    .then(function(){  $scope.modal.show() })
   }
+
   return ctrl;
 }])
+
 // verse detail
 .controller('verseDetailCtrl', ['$scope','$stateParams', 'DbService','$state','$ionicModal', function( $scope, $stateParams, DbService, $state, $ionicModal) {
   // using routeParams
   var ctrl = this;
-  ctrl.bookId = $stateParams.book;
-  ctrl.chapId = $stateParams.chap;
-  ctrl.verse = $stateParams.verse;
+  ctrl.bookId = $scope.bookId;
+  ctrl.chapId = $scope.chapId;
+  ctrl.verse = $scope.verse;
   ctrl.selectedCategory = '';
-  // ctrl.categories = DbService.getCategoryList(); // return list of categories
-  ctrl.getCategories = function(){
-    ctrl.categories = [
-      'Jesus',
-      'Paul',
-      'John'
-    ];
-  }
-  // TODO how to open modal
-  $ionicModal.fromTemplateUrl('../template/bookIndex/verse-detail.html',{
-    scope: $scope,
-    animation: 'slide-in-up'
-  }).then(function(modal){
-    $scope.modal = modal
-  })
+  //console.log('%%% verse detail scope info', $scope)
 
-   DbService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse)
+  DbService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse)
   .then(function(res){
     ctrl.verseDetail = res.data
+    //ctrl.categories = res.data.catList
   })
 
   ctrl.saveVerse = function(){
     // save verse
     DbService.saveVerse(ctrl.verseDetail)
-    $scope.modal.hide()
+    .then(function(){
+      $scope.modal.hide()
+    })
     // redirect to prior page
-    $state.go("menu.bookSearchResults",{book:ctrl.bookId,chap:ctrl.chapId});
+    //$state.go("menu.bookSearchResults",{book:ctrl.bookId,chap:ctrl.chapId});
   }
 
+  ctrl.getCategories = function(){
+    var objlist = DbService.getAllCategoryList()
+    //TODO filter using verseId
+    /*
+    _.map(objlist, function(i){})
+    var catlist = _.filter(objlist, function(i){i})
+    */
+  }
   // data-> a verse may only have one category for now
-  ctrl.addToCategory = function(){}
+  ctrl.addVerseToCategory = function(){
+    // addcategory(vid, newName)
+    DbService.addVerseToCategory(ctrl.vereseDetail.vid, ctrl.selectedCategory)
+  }
+  ctrl.cancel = function(){
+    $scope.modal.hide()
+  }
   return ctrl;
 }])
 

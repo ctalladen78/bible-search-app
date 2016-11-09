@@ -1,15 +1,16 @@
 [
   {
     "type" : "category",
-    "vid" : "genesis-1-1",
+    "vidList" : ["matthew-1-1"],
     "cid" : "1979-11-11-1234",
-    "catlist": ["cat1", "cat2"]
+    "catName":"cat1"
   },
   {
     "type" : "category",
-    "vid" : "psalms-1-2",
+    "vidList" : ["mark-1-2"],
     "cid" : "1980-11-11-1235",
-    "catlist": ["cat3"]
+    "catName":"cat2"
+
   },
   {
     "vid" : "matthew-1-1",

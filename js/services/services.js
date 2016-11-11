@@ -17,8 +17,8 @@ angular.module('app.services', [])
     getFavoriteList : getFavoriteList,
     getCategoryList : getCategoryList,
     getAllCategoryList : getAllCategoryList,
-    saveVerse : saveVerse
-
+    saveVerse : saveVerse,
+    addVerseToCategory : addVerseToCategory
   }
 // https://www.npmjs.com/package/angular-file-upload
   // populate db from api endpoint
@@ -76,7 +76,7 @@ angular.module('app.services', [])
       db.allDocs({include_docs:true})
         .then(function(res){
           docs = res.rows.map(function(row){return row.doc;});
-          console.log('%%% all docs', docs)
+          // console.log('%%% all docs', docs)
           var obj = {}; // nested object of arrays grouped by chapter
 
           /*
@@ -212,14 +212,16 @@ angular.module('app.services', [])
     var verseObj = getDocs()
     .then(function(res){
 
-      //bookID = "Matthew",chapID =1
+      // console.log('%%% get docs', res)
       console.log('%%% get verse detail', bookID, chapID, verseID)
       var chaps =_.filter(res, function(i){return i.book === bookID})
       var verses = _.filter(chaps, function(j){return j.chapter === parseInt(chapID)})
-      console.log('%%% get verses', verses)
-      // var verseObj = db.query(vid)
-      var verseObj = _.filter(verses,function(k){return k.verse === verseID })
-      verseObj.catList = getCategoryList(verseObj.vid)
+      // console.log('%%% get verses', verses)
+      var verseObj ={}
+      // filter and getCategoryList both returns arrays
+      verseObj.detail = _.filter(verses,function(k){return k.verse === verseID })
+      verseObj.catList = getCategoryList(verseObj.detail[0].vid)
+      // console.log('%%%% verse obj', verseObj)
       return verseObj
     })
     return verseObj
@@ -231,8 +233,11 @@ angular.module('app.services', [])
       db.put(verseObj)
     })
     */
+    addVerseToCategory(verseObj)
+    console.log(verseObj)
     return $q.when(true)
   }
+
   // user likes/unlikes this verse
   function toggleFavorites(vid){
     /*
@@ -287,9 +292,16 @@ angular.module('app.services', [])
   // return a list of verses given verse id
   // this is for displaying what categories associated to verse
   function getCategoryList(vid){
-    var allCats = _.filter(docs, function(i){return i.type === 'category'})
-    var catList = _.filter(docs, function(i){return i.vid === vid})
-    console.log('%%% category list of ',vid, catList)
+    var catList = getDocs()
+    .then(function(res){
+      var allCats = _.filter(res, function(i){return i.type === 'category'})
+      // TODO lookup lodash map path find
+      var tempList = _.map(allCats, function(c){
+        _.map(c.vidList, function(l){return l===vid})
+      })
+      // var catList = _.filter(allCats, function(i){return i.vidList === vid})
+      console.log('%%% category list of ',vid, tempList)
+    })
     return catList
 
   }
@@ -297,16 +309,28 @@ angular.module('app.services', [])
   function getAllCategoryList(){
     var catList = getDocs()
     .then(function(res){
-      console.log('%%% get docs ', res)
+      // console.log('%%% get docs ', res)
       var list = _.filter(res, function(i){return i.type === 'category'})
-      console.log('%%% get all categories ', list)
+      var l2 = _.map(list, function(l){return l.catName})
+      console.log('%%% get all categories ', l2)
+      return l2
     })
     return catList
   }
 
-  function addVerseToCategory(vid, catName){
-    //TODO filter docs with catName
-    //TODO add vid to vidList
+  function addVerseToCategory(vobj){
+    getDocs()
+    .then(function(res){
+      _.map(vobj.catList, function(catname){
+        //TODO filter docs with catname
+        var cat = _.filter(res, function(c){  c.catName === catname})
+        console.log('%%% add verse to cat',cat)
+        //TODO add vid to vidlist
+        cat.vidList.push(catname)
+        // TODO update category in db
+        // updateCategory(cat, cat.name, cat.name)
+      })
+    })
   }
 
   // see: http://stackoverflow.com/questions/1674089/what-is-the-idiomatic-way-to-implement-foreign-keys-in-couchdb

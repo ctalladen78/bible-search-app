@@ -51,8 +51,11 @@ angular.module('app.controllers', ['app.services'])
       scope: $scope,
       animation: 'slide-in-up'
     })
-    .then(function(modal){ $scope.modal = modal })
-    .then(function(){  $scope.modal.show() })
+    .then(function(modal){
+      $scope.modal = modal
+      $scope.modal.show()
+     })
+    // .then(function(){  $scope.modal.show() })
   }
 
   return ctrl;
@@ -70,32 +73,31 @@ angular.module('app.controllers', ['app.services'])
 
   DbService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse)
   .then(function(res){
-    ctrl.verseDetail = res.data
-    //ctrl.categories = res.data.catList
+    ctrl.verseDetail = res.detail[0]
+    console.log('%%%% get verse detail', res.detail)
+    ctrl.catList = res.catList
   })
 
+  // redirect to prior page
   ctrl.saveVerse = function(){
     // save verse
     DbService.saveVerse(ctrl.verseDetail)
     .then(function(){
       $scope.modal.hide()
     })
-    // redirect to prior page
-    //$state.go("menu.bookSearchResults",{book:ctrl.bookId,chap:ctrl.chapId});
   }
-
+  // select categories dropdown
   ctrl.getCategories = function(){
-    var objlist = DbService.getAllCategoryList()
-    //TODO filter using verseId
-    /*
-    _.map(objlist, function(i){})
-    var catlist = _.filter(objlist, function(i){i})
-    */
+     DbService.getAllCategoryList()
+    .then(function(res){
+      ctrl.categories = res
+    console.log('%%% get categories', ctrl.categories)
+    })
   }
   // data-> a verse may only have one category for now
   ctrl.addVerseToCategory = function(){
-    // addcategory(vid, newName)
-    DbService.addVerseToCategory(ctrl.vereseDetail.vid, ctrl.selectedCategory)
+    console.log('%%% add to category', ctrl.verseDetail.vid, ctrl.selectedCategory)
+    DbService.addVerseToCategory(ctrl.verseDetail.vid, ctrl.selectedCategory)
   }
   ctrl.cancel = function(){
     $scope.modal.hide()
@@ -112,6 +114,7 @@ angular.module('app.controllers', ['app.services'])
   ctrl.bookList = [];
   ctrl.chapList = [];
 
+  // TODO use the static names json file
   ctrl.getBooks = function(){
     // populate Bible bookList
     ctrl.bookList = ['','Genesis','Psalms','John','Acts']; // DbService.getBookList()
@@ -133,7 +136,7 @@ angular.module('app.controllers', ['app.services'])
   }
   return ctrl;
 }])
-// word search component
+// word search page component
 .controller('wordSearchResultsCtrl', ['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService) {
   // using routeParams return list of verses containing query term
   // may have to paginate
@@ -169,7 +172,7 @@ angular.module('app.controllers', ['app.services'])
   }
   return ctrl;
 }])
-// categories master list
+// categories page master list
 .controller('categoriesCtrl', ['$scope','$stateParams','DbService', function($scope, $stateParams, DbService) {
   // data-> get all categories from db
   var ctrl = this;

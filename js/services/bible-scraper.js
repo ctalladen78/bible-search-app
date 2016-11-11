@@ -94,10 +94,13 @@ angular.module('app.services')
       return promise;
     },
     'getLocalTestBooks' : function(book, ver){
-      return $http.get('./test.json')
+      return $http.get('./output.json')
       .then(function(res){
         console.log('%%% initializing', res.data)
-        return res.data
+        // var bible = JSON.parse(res.data)
+        var bible = res.data.bible
+        console.log('%%% initializing', bible)
+        return bible
       })
     }
   }

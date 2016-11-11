@@ -5,3 +5,4 @@ bower_components/
 /test.json
 /bible.json
 # wisdom books: job, psalms, proverb, ecclesiastes, song of songs
+/output.json

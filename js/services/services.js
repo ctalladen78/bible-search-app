@@ -62,11 +62,11 @@ angular.module('app.services', [])
     return $q.when(
         bibleScraper.getLocalTestBooks()
         .then(function(result){
-            var bibleLength = Object.keys(result).length
+            // var bibleLength = Object.keys(result).length
             db.bulkDocs(result)
         })
         .then(function(result){
-          console.log('%%% init db:', result.data)
+          console.log('%%% init db:', result)
         })
       )
   }
@@ -192,11 +192,8 @@ angular.module('app.services', [])
     // best practice use allDocs instead() of query()
     var verseList = getDocs()
     .then(function(res){
-      console.log('%%% get docs', res)
-      var chaps =_.filter(res, function(i){return i.book === bookID})
-      var verses = _.filter(chaps, function(j){return j.chapter === parseInt(chapID)})
-
-      console.log('%%% verses', verses)
+      var chaps =_.filter(res, function(i){return i.bookName === bookID})
+      var verses = _.filter(chaps[0].bookList, function(j){return j.chapter === parseInt(chapID)})
       return _.map(verses,function(k){
         var obj = {}
         obj.verse = k.verse;
@@ -211,11 +208,10 @@ angular.module('app.services', [])
   function getVerseDetail(bookID, chapID, verseID){
     var verseObj = getDocs()
     .then(function(res){
-
       // console.log('%%% get docs', res)
       console.log('%%% get verse detail', bookID, chapID, verseID)
-      var chaps =_.filter(res, function(i){return i.book === bookID})
-      var verses = _.filter(chaps, function(j){return j.chapter === parseInt(chapID)})
+      var chaps =_.filter(res, function(i){return i.bookName === bookID})
+      var verses = _.filter(chaps[0].bookList, function(j){return j.chapter === parseInt(chapID)})
       // console.log('%%% get verses', verses)
       var verseObj ={}
       // filter and getCategoryList both returns arrays

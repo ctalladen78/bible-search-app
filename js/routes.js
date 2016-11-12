@@ -35,6 +35,16 @@ angular.module('app.routes', [])
       }
     }
   })
+  .state('menu.verseIndex', {
+    url: '/:book/:chap',
+    views: {
+      'side-menu21': {
+        templateUrl: 'template/bookIndex/verseIndex.html',
+        controller: 'bookSearchResultsCtrl'
+      }
+    }
+  })
+
   .state('menu.search', {
     url: '/search',
     views: {

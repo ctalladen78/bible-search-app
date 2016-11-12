@@ -1,13 +1,13 @@
-<ion-view title="favorites" id="page2" class=" " ng-controller="favoritesCtrl as vm">
+<ion-view title="{{vm.bookId}} {{vm.chapId}}" id="page7" class=" " ng-controller="bookSearchResultsCtrl as vm">
     <ion-content padding="true" class="has-header">
-        <ion-list ng-init="vm.getVerses()"
+        <ion-list ng-init="vm.getVerses(vm.bookId, vm.chapId)"
         id="bookSearchResults-list5" class=" " >
             <!-- ui-sref passes parameters to next page-->
             <div ng-repeat="ver in vm.verses"
             class="item-text-wrap  "
             id="bookSearchResults-list-item16">
             <div class="item " style="padding: 5px 5px 5px 15px;">
-            <a class="item-icon-right" ng-click="vm.openModal(ver.vid)"
+            <a class="item-icon-right" ng-click="vm.openModal(ver.verse)"
                 <span class="item-note">
                 {{ver.verse}}
                 </span>

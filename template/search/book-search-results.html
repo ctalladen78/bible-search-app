@@ -1,17 +1,12 @@
 <ion-view title="{{vm.bookId}} {{vm.chapId}}" id="page7" class=" " ng-controller="bookSearchResultsCtrl as vm">
     <ion-content padding="true" class="has-header">
-        <ion-list ng-init="vm.getVerses(vm.bookId, vm.chapId)"
+        <ion-list ng-init=""
         id="bookSearchResults-list5" class=" " >
             <!-- ui-sref passes parameters to next page-->
             <div ng-repeat="ver in vm.verses"
             class="item-text-wrap  "
             id="bookSearchResults-list-item16">
-            <div class="item ">
-              <!-- TODO put verse and icon on same heading section-->
-              <!--
-              <a class="item-icon-right"
-              ui-sref="menu.verseDetail({book:vm.bookId, chap:vm.chapId, verse:ver.verse})">
-            -->
+            <div class="item " style="padding: 5px 5px 5px 15px;">
             <a class="item-icon-right" ng-click="vm.openModal(ver.verse)"
                 <span class="item-note">
                 {{ver.verse}}

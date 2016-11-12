@@ -35,7 +35,6 @@ angular.module('app.services', [])
         populateTest();
       }
       // if partial count then run diff algorithm
-      // TODO bug db is not updating syncing to changes during refresh
       else{
         syncToChanges()
       }
@@ -158,11 +157,7 @@ angular.module('app.services', [])
     }
     return low;
   }
-  // initialize favorites category as empty list so that it is ready to
-  // have verses
-  function initFavorites(){
-    // add favorites category to db
-  }
+
   // return a list of books
   function getBooks(){
     var bookList = $http.get('./static-new-testament.json').then(function(res){
@@ -222,6 +217,14 @@ angular.module('app.services', [])
     })
     return verseObj
   }
+
+  function getVerseBy(vid){
+      return getDocs()
+      .then(function(docs){
+        return _.filter(docs, function(d){return d.vid === vid})
+      })
+  }
+
   // TODO save verse detail
   function saveVerse(verseObj){
     /*
@@ -235,31 +238,42 @@ angular.module('app.services', [])
   }
 
   // user likes/unlikes this verse
-  function toggleFavorites(vid){
-    /*
-    db.query(vid)
-    .then(function(obj){
-      obj.like = !obj.like
-      return obj
+  function toggleFavorites(vid, isLiked){
+    getVerseBy(vid)
+    .then(function(verse){
+      verse.like = isLiked
+      // syncToChanges()
     })
-    .then(function(obj){
-      db.put(obj)
-      syncToChanges()
-    })
-    */
   }
   // how to count reading history accurately
   // depending on which verse user is reading
   function updateReadingHistory(){
 
   }
+  // initialize favorites category as empty list so that it is ready to
+  // have verses
+  function initFavorites(){
+    // add favorites category to db
+    var vidlist = ["John-3-14", "2corinthians-5-17"]
+    vidlist.map(function(vid){
+      getVerseBy(vid)
+      .then(function(verse){
+        verse.like = true
+        // syncToChanges()
+      })
+    })
+  }
   // return a list of verses given favorites id
   // this is for the favorites page
-  function getFavoriteList(favid){
-    var favList = _.filter(docs, function(i){return i.like === true})
-    console.log('%%% favList', favList)
-    return favList
+  function getFavoriteList(){
+    getDocs()
+    .then(function(docs){
+      var favList = _.filter(docs, function(i){return i.like === true})
+      console.log('%%% favList', favList)
+      return favList
+    })
   }
+
   function updateCategory(vid, oldCatName,newCatName){
     /*
     db.get(cat.cid where cat.vid === vid)

@@ -3,21 +3,16 @@
         <ion-list ng-init="vm.getVerses(vm.bookId, vm.chapId)"
         id="bookSearchResults-list5" class=" " >
             <!-- ui-sref passes parameters to next page-->
-            <div ng-repeat="ver in vm.verses"
-            class="item-text-wrap  "
-            id="bookSearchResults-list-item16">
-            <div class="item " style="padding: 5px 5px 5px 15px;">
-            <a class="item-icon-right" ng-click="vm.openModal(ver.verse)"
-                <span class="item-note">
-                {{ver.verse}}
-                </span>
-                <i  class="icon ion-more"></i>
-              </a>
-            </div>
-              <div class="item">
-             <p>{{ver.text}}</p>
-           </div>
-         </div>
+            <ion-item ng-repeat="ver in vm.verses"
+            class="item item-text-wrap  item-icon-right"
+            id="bookSearchResults-list-item16" style="display:table">
+              <p style="display:inline-block; padding-right:10px; display:table-cell;">
+                  {{ver.verse}}
+              </p>
+               <div style="display:table-cell">{{ver.text}}</div>
+               <i ng-click="vm.openModal(ver.verse)" class="positive icon ion-android-more-vertical">
+              </i>
+         </ion-item>
         </ion-list>
     </ion-content>
 </ion-view>

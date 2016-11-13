@@ -27,7 +27,7 @@ angular.module('app.controllers', ['app.services'])
   return ctrl;
 }])
 // verse list search results master list
-.controller('bookSearchResultsCtrl', ['$scope','$stateParams', 'DbService','$ionicModal','$state', function($scope, $stateParams, DbService, $ionicModal, $state) {
+.controller('bookSearchResultsCtrl', ['$scope','$stateParams', 'DbService','$ionicModal','$state','$window','$ionicHistory', function($scope, $stateParams, DbService, $ionicModal, $state,$window, $ionicHistory) {
   // using routeParams
   var ctrl = this;
   $scope.bookId = $stateParams.book;
@@ -42,33 +42,27 @@ angular.module('app.controllers', ['app.services'])
       ctrl.verses = res
     })
   }
-
+  // dont use modal http://stackoverflow.com/questions/30430160/why-isnt-my-ionic-modal-opening-on-an-android-4-4-device
   ctrl.openModal = function(verse){
-    //console.log('%% open modal with', $scope.bookId, $scope.chapId, verse)
-    $scope.verse = verse
-    $ionicModal.fromTemplateUrl('../template/bookIndex/verse-detail.html',{
-      scope: $scope,
-      animation: 'slide-in-up'
-    })
-    .then(function(modal){
-      $scope.modal = modal
-      $scope.modal.show()
-     })
-    // .then(function(){  $scope.modal.show() })
+    ctrl.verseId = verse
+    console.log('%% open modal with', ctrl.bookId, ctrl.chapId, ctrl.verseId)
+    console.log($ionicHistory.viewHistory())
+    $state.go('menu.verseDetail',{book:ctrl.bookId, chap:ctrl.chapId, verse:ctrl.verseId})
   }
 
   return ctrl;
 }])
 
 // verse detail
-.controller('verseDetailCtrl', ['$scope','$stateParams', 'DbService','$state','$ionicModal', function( $scope, $stateParams, DbService, $state, $ionicModal) {
+.controller('verseDetailCtrl', ['$scope','$stateParams', 'DbService','$state','$ionicModal','$ionicPopup','$ionicHistory', function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicPopup, $ionicHistory) {
   // using routeParams
   var ctrl = this;
-  ctrl.bookId = $scope.bookId;
-  ctrl.chapId = $scope.chapId;
-  ctrl.verse = $scope.verse;
+  ctrl.bookId = $stateParams.book;
+  ctrl.chapId = $stateParams.chap;
+  ctrl.verse = $stateParams.verse;
   ctrl.selectedCategory = '';
   //console.log('%%% verse detail scope info', $scope)
+  $ionicPopup.alert({title: 'it works'})
 
   DbService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse)
   .then(function(res){
@@ -78,11 +72,12 @@ angular.module('app.controllers', ['app.services'])
   })
 
   // redirect to prior page
+  // https://codepen.io/mircobabini/post/ionic-how-to-clear-back-navigation-the-right-way
   ctrl.saveVerse = function(){
     // save verse
     DbService.saveVerse(ctrl.verseDetail)
     .then(function(){
-      $scope.modal.hide()
+      $ionicHistory.goBack()
     })
   }
   // select categories dropdown
@@ -93,13 +88,15 @@ angular.module('app.controllers', ['app.services'])
     console.log('%%% get categories', ctrl.categories)
     })
   }
-  // data-> a verse may only have one category for now
+  // add vid to category.catList
   ctrl.addVerseToCategory = function(){
     console.log('%%% add to category', ctrl.verseDetail.vid, ctrl.selectedCategory)
     DbService.addVerseToCategory(ctrl.verseDetail.vid, ctrl.selectedCategory)
   }
   ctrl.cancel = function(){
-    $scope.modal.hide()
+    // $ionicHistory.nextViewOptions({disableBack:true})
+    $ionicHistory.goBack()
+    console.log($ionicHistory.viewHistory())
   }
   return ctrl;
 }])

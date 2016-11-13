@@ -211,8 +211,8 @@ angular.module('app.services', [])
       var verseObj ={}
       // filter and getCategoryList both returns arrays
       verseObj.detail = _.filter(verses,function(k){return k.verse === verseID })
+      console.log('%%%% verse obj', verseObj)
       verseObj.catList = getCategoryList(verseObj.detail[0].vid)
-      // console.log('%%%% verse obj', verseObj)
       return verseObj
     })
     return verseObj

@@ -10,7 +10,7 @@
                 <input  type="text" ng-model="vm.category" value="{{vm.category}}">
             </label>
         </form>
-        <a ui-sref="menu.categories" id="editCategory-button15" class=" button button-positive  button-block ">Save Changes</a>
+        <a ng-click="vm.updateCategory()" ui-sref="menu.categories" id="editCategory-button15" class=" button button-positive  button-block ">Save Changes</a>
         <a ui-sref="menu.categories" id="editCategory-button15" class=" button button-positive  button-block ">Delete Category</a>
         <a ui-sref="menu.categories" id="editCategory-button16" class=" button button-positive  button-block ">Cancel</a>
     </ion-content>

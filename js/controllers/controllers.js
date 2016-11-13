@@ -61,15 +61,19 @@ angular.module('app.controllers', ['app.services'])
   ctrl.chapId = $stateParams.chap;
   ctrl.verse = $stateParams.verse;
   ctrl.selectedCategory = '';
-  //console.log('%%% verse detail scope info', $scope)
-  $ionicPopup.alert({title: 'it works'})
+  // $ionicPopup.alert({title: 'it works'}) // see cordova plugin add org.apache.cordova.dialogs
 
   DbService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse)
   .then(function(res){
     ctrl.verseDetail = res.detail[0]
-    console.log('%%%% get verse detail', res.detail)
+    console.log('%%%% get verse detail', ctrl.verseDetail)
     ctrl.catList = res.catList
+    ctrl.like = DbService.isVidLiked(vid)
   })
+
+  ctrl.like = function(){
+    DbService.toggleFavorites(ctrl.verseDetail.vid, ctrl.like)
+  }
 
   // redirect to prior page
   // https://codepen.io/mircobabini/post/ionic-how-to-clear-back-navigation-the-right-way
@@ -101,24 +105,6 @@ angular.module('app.controllers', ['app.services'])
   return ctrl;
 }])
 
-// favorites page master list
-.controller('favoritesCtrl', ['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService) {
-  var ctrl = this;
-  // data-> return list of verses that are liked from db
-  ctrl.getVerses = function(){
-    DbService.getFavoriteList() // return list of verse objects
-    .then(function(docs){
-      ctrl.verses = docs
-    })
-    .catch(function(){
-      ctrl.verses = []
-    })
-  }
-  ctrl.openModal = function(vid){
-
-  }
-  return ctrl;
-}])
 
 // dropdown search component
 .controller('searchCtrl', ['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService) {
@@ -176,27 +162,39 @@ angular.module('app.controllers', ['app.services'])
 // word search page component
 .controller('wordSearchResultsCtrl', ['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService) {
   // using routeParams return list of verses containing query term
-  // may have to paginate
-  // highlight term
+  // highlight the search term in text
   var ctrl = this;
   ctrl.word = $stateParams.term;
   ctrl.getVerses = function(word){
-  // ctrl.verses = DbService.wordSearch(ctrl.word) // return list of verse objects
-    ctrl.verses = [
-      {"book": "Isiah", "chapter":12, "like":"true","category":[],"verse":14, "text": "For God so loved the world..."},
-      {"book": "Hebrews", "chapter":33, "like":"true","category":[],"verse":15, "text": "That we ought not condemn..."},
-      {"book": "Revelations", "chapter":45, "like":"true","category":[],"verse":16, "text": "When He shall return ..."}
-    ];
-    console.log('verse init');
+  DbService.wordSearch(ctrl.word) // return list of verse objects
+  .then(function(res){
+    ctrl.verses = res
+
+  })
+  .catch(function(){ ctrl.verses = []})
+
   }
   return ctrl;
 }])
 
-
+// favorites page master list
+.controller('favoritesCtrl', ['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService) {
+  var ctrl = this;
+  // return list of verse objects
+  ctrl.getVerses = function(){
+    DbService.getFavoriteList()
+    .then(function(docs){
+      ctrl.verses = docs
+    })
+    .catch(function(){
+      ctrl.verses = []
+    })
+  }
+  return ctrl;
+}])
 
 // categories page master list
 .controller('categoriesCtrl', ['$scope','$stateParams','DbService', function($scope, $stateParams, DbService) {
-  // data-> get all categories from db
   var ctrl = this;
   ctrl.category = '';
   ctrl.getCategories = function(){
@@ -204,25 +202,38 @@ angular.module('app.controllers', ['app.services'])
     .then(function(docs){
       ctrl.categories = docs
     })
+    .catch(function(){console.log('%%% could not add category')})
   }
   return ctrl;
 }])
+
 // category detail is a list of verses
 .controller('categoryDetailCtrl', ['$scope','$stateParams','DbService', function($scope, $stateParams, DbService){
+  var ctrl = this;
   // using routeParams
   ctrl.category = $stateParams.cat;
-  ctrl.getVerseList = function(){
+  ctrl.getVerses = function(){
     //DbService.getVerseList("Matthew", 1)
     // TODO get category.catList, parse the catList, then make list using getVerseBy(vid)
   }
+  return ctrl
 }])
+
 // add new empty category
-.controller('addCategoryCtrl', ['$scope','$stateParams',function($scope, $stateParams) {
+.controller('addCategoryCtrl', ['$scope','$stateParams','DbService',function($scope, $stateParams, DbService) {
+  var ctrl = this;
   // using routeParams write to db
-
+  ctrl.category =''
+  ctrl.addCategory = function(){
+    DbService.addCategory(ctrl.category)
+    .catch(function(){console.log('%%% could not add category')})
+  }
+  return ctrl
 }])
-// rename existing category
-.controller('editCategoryCtrl', ['$stateParams','$scope',function($stateParams, $scope) {
-  // using routeParams write to db
 
+// rename existing category
+.controller('editCategoryCtrl', ['$stateParams','$scope','DbService',function($stateParams, $scope, DbService) {
+  var ctrl = this;
+  // using routeParams write to db
+  return ctrl
 }])

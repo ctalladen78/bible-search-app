@@ -15,10 +15,11 @@ angular.module('app.services', [])
     getVerseList : getVerseList,
     getVerseDetail : getVerseDetail,
     getFavoriteList : getFavoriteList,
-    getCategoryList : getCategoryList,
+    getCategoryByVid : getCategoryByVid,
     getAllCategoryList : getAllCategoryList,
     saveVerse : saveVerse,
-    addVerseToCategory : addVerseToCategory
+    addVerseToCategory : addVerseToCategory,
+    addCategory: addCategory
   }
 // https://www.npmjs.com/package/angular-file-upload
   // populate db from api endpoint
@@ -128,6 +129,13 @@ angular.module('app.services', [])
     )
   }
 
+  function printDocs(){
+    getDocs()
+    .then(function(docs){
+      console.log('%%% get all docs', docs)
+    })
+  }
+
   // remove from cache
   function onDeleted(id) {
     var index = binarySearch(docs, id);
@@ -212,7 +220,7 @@ angular.module('app.services', [])
       // filter and getCategoryList both returns arrays
       verseObj.detail = _.filter(verses,function(k){return k.verse === verseID })
       console.log('%%%% verse obj', verseObj)
-      verseObj.catList = getCategoryList(verseObj.detail[0].vid)
+      verseObj.catList = getCategoryByVid(verseObj.detail[0].vid)
       return verseObj
     })
     return verseObj
@@ -237,12 +245,27 @@ angular.module('app.services', [])
     return $q.when(true)
   }
 
-  // user likes/unlikes this verse
-  function toggleFavorites(vid, isLiked){
-    getVerseBy(vid)
-    .then(function(verse){
-      verse.like = isLiked
-      // syncToChanges()
+  // add vid to favorites.vidList
+  function addToFavorites(vid){
+    getDocs()
+    .then(function(docs){
+      return _.filter(docs, function(d){ return d.type === 'favorite'})
+    })
+    .then(function(favorites){
+      favorites.data.vidList.push(verse.vid)
+      syncToChanges()
+      printDocs()
+    })
+  }
+  // return truthy if vid exists in favorites.vidList
+  function isVidLiked(vid){
+    getDocs()
+    .then(function(docs){
+      return _.filter(docs.data, function(d){ return d.type === 'favorite'})
+    })
+    .then(function(fav){
+      return _.filter(fav.data.vidList, function(f){ return f === vid})
+
     })
   }
   // how to count reading history accurately
@@ -250,31 +273,46 @@ angular.module('app.services', [])
   function updateReadingHistory(){
 
   }
+
+  function wordSearch(term){
+    return $q.when(function(){
+      return list = [
+      {"book": "Isiah", "chapter":12, "like":"true","category":[],"verse":14, "text": "For God so loved the world..."},
+      {"book": "Hebrews", "chapter":33, "like":"true","category":[],"verse":15, "text": "That we ought not condemn..."},
+      {"book": "Revelations", "chapter":45, "like":"true","category":[],"verse":16, "text": "When He shall return ..."}
+      ];
+    }
+    )
+  }
   // initialize favorites category as empty list so that it is ready to
   // have verses
   function initFavorites(){
     // add favorites category to db
+    var favorite = {}
     var vidlist = ["John-3-14", "2corinthians-5-17"]
+    favorite.type = "favorite"
+    favorite.cid = new Date().toISOString()
+    favorite.vidlist = vidlist
+    // init like the verses
     vidlist.map(function(vid){
-      getVerseBy(vid)
-      .then(function(verse){
-        verse.like = true
-        // syncToChanges()
-      })
+      favorite.vidlist.push(vid)
     })
+    db.put(favorite)
+    syncToChanges()
+    printDocs()
   }
   // return a list of verses given favorites id
   // this is for the favorites page
   function getFavoriteList(){
-    getDocs()
+    return getDocs()
     .then(function(docs){
-      var favList = _.filter(docs, function(i){return i.like === true})
+      var favList = _.filter(docs, function(i){return i.type === "favorite"})
       console.log('%%% favList', favList)
       return favList
     })
   }
 
-  function updateCategory(vid, oldCatName,newCatName){
+  function renameCategory(vid, oldCatName,newCatName){
     /*
     db.get(cat.cid where cat.vid === vid)
     .then(function(res){
@@ -300,8 +338,8 @@ angular.module('app.services', [])
     */
   }
   // return a list of verses given verse id
-  // this is for displaying what categories associated to verse
-  function getCategoryList(vid){
+  // this is for displaying what categories per associated verse
+  function getCategoryByVid(vid){
     var catList = getDocs()
     .then(function(res){
       var allCats = _.filter(res, function(i){return i.type === 'category'})
@@ -313,6 +351,11 @@ angular.module('app.services', [])
       console.log('%%% category list of ',vid, tempList)
     })
     return catList
+
+  }
+  // return list of verses by category id
+  // this is for displaying verses per associated category
+  function getCategoryByCid(cid){
 
   }
   // return all categories for selection
@@ -344,7 +387,7 @@ angular.module('app.services', [])
   }
 
   // see: http://stackoverflow.com/questions/1674089/what-is-the-idiomatic-way-to-implement-foreign-keys-in-couchdb
-  function addCategory(vid, catName){
+  function addCategory(catName){
     return $q.when(
       db.get(cid)
       .then(function(obj){
@@ -361,6 +404,7 @@ angular.module('app.services', [])
       .then(function(obj){
         db.put(obj);
         syncToChanges();
+        printDocs()
       })
     )
     }

@@ -1,11 +1,22 @@
-<ion-view title="category-detail" id="page9" class=" ">
+<ion-view title="{{vm.category}}" id="page9" class=" " ng-controller="categoryDetailCtrl as vm">
     <ion-content padding="true" class="has-header">
-        <ion-list id="categoryDetail-list6" class=" ">
-            <ion-item class="item-icon-right  " id="categoryDetail-list-item20" ui-sref="menu.verseDetail">Psalm 119 -1
-                <i class="icon ion-android-arrow-forward"></i>
-            </ion-item>
-            <ion-item id="categoryDetail-list-item22" class="  ">Item 2</ion-item>
-            <ion-item id="categoryDetail-list-item23" class="  ">Item 3</ion-item>
+        <ion-list ng-init="vm.getVerses()"
+        id="bookSearchResults-list5" class=" " >
+            <div ng-repeat="ver in vm.verses"
+            class="item-text-wrap  "
+            id="bookSearchResults-list-item16">
+            <div class="item " style="padding: 5px 5px 5px 15px;">
+            <a class="item-icon-right" ng-click="vm.openModal(ver.vid)"
+                <span class="item-note">
+                {{ver.verse}}
+                </span>
+                <i  class="icon ion-more"></i>
+              </a>
+            </div>
+              <div class="item">
+             <p>{{ver.text}}</p>
+           </div>
+         </div>
         </ion-list>
     </ion-content>
 </ion-view>

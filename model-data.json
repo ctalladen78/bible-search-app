@@ -1,5 +1,10 @@
 [
   {
+    "type" : "favorite",
+    "vidList" : ["Matthew-1-1"],
+    "cid" : "1979-11-11-1234"
+  },
+  {
     "type" : "category",
     "vidList" : ["Matthew-1-1"],
     "cid" : "1979-11-11-1234",
@@ -10,7 +15,6 @@
     "vidList" : ["Mark-1-2"],
     "cid" : "1980-11-11-1235",
     "catName":"cat2"
-
   },
   {
     "vid" : "Matthew-1-1",

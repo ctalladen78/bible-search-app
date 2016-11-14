@@ -19,7 +19,8 @@ angular.module('app.services', [])
     getAllCategoryList : getAllCategoryList,
     saveVerse : saveVerse,
     addVerseToCategory : addVerseToCategory,
-    addCategory: addCategory
+    addCategory: addCategory,
+    wordSearch : wordSearch
   }
 // https://www.npmjs.com/package/angular-file-upload
   // populate db from api endpoint
@@ -229,7 +230,18 @@ angular.module('app.services', [])
   function getVerseBy(vid){
       return getDocs()
       .then(function(docs){
-        return _.filter(docs, function(d){return d.vid === vid})
+        var doc;
+        _.forEach(docs, function(d){
+          if(d.bookList){
+            _.forEach(d.bookList,function(v){
+              if(v.vid === vid){
+                doc = v
+              }
+            })
+          }
+        })
+        console.log('%%% getting verse by', vid, doc.vid)
+        return doc
       })
   }
 
@@ -294,12 +306,11 @@ angular.module('app.services', [])
     favorite.cid = new Date().toISOString()
     favorite.vidlist = vidlist
     // init like the verses
-    vidlist.map(function(vid){
-      favorite.vidlist.push(vid)
-    })
     db.put(favorite)
-    syncToChanges()
-    printDocs()
+    .then(function(){
+      syncToChanges()
+      printDocs()
+     })
   }
   // return a list of verses given favorites id
   // this is for the favorites page
@@ -307,8 +318,14 @@ angular.module('app.services', [])
     return getDocs()
     .then(function(docs){
       var favList = _.filter(docs, function(i){return i.type === "favorite"})
-      console.log('%%% favList', favList)
-      return favList
+      favList = favList[0].vidList
+      var list = []
+      _.each(favList, function(i){
+          getVerseBy(i)
+          .then(function(v){list.push(v); return list})
+          .then(function(l){console.log('%%% liked verses',l)})
+      })
+      return list
     })
   }
 

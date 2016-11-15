@@ -16,7 +16,8 @@
     "cid" : "1980-11-11-1235",
     "catName":"cat2"
   },
-    {"bookName":"Matthew",
+  {
+    "bookName":"Matthew",
     "bookList": [
   {
     "vid" : "Matthew-1-1",

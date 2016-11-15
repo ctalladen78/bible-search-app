@@ -20,7 +20,10 @@ angular.module('app.services', [])
     saveVerse : saveVerse,
     addVerseToCategory : addVerseToCategory,
     addCategory: addCategory,
-    wordSearch : wordSearch
+    wordSearch : wordSearch,
+    addToFavorites : addToFavorites,
+    isVidLiked : isVidLiked
+
   }
 // https://www.npmjs.com/package/angular-file-upload
   // populate db from api endpoint
@@ -36,7 +39,6 @@ angular.module('app.services', [])
       if(info.doc_count === 0){
         populateTest();
       }
-      // if partial count then run diff algorithm
       else{
         syncToChanges()
       }
@@ -51,13 +53,9 @@ angular.module('app.services', [])
       console.log('%%% db does not exist')
       populateTest();
     })
-    //  populate db with test data
-    var version = 'akjv'; // kjv, korean, web, etc
-    var book = 'ezra';
 
     // create empty favorites and categories
-    // maybe seed it with John 3:16
-    //initFavorites();
+    initFavorites();
   }
   function populateTest(){
     return $q.when(
@@ -118,7 +116,7 @@ angular.module('app.services', [])
           // change.id holds the deleted id
           console.log('%%% deleting:', change.deleted);
           onDeleted(change.id);
-        } else { // updated/inserted
+        } else { // updated or inserted doc
           // change.doc holds the new doc
           onUpdatedOrInserted(change.doc);
         }
@@ -273,11 +271,10 @@ angular.module('app.services', [])
   function isVidLiked(vid){
     getDocs()
     .then(function(docs){
-      return _.filter(docs.data, function(d){ return d.type === 'favorite'})
-    })
-    .then(function(fav){
-      return _.filter(fav.data.vidList, function(f){ return f === vid})
-
+      var fav =  _.filter(docs.data, function(d){ return d.type === 'favorite'})
+      var isLiked =  _.filter(fav.vidList, function(f){ return f === vid})
+      console.log('%%%% is liked', isLiked, vid, fav.vidList)
+      return isLiked
     })
   }
   // how to count reading history accurately
@@ -306,19 +303,24 @@ angular.module('app.services', [])
     favorite.cid = new Date().toISOString()
     favorite.vidlist = vidlist
     // init like the verses
-    db.put(favorite)
-    .then(function(){
-      syncToChanges()
-      printDocs()
-     })
+    $q.when(
+      db.put(favorite)
+      .then(function(){
+        syncToChanges()
+        printDocs()
+       })
+     )
   }
   // return a list of verses given favorites id
   // this is for the favorites page
   function getFavoriteList(){
     return getDocs()
     .then(function(docs){
+
+console.log('%%% docs', docs)
       var favList = _.filter(docs, function(i){return i.type === "favorite"})
-      favList = favList[0].vidList
+      console.log('%%% favlist', favList)
+      favList = favList[0]
       var list = []
       _.each(favList, function(i){
           getVerseBy(i)

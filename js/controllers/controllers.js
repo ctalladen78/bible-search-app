@@ -61,18 +61,23 @@ angular.module('app.controllers', ['app.services'])
   ctrl.chapId = $stateParams.chap;
   ctrl.verse = $stateParams.verse;
   ctrl.selectedCategory = '';
+  ctrl.likenum = 0;
   // $ionicPopup.alert({title: 'it works'}) // see cordova plugin add org.apache.cordova.dialogs
 
   DbService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse)
   .then(function(res){
     ctrl.verseDetail = res.detail[0]
-    console.log('%%%% get verse detail', ctrl.verseDetail)
-    ctrl.catList = res.catList
+    ctrl.catList = DbService.getCategoryByVid(ctrl.verseDetail.vid)
     ctrl.like = DbService.isVidLiked(vid)
+    console.log('%%%% get verse detail', ctrl)
   })
 
   ctrl.like = function(){
-    DbService.toggleFavorites(ctrl.verseDetail.vid, ctrl.like)
+    ctrl.likenum++
+    console.log('%%%% clicked like ', ctrl.likenum, ' times')
+    if(ctrl.likenum % 2 != 0)
+      DbService.addToFavorites(ctrl.verseDetail.vid)
+
   }
 
   // redirect to prior page
@@ -84,7 +89,8 @@ angular.module('app.controllers', ['app.services'])
       $ionicHistory.goBack()
     })
   }
-  // select categories dropdown
+  
+  // select from all categories dropdown
   ctrl.getCategories = function(){
      DbService.getAllCategoryList()
     .then(function(res){
@@ -109,7 +115,7 @@ angular.module('app.controllers', ['app.services'])
 // dropdown search component
 .controller('searchCtrl', ['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService) {
   var ctrl = this;
-  ctrl.word = '';
+  ctrl.word = ''; // search term
   ctrl.bookId = '';
   ctrl.chapId = '';
 

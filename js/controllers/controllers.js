@@ -61,17 +61,19 @@ angular.module('app.controllers', ['app.services'])
   ctrl.chapId = $stateParams.chap;
   ctrl.verse = $stateParams.verse;
   ctrl.selectedCategory = '';
-  ctrl.likenum = 0;
+  ctrl.verseDetail.like;
+  //ctrl.likenum = 0;
   // $ionicPopup.alert({title: 'it works'}) // see cordova plugin add org.apache.cordova.dialogs
 
   DbService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse)
   .then(function(res){
     ctrl.verseDetail = res.detail[0]
     ctrl.catList = DbService.getCategoryByVid(ctrl.verseDetail.vid)
-    ctrl.like = DbService.isVidLiked(vid)
+    ctrl.verseDetail.like = DbService.isVidLiked(vid)
     console.log('%%%% get verse detail', ctrl)
   })
 
+  /*
   ctrl.like = function(){
     ctrl.likenum++
     console.log('%%%% clicked like ', ctrl.likenum, ' times')
@@ -79,6 +81,7 @@ angular.module('app.controllers', ['app.services'])
       DbService.addToFavorites(ctrl.verseDetail.vid)
 
   }
+  */
 
   // redirect to prior page
   // https://codepen.io/mircobabini/post/ionic-how-to-clear-back-navigation-the-right-way

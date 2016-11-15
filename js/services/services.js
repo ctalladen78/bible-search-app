@@ -301,7 +301,7 @@ angular.module('app.services', [])
   function initFavorites(){
     // add favorites category to db
     var favorite = {}
-    var vidlist = ["John-3-14", "2corinthians-5-17"]
+    var vidlist = ["John-3-14", "2corinthians-5-17", "Matthew-1-1"]
     favorite.type = "favorite"
     favorite.cid = new Date().toISOString()
     favorite.vidlist = vidlist

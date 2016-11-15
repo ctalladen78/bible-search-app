@@ -1,8 +1,8 @@
 <ion-view  title="Edit Verse" id="page6" class=" " ng-controller="verseDetailCtrl as vm">
   <ion-nav-bar title="{{vm.bookId}} {{vm.chapId}} : {{vm.verse}}" align-title="left">
   <ion-nav-buttons  title="Edit {{vm.bookId}} {{vm.chapId}} {{vm.verse}}"side="secondary">
-    <button>
-    <i class="icon ion-android-star" ng-click="vm.verseDetail.like != vm.verseDetail.like"></i>
+    <button ng-click="vm.like()">
+    <i class="icon ion-android-star" ></i>
   </button>
   </ion-nav-buttons>
 </ion-nav-bar>

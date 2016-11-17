@@ -21,3 +21,37 @@
         </ion-list>
     </ion-content>
 </ion-view>
+
+<script type="text/template" id="verse-detail.html">
+<ion-modal-view ng-controller="verseDetailCtrl as vm">
+    <!-- header bar -->
+  <ion-nav-bar title="{{vm.verseDetail.bookId}} {{vm.verseDetail.chapId}} : {{vm.verseDetail.verse}}" align-title="center">
+  <ion-nav-buttons  title="Edit {{vm.bookId}} {{vm.chapId}} {{vm.verse}}" side="secondary">
+    <button ng-click="{vm.verseDetail.isliked = !vm.verseDetail.isliked}">
+        <i class="icon ion-android-star" ng-class={isactive:vm.verseDetail.isliked}></i>
+    </button>
+  </ion-nav-buttons>
+  </ion-nav-bar>
+  <!-- main content -->
+    <ion-content padding="true" class="has-header">
+            <ion-item class="item " id="verseDetail-list-item19">
+                <p>{{vm.verseDetail.vid}}</p>
+            </ion-item>
+        <form id="editVerse-form2" class="list ">
+            <label class="item item-select " id="editVerse-select3">
+                <span class="input-label">Add to categories</span>
+                <select ng-init="vm.getCategories()" ng-model="vm.selectedCategory"
+                ng-options="cat as cat for cat in vm.categories"
+                ng-change="vm.addVerseToCategory()">
+                </select>
+            </label>
+        </form>
+        <button class=" button button-positive  button-block "
+        ng-click="vm.saveVerse()">Save Changes</button>
+        <!-- redirect back to verse list page -->
+        <a  id="editVerse-button9" ng-click="vm.cancel()"
+        class=" button button-positive  button-block ">Cancel</a>
+
+    </ion-content>
+</ion-modal-view>
+</script>

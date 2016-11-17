@@ -13,27 +13,13 @@ To use this, either create a new ionic project using the ionic node.js utility, 
 ### launch from cloud9
 `ionic serve -p $PORT -nolivereload`
 
+Todo
+ionic add crosswalk for android
+ionic browser add crosswalk 
+ionic run android
+add modal template to verselist template 
+use ionic airport parking app
 
-### With the Ionic tool:
-
-Take the name after `ionic-starter-`, and that is the name of the template to be used when using the `ionic start` command below:
-
-```bash
-$ sudo npm install -g ionic cordova
-$ ionic start myApp sidemenu
-```
-
-Then, to run it, cd into `myApp` and run:
-
-```bash
-$ ionic platform add ios
-$ ionic build ios
-$ ionic emulate ios
-```
-
-Substitute ios for android if not on a Mac, but if you can, the ios development toolchain is a lot easier to work with until you need to do anything custom to Android.
 
 ## Demo
 http://plnkr.co/edit/0RXSDB?p=preview
-
-

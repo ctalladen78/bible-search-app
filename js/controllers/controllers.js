@@ -54,7 +54,7 @@ angular.module('app.controllers', ['app.services'])
 }])
 
 // verse detail
-.controller('verseDetailCtrl', ['$scope','$stateParams', 'DbService','$state','$ionicModal','$ionicPopup','$ionicHistory', function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicPopup, $ionicHistory) {
+.controller('verseDetailCtrl', ['$scope','$stateParams', 'DbService','$state','$ionicModal','$ionicHistory','$ionicLoading', function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $ionicLoading) {
   // using routeParams
   var ctrl = this;
   ctrl.bookId = $stateParams.book;
@@ -62,8 +62,6 @@ angular.module('app.controllers', ['app.services'])
   ctrl.verse = $stateParams.verse;
   ctrl.selectedCategory = '';
   ctrl.verseDetail.like;
-  //ctrl.likenum = 0;
-  // $ionicPopup.alert({title: 'it works'}) // see cordova plugin add org.apache.cordova.dialogs
 
   DbService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse)
   .then(function(res){
@@ -86,13 +84,16 @@ angular.module('app.controllers', ['app.services'])
   // redirect to prior page
   // https://codepen.io/mircobabini/post/ionic-how-to-clear-back-navigation-the-right-way
   ctrl.saveVerse = function(){
-    // save verse
+    if(!ctrl.verseDetail.like){DbService.removeFromFavorites(ctrl.verseDetail.vid)}
+    if(ctrl.verseDetail.like){
+      DbService.addToFavorites(ctrl.verseDetail.vid)
+    }
     DbService.saveVerse(ctrl.verseDetail)
     .then(function(){
-      $ionicHistory.goBack()
+      // $ionicHistory.goBack()
     })
   }
-  
+
   // select from all categories dropdown
   ctrl.getCategories = function(){
      DbService.getAllCategoryList()
@@ -107,7 +108,6 @@ angular.module('app.controllers', ['app.services'])
     DbService.addVerseToCategory(ctrl.verseDetail.vid, ctrl.selectedCategory)
   }
   ctrl.cancel = function(){
-    // $ionicHistory.nextViewOptions({disableBack:true})
     $ionicHistory.goBack()
     console.log($ionicHistory.viewHistory())
   }

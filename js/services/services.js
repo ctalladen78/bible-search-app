@@ -38,13 +38,14 @@ angular.module('app.services', [])
       // count objects in bible.json
       if(info.doc_count === 0){
         populateTest();
+        initFavorites();
       }
       else{
         syncToChanges()
       }
     })
     .then(console.log.bind(console))
-    // db exists
+    // db exists do nothing
     .then(function(){
       console.log('%%% db exists');
     })
@@ -52,11 +53,10 @@ angular.module('app.services', [])
     .catch(function(){
       console.log('%%% db does not exist')
       populateTest();
+      initFavorites();
     })
-
-    // create empty favorites and categories
-    initFavorites();
   }
+
   function populateTest(){
     return $q.when(
         bibleScraper.getLocalTestBooks()
@@ -275,6 +275,18 @@ angular.module('app.services', [])
       var isLiked =  _.filter(fav.vidList, function(f){ return f === vid})
       console.log('%%%% is liked', isLiked, vid, fav.vidList)
       return isLiked
+    })
+  }
+
+  function removeFromFavorites(vid){
+    getDocs()
+    .then(function(docs){
+      return _.filter(docs, function(d){ return d.type === 'favorite'})
+    })
+    .then(function(favorites){
+      _.remove(favorites.vidList, function(i){return i === vid}) // remove vid from favorites
+      syncToChanges()
+      printDocs()
     })
   }
   // how to count reading history accurately

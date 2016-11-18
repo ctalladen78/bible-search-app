@@ -17,10 +17,13 @@ Todo
 
 -[ ] ionic add crosswalk for android
 
-* ionic browser add crosswalk
-* ionic run android
-* add modal template to verselist template
-* use ionic airport parking app
+-[ ] ionic browser add crosswalk
+
+-[ ] ionic run android
+
+-[ ] add modal template to verselist template
+
+-[ ] use ionic airport parking app
 
 
 ## Demo

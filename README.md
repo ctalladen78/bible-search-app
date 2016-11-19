@@ -10,14 +10,15 @@
 
 -[ ] use ionic airport parking app
 
+-[ ] swipe right on verse list item highlights and add to favorite
+
 
 
 ## Parking Lot Items
 
- * Notes section
- * Bookmark section that makes it easy for reader to jump to last verse/chapter being read.  
  * Bookmark section shows date of last activity
- *
+ * Reading history
+ * Home page shows inspiring images and verses
 
 
 ## How to use this template

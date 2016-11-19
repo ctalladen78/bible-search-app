@@ -214,7 +214,7 @@ angular.module('app.services', [])
       console.log('%%% get verse detail', bookID, chapID, verseID)
       var chaps =_.filter(res, function(i){return i.bookName === bookID})
       var verses = _.filter(chaps[0].bookList, function(j){return j.chapter === parseInt(chapID)})
-      // console.log('%%% get verses', verses)
+      console.log('%%% get verses', verses)
       var verseObj ={}
       // filter and getCategoryList both returns arrays
       verseObj.detail = _.filter(verses,function(k){return k.verse === verseID })
@@ -269,11 +269,14 @@ angular.module('app.services', [])
   }
   // return truthy if vid exists in favorites.vidList
   function isVidLiked(vid){
-    getDocs()
+    return getDocs()
     .then(function(docs){
-      var fav =  _.filter(docs.data, function(d){ return d.type === 'favorite'})
-      var isLiked =  _.filter(fav.vidList, function(f){ return f === vid})
-      console.log('%%%% is liked', isLiked, vid, fav.vidList)
+      var fav =  _.filter(docs, function(d){ return d.type === 'favorite'})
+      // console.log('%% all favorite', fav[0].vidList)
+      var isLiked =  _.some(fav[0].vidList, function(f){
+        return f === vid
+      })
+      console.log('%%%% is liked', isLiked, vid )
       return isLiked
     })
   }
@@ -331,15 +334,17 @@ angular.module('app.services', [])
 
 console.log('%%% docs', docs)
       var favList = _.filter(docs, function(i){return i.type === "favorite"})
-      console.log('%%% favlist', favList)
-      favList = favList[0]
-      var list = []
+      console.log('%%% favlist', favList[0].vidList)
+      favList = favList[0].vidList // list of vids
+      var list = [] // list of verses
       _.each(favList, function(i){
+        // get verses from vids
           getVerseBy(i)
           .then(function(v){list.push(v); return list})
           .then(function(l){console.log('%%% liked verses',l)})
       })
-      return list
+      // return list
+      return favList
     })
   }
 
@@ -374,7 +379,6 @@ console.log('%%% docs', docs)
     var catList = getDocs()
     .then(function(res){
       var allCats = _.filter(res, function(i){return i.type === 'category'})
-      // TODO lookup lodash map path find
       var tempList = _.map(allCats, function(c){
         _.map(c.vidList, function(l){return l===vid})
       })

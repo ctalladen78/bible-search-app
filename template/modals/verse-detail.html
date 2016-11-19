@@ -1,33 +1,10 @@
-<ion-view title="Favorites" id="page2" class=" " ng-controller="favoritesCtrl as vm">
-    <ion-content padding="true" class="has-header">
-        <ion-list ng-init="vm.getVerses()"
-        id="bookSearchResults-list5" class=" " >
-            <!-- ui-sref passes parameters to next page-->
-            <div ng-repeat="ver in vm.verses"
-            class="item-text-wrap  "
-            id="bookSearchResults-list-item16">
-            <div class="item " style="padding: 5px 5px 5px 15px;">
-            <a class="item-icon-right" ng-click="vm.openModal(ver.vid)"
-                <span class="item-note">
-                {{ver.verse}}
-                </span>
-                <i  class="icon ion-more"></i>
-              </a>
-            </div>
-              <div class="item">
-             <p>{{ver.text}}</p>
-           </div>
-         </div>
-        </ion-list>
-    </ion-content>
-</ion-view>
 
 <script type="text/ng-template" id="verse-detail.html">
-<div ng-controller="verseDetailCtrl as vm">
+<ion-modal-view ng-controller="verseDetailCtrl as vm">
     <!-- header bar -->
   <ion-nav-bar title="{{vm.verseDetail.bookId}} {{vm.verseDetail.chapId}} : {{vm.verseDetail.verse}}" align-title="center">
   <ion-nav-buttons  title="Edit {{vm.bookId}} {{vm.chapId}} {{vm.verse}}" side="secondary">
-    <button ng-click="vm.toggleLike()">
+    <button ng-click="{vm.verseDetail.isliked = !vm.verseDetail.isliked}">
         <i class="icon ion-android-star" ng-class={isactive:vm.verseDetail.isliked}></i>
     </button>
   </ion-nav-buttons>
@@ -53,5 +30,5 @@
         class=" button button-positive  button-block ">Cancel</a>
 
     </ion-content>
-  </div>
+</ion-modal-view>
 </script>

@@ -27,7 +27,8 @@ angular.module('app.controllers', ['app.services'])
   return ctrl;
 }])
 // verse list search results master list
-.controller('bookSearchResultsCtrl', ['$scope','$stateParams', 'DbService','$ionicModal','$state','$window','$ionicHistory', function($scope, $stateParams, DbService, $ionicModal, $state,$window, $ionicHistory) {
+.controller('bookSearchResultsCtrl', ['$scope','$stateParams', 'DbService','$ionicModal','$state','$window','$ionicHistory',
+function($scope, $stateParams, DbService, $ionicModal, $state, $window, $ionicHistory) {
   // using routeParams
   var ctrl = this;
   $scope.bookId = $stateParams.book;
@@ -42,44 +43,75 @@ angular.module('app.controllers', ['app.services'])
       ctrl.verses = res
     })
   }
-  // dont use modal http://stackoverflow.com/questions/30430160/why-isnt-my-ionic-modal-opening-on-an-android-4-4-device
+  // issues with modal http://stackoverflow.com/questions/30430160/why-isnt-my-ionic-modal-opening-on-an-android-4-4-device
   ctrl.openModal = function(verse){
     ctrl.verseId = verse
+    $scope.verseId = verse
     console.log('%% open modal with', ctrl.bookId, ctrl.chapId, ctrl.verseId)
-    console.log($ionicHistory.viewHistory())
-    $state.go('menu.verseDetail',{book:ctrl.bookId, chap:ctrl.chapId, verse:ctrl.verseId})
+    $ionicModal.fromTemplateUrl('verse-detail.html', {
+      scope: $scope,
+      backdropClickToClose: false,
+      animation: 'slide-in-up',
+      hardwareBackButtonClose: true,
+      focusFirstInput: true
+    })
+    // https://medium.com/@saniyusu/create-an-isolate-modal-with-ionic-v1
+    .then(function(modal){
+      $scope.modal = modal
+      // console.log($scope.modal)
+      $scope.modal.show()
+    })
+    // console.log($ionicHistory.viewHistory())
+    // $state.go('menu.verseDetail',{book:ctrl.bookId, chap:ctrl.chapId, verse:ctrl.verseId})
   }
+  // http://stackoverflow.com/questions/25854422/using-this-as-scope-when-creating-ionicmodal
+  // http://www.gajotres.net/how-to-show-different-native-modal-windows-in-ionic-framework
+  /*
+  ctrl.loadModal = function(){
+    $ionicModal.fromTemplateUrl('verse-detail.html', {
+      scope: $scope,
+      backdropClickToClose: false,
+      animation: 'slide-in-up',
+      hardwareBackButtonClose: true,
+      focusFirstInput: true
+    })
+    // https://medium.com/@saniyusu/create-an-isolate-modal-with-ionic-v1
+    .then(function(modal){
+      $scope.modal = modal
+      console.log($scope.modal)
+    })
+  }
+  */
 
   return ctrl;
 }])
 
 // verse detail
-.controller('verseDetailCtrl', ['$scope','$stateParams', 'DbService','$state','$ionicModal','$ionicHistory','$ionicLoading', function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $ionicLoading) {
+.controller('verseDetailCtrl', ['$scope','$stateParams', 'DbService','$state','$ionicModal','$ionicHistory','$ionicLoading',
+function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $ionicLoading) {
   // using routeParams
   var ctrl = this;
   ctrl.bookId = $stateParams.book;
   ctrl.chapId = $stateParams.chap;
   ctrl.verse = $stateParams.verse;
+  ctrl.verse = $scope.verseId
   ctrl.selectedCategory = '';
-  ctrl.verseDetail.like;
+  ctrl.verseDetail;
 
   DbService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse)
   .then(function(res){
     ctrl.verseDetail = res.detail[0]
-    ctrl.catList = DbService.getCategoryByVid(ctrl.verseDetail.vid)
-    ctrl.verseDetail.like = DbService.isVidLiked(vid)
+    DbService.getCategoryByVid(ctrl.verseDetail.vid)
+    .then(function(cats){ctrl.catList = cats})
+     DbService.isVidLiked(ctrl.verseDetail.vid)
+    .then(function(like){ctrl.verseDetail.like = like})
     console.log('%%%% get verse detail', ctrl)
   })
 
-  /*
-  ctrl.like = function(){
-    ctrl.likenum++
-    console.log('%%%% clicked like ', ctrl.likenum, ' times')
-    if(ctrl.likenum % 2 != 0)
-      DbService.addToFavorites(ctrl.verseDetail.vid)
-
+  ctrl.toggleLike = function(){
+    ctrl.verseDetail = !ctrl.verseDetail.like
+    console.log('%%% is liked? ', ctrl.verseDetail.like)
   }
-  */
 
   // redirect to prior page
   // https://codepen.io/mircobabini/post/ionic-how-to-clear-back-navigation-the-right-way
@@ -108,8 +140,9 @@ angular.module('app.controllers', ['app.services'])
     DbService.addVerseToCategory(ctrl.verseDetail.vid, ctrl.selectedCategory)
   }
   ctrl.cancel = function(){
-    $ionicHistory.goBack()
-    console.log($ionicHistory.viewHistory())
+    $scope.modal.hide()
+    // $ionicHistory.goBack()
+    // console.log($ionicHistory.viewHistory())
   }
   return ctrl;
 }])
@@ -193,11 +226,31 @@ angular.module('app.controllers', ['app.services'])
   ctrl.getVerses = function(){
     DbService.getFavoriteList()
     .then(function(docs){
-      ctrl.verses = docs
+      ctrl.verses = docs // returns a list of vids
     })
     .catch(function(){
       ctrl.verses = []
     })
+  }
+  // TODO this should autofocus into the verse index page
+  ctrl.openModal = function(verseDetail){
+    $scope.verseId = verse
+    console.log('%% open modal with', ctrl.bookId, ctrl.chapId, ctrl.verseId)
+    $ionicModal.fromTemplateUrl('verse-detail.html', {
+      scope: $scope,
+      backdropClickToClose: false,
+      animation: 'slide-in-up',
+      hardwareBackButtonClose: true,
+      focusFirstInput: true
+    })
+    // https://medium.com/@saniyusu/create-an-isolate-modal-with-ionic-v1
+    .then(function(modal){
+      $scope.modal = modal
+      // console.log($scope.modal)
+      $scope.modal.show()
+    })
+    // console.log($ionicHistory.viewHistory())
+    // $state.go('menu.verseDetail',{book:ctrl.bookId, chap:ctrl.chapId, verse:ctrl.verseId})
   }
   return ctrl;
 }])

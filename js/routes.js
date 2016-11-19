@@ -94,7 +94,7 @@ angular.module('app.routes', [])
       }
     }
   })
-
+/*
   .state('menu.verseDetail', {
     url: '/detail/:book/:chap/:verse',
     views: {
@@ -104,6 +104,7 @@ angular.module('app.routes', [])
       }
     }
   })
+  */
 /*
   .state('editVerse', {
     url: '/edit/:book/:chap/:verse',

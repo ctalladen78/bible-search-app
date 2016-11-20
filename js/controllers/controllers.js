@@ -66,16 +66,8 @@ function($scope, $stateParams, DbService, $ionicModal, $state, $window, $ionicHi
   }
   // http://stackoverflow.com/questions/25854422/using-this-as-scope-when-creating-ionicmodal
   // http://www.gajotres.net/how-to-show-different-native-modal-windows-in-ionic-framework
-  /*
-  ctrl.loadModal = function(){
-    $ionicModal.fromTemplateUrl('verse-detail.html', {
-      scope: $scope,
-      backdropClickToClose: false,
-      animation: 'slide-in-up',
-      hardwareBackButtonClose: true,
-      focusFirstInput: true
-    })
-    // https://medium.com/@saniyusu/create-an-isolate-modal-with-ionic-v1
+      // https://medium.com/@saniyusu/create-an-isolate-modal-with-ionic-v1
+      /*
     .then(function(modal){
       $scope.modal = modal
       console.log($scope.modal)
@@ -103,13 +95,14 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
     ctrl.verseDetail = res.detail[0]
     DbService.getCategoryByVid(ctrl.verseDetail.vid)
     .then(function(cats){ctrl.catList = cats})
+    // .then(function(cats){ctrl.catList = ["test1", "test2"]})
      DbService.isVidLiked(ctrl.verseDetail.vid)
     .then(function(like){ctrl.verseDetail.like = like})
     console.log('%%%% get verse detail', ctrl)
   })
 
   ctrl.toggleLike = function(){
-    ctrl.verseDetail = !ctrl.verseDetail.like
+    ctrl.verseDetail.like = !ctrl.verseDetail.like
     console.log('%%% is liked? ', ctrl.verseDetail.like)
   }
 
@@ -131,7 +124,7 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
      DbService.getAllCategoryList()
     .then(function(res){
       ctrl.categories = res
-    console.log('%%% get categories', ctrl.categories)
+    console.log('%%% get all categories', ctrl.categories)
     })
   }
   // add vid to category.catList
@@ -144,6 +137,9 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
     // $ionicHistory.goBack()
     // console.log($ionicHistory.viewHistory())
   }
+  $scope.$on('$destroy', function(){console.log('modal closed');$scope.modal.remove()})
+  // $scope.$on('modal.removed', function(){console.log('modal closed');$scope.modal.remove()})
+
   return ctrl;
 }])
 
@@ -269,14 +265,16 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
   return ctrl;
 }])
 
-// category detail is a list of verses
+// category detail page has a list of verses
 .controller('categoryDetailCtrl', ['$scope','$stateParams','DbService', function($scope, $stateParams, DbService){
   var ctrl = this;
-  // using routeParams
-  ctrl.category = $stateParams.cat;
+  ctrl.category = $stateParams.categoryId;
   ctrl.getVerses = function(){
-    //DbService.getVerseList("Matthew", 1)
-    // TODO get category.catList, parse the catList, then make list using getVerseBy(vid)
+    DbService.getCategoryByName(ctrl.category)
+    .then(function(cat){
+      console.log('get category by cid', cat)
+      DbService.getVerseByCat(cat.cid)
+    })
   }
   return ctrl
 }])

@@ -22,8 +22,10 @@ angular.module('app.services', [])
     addCategory: addCategory,
     wordSearch : wordSearch,
     addToFavorites : addToFavorites,
-    isVidLiked : isVidLiked
-
+    removeFromFavorites : removeFromFavorites,
+    isVidLiked : isVidLiked,
+    getVerseByCat : getVerseByCat,
+    getCategoryByName : getCategoryByName
   }
 // https://www.npmjs.com/package/angular-file-upload
   // populate db from api endpoint
@@ -219,7 +221,10 @@ angular.module('app.services', [])
       // filter and getCategoryList both returns arrays
       verseObj.detail = _.filter(verses,function(k){return k.verse === verseID })
       console.log('%%%% verse obj', verseObj)
-      verseObj.catList = getCategoryByVid(verseObj.detail[0].vid)
+      getCategoryByVid(verseObj.detail[0].vid)
+      .then(function(cats){
+        verseObj.catList = cats
+      })
       return verseObj
     })
     return verseObj
@@ -271,12 +276,16 @@ angular.module('app.services', [])
   function isVidLiked(vid){
     return getDocs()
     .then(function(docs){
+      try{
       var fav =  _.filter(docs, function(d){ return d.type === 'favorite'})
-      // console.log('%% all favorite', fav[0].vidList)
+      console.log('%% all favorites', fav[0].vidList)
       var isLiked =  _.some(fav[0].vidList, function(f){
         return f === vid
       })
       console.log('%%%% is liked', isLiked, vid )
+    }catch(e){
+      isLiked = false
+    }
       return isLiked
     })
   }
@@ -373,24 +382,57 @@ console.log('%%% docs', docs)
     })
     */
   }
-  // return a list of verses given verse id
+  // return a list of category given verse id
   // this is for displaying what categories per associated verse
   function getCategoryByVid(vid){
-    var catList = getDocs()
+    return getDocs()
     .then(function(res){
       var allCats = _.filter(res, function(i){return i.type === 'category'})
-      var tempList = _.map(allCats, function(c){
-        _.map(c.vidList, function(l){return l===vid})
+      var tempList = []
+      _.forEach(allCats, function(c){
+        _.forEach(c.vidList, function(l){
+          if(l === vid){
+            tempList.push(c.catName);
+          }
+        })
       })
-      // var catList = _.filter(allCats, function(i){return i.vidList === vid})
       console.log('%%% category list of ',vid, tempList)
+      return tempList
     })
-    return catList
+  }
 
+// return a list of verses given category id
+  function getVerseByCat(cid){
+    return getDocs()
+    .then(function(res){
+      var allCats = _.filter(res, function(i){return i.type === 'category'})
+      // console.log('get all categories', allCats)
+      var tempList = []
+      _.forEach(allCats, function(c){
+        _.forEach(c.vidList, function(vid){
+          if(c.cid === cid){
+            getVerseBy(vid)
+            .then(function(v){tempList.push(v); return tempList})
+            .then(function(v){console.log('%%% verse list of ',cid, tempList)})
+          }
+        })
+      })
+    })
   }
   // return list of verses by category id
   // this is for displaying verses per associated category
-  function getCategoryByCid(cid){
+  function getCategoryByName(catName){
+    return getDocs()
+    .then(function(res){
+      var allCats = _.filter(res, function(i){return i.type === 'category'})
+      var ret;
+      _.forEach(allCats, function(c){
+        if(c.catName === catName){
+           ret = c
+         }
+      })
+      return ret
+    })
 
   }
   // return all categories for selection

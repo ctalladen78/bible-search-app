@@ -109,13 +109,10 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
   // redirect to prior page
   // https://codepen.io/mircobabini/post/ionic-how-to-clear-back-navigation-the-right-way
   ctrl.saveVerse = function(){
-    if(!ctrl.verseDetail.like){DbService.removeFromFavorites(ctrl.verseDetail.vid)}
-    if(ctrl.verseDetail.like){
-      DbService.addToFavorites(ctrl.verseDetail.vid)
-    }
+
     DbService.saveVerse(ctrl.verseDetail)
     .then(function(){
-      // $ionicHistory.goBack()
+      $ionicHistory.goBack()
     })
   }
 
@@ -136,6 +133,14 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
     $scope.modal.hide()
     // $ionicHistory.goBack()
     // console.log($ionicHistory.viewHistory())
+  }
+  ctrl.gotoCategories = function(catname){
+
+    $scope.modal.hide()
+    .then(function(){
+
+    $state.go('menu.categoryDetail',{categoryId:catname})
+    })
   }
   $scope.$on('$destroy', function(){console.log('modal closed');$scope.modal.remove()})
   // $scope.$on('modal.removed', function(){console.log('modal closed');$scope.modal.remove()})
@@ -274,23 +279,30 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
     .then(function(cat){
       console.log('get category by cid', cat)
       DbService.getVerseByCat(cat.cid)
+      .then(function(verses){
+        ctrl.verseList = verses
+      })
     })
   }
   return ctrl
 }])
 
 // add new empty category
-.controller('addCategoryCtrl', ['$scope','$stateParams','DbService',function($scope, $stateParams, DbService) {
+.controller('addCategoryCtrl', ['$scope','$stateParams','DbService','$ionicHistory', function($scope, $stateParams, DbService,$ionicHistory) {
   var ctrl = this;
   // using routeParams write to db
-  ctrl.category =''
+  ctrl.catName =''
   ctrl.addCategory = function(){
-    DbService.addCategory(ctrl.category)
-    .catch(function(){console.log('%%% could not add category')})
+    DbService.addCategory(ctrl.catName)
+    .then(function(){$ionicHistory.goBack()})
+  }
+  ctrl.cancel = function(){
+    $ionicHistory.goBack()
   }
   return ctrl
 }])
 
+// TODO: parking lot item
 // rename existing category
 .controller('editCategoryCtrl', ['$stateParams','$scope','DbService',function($stateParams, $scope, DbService) {
   var ctrl = this;

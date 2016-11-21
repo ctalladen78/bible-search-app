@@ -9,6 +9,7 @@ angular.module('app.routes', [])
     abstract:true
   })
   .state('menu.home', {
+    cache: false,
     url:'/home',
     views: {
       'side-menu21':{
@@ -36,6 +37,7 @@ angular.module('app.routes', [])
     }
   })
   .state('menu.verseIndex', {
+    cache: false,
     url: '/:book/:chap',
     views: {
       'side-menu21': {
@@ -94,7 +96,7 @@ angular.module('app.routes', [])
       }
     }
   })
-/*
+/* removed page feature in favor of modal
   .state('menu.verseDetail', {
     url: '/detail/:book/:chap/:verse',
     views: {
@@ -132,7 +134,7 @@ angular.module('app.routes', [])
       }
     }
   })
-
+  // TODO parking lot item
   .state('menu.editCategory', {
     url: '/edit-category/:categoryId',
     views: {

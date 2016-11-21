@@ -1,8 +1,18 @@
 <ion-view title="{{vm.category}}" id="page9" class=" " ng-controller="categoryDetailCtrl as vm">
+  <ion-nav-buttons side="right" class="buttons">
+      <!--
+    <a class="button button-medium" ui-sref="menu.editCategory">
+        <i class="icon ion-edit"></i>
+    </a>
+    <!--  -->
+      <a class="button button-medium"ui-sref="menu.addCategory">
+        <i  class="icon ion-plus-round"></i>
+      </a>
+    </ion-nav-buttons>
     <ion-content padding="true" class="has-header">
         <ion-list ng-init="vm.getVerses()"
         id="bookSearchResults-list5" class=" " >
-            <div ng-repeat="ver in vm.verses"
+            <div ng-repeat="ver in vm.verseList"
             class="item-text-wrap  "
             id="bookSearchResults-list-item16">
             <div class="item " style="padding: 5px 5px 5px 15px;">

@@ -1,11 +1,11 @@
-<ion-view title="add-category" id="page8" class=" ">
+<ion-view title="Add Category" id="page8" class=" " ng-controller="addCategoryCtrl as vm">
     <ion-content padding="true" class="has-header">
         <form id="addCategory-form3" class="list ">
             <label class="item item-input " id="addCategory-input3">
-                <input type="text" placeholder="New Category ...">
+                <input type="text" placeholder="Category Name ..." ng-model="vm.catName">
             </label>
         </form>
-        <a ui-sref="menu.categories" id="addCategory-button12" class=" button button-positive  button-block ">Save</a>
-        <a ui-sref="menu.categories" id="addCategory-button13" class=" button button-positive  button-block ">Cancel</a>
+        <a ng-click="vm.addCategory()" id="addCategory-button12" class=" button button-positive  button-block ">Save</a>
+        <a ng-click="vm.cancel()" id="addCategory-button13" class=" button button-positive  button-block ">Cancel</a>
     </ion-content>
 </ion-view>

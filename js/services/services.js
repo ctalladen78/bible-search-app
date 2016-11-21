@@ -39,7 +39,8 @@ angular.module('app.services', [])
     db.info(function(err, info){
       // count objects in bible.json
       if(info.doc_count === 0){
-        populateTest();
+        populateDb();
+        // .then(function(){})
         initFavorites();
       }
       else{
@@ -54,12 +55,13 @@ angular.module('app.services', [])
     // db not initialized
     .catch(function(){
       console.log('%%% db does not exist')
-      populateTest();
+      populateDb();
+      // .then(function(){})
       initFavorites();
     })
   }
 
-  function populateTest(){
+  function populateDb(){
     return $q.when(
         bibleScraper.getLocalTestBooks()
         .then(function(result){
@@ -71,6 +73,7 @@ angular.module('app.services', [])
         })
       )
   }
+
   // return the synced docs cache with db
   function getDocs(){
     return $q.when(
@@ -104,6 +107,7 @@ angular.module('app.services', [])
         .catch(console.log.bind(console))
     );
   }
+
   // apply db changes to docs cache
   // this is done whenever we need to sync the cache with db
   function syncToChanges() {
@@ -247,17 +251,23 @@ angular.module('app.services', [])
         return doc
       })
   }
+  // updates the favorites and categories only
+  // verse object state does not change
+  function saveVerse(verseDetail){
+    // syncToChanges
+    console.log('%%% save verse', verseDetail)
+    return $q.when(function(){
+      if(verseDetail.like){
+        addToFavorites(verseDetail.vid)
+      }
+      if(!verseDetail.like){
+        removeFromFavorites(verseDetail.vid)
+      }
 
-  // TODO save verse detail
-  function saveVerse(verseObj){
-    /*
-    db.get(verseObj).then(function(res){
-      db.put(verseObj)
     })
-    */
-    addVerseToCategory(verseObj)
-    console.log(verseObj)
-    return $q.when(true)
+    .then(function(){
+      syncToChanges()
+    })
   }
 
   // add vid to favorites.vidList
@@ -272,6 +282,16 @@ angular.module('app.services', [])
       printDocs()
     })
   }
+  function removeFromFavorites(vid){
+    getDocs()
+    .then(function(docs){
+      return _.filter(docs, function(d){ return d.type === 'favorite'})
+    })
+    .then(function(favorites){
+      _.remove(favorites.vidList, function(i){return i === vid}) // remove vid from favorites
+    })
+  }
+
   // return truthy if vid exists in favorites.vidList
   function isVidLiked(vid){
     return getDocs()
@@ -290,17 +310,6 @@ angular.module('app.services', [])
     })
   }
 
-  function removeFromFavorites(vid){
-    getDocs()
-    .then(function(docs){
-      return _.filter(docs, function(d){ return d.type === 'favorite'})
-    })
-    .then(function(favorites){
-      _.remove(favorites.vidList, function(i){return i === vid}) // remove vid from favorites
-      syncToChanges()
-      printDocs()
-    })
-  }
   // how to count reading history accurately
   // depending on which verse user is reading
   function updateReadingHistory(){
@@ -321,6 +330,7 @@ angular.module('app.services', [])
   // have verses
   function initFavorites(){
     // add favorites category to db
+    console.log('%%% init favorites')
     var favorite = {}
     var vidlist = ["John-3-14", "2corinthians-5-17", "Matthew-1-1"]
     favorite.type = "favorite"
@@ -412,11 +422,12 @@ console.log('%%% docs', docs)
         _.forEach(c.vidList, function(vid){
           if(c.cid === cid){
             getVerseBy(vid)
-            .then(function(v){tempList.push(v); return tempList})
-            .then(function(v){console.log('%%% verse list of ',cid, tempList)})
+            .then(function(v){tempList.push(v);})
+            .then(function(v){console.log('%%% verse list of ',c.catName, tempList)})
           }
         })
       })
+       return tempList
     })
   }
   // return list of verses by category id
@@ -438,51 +449,56 @@ console.log('%%% docs', docs)
   // return all categories for selection
   function getAllCategoryList(){
     var catList = getDocs()
-    .then(function(res){
+    .then(function(docs){
       // console.log('%%% get docs ', res)
-      var list = _.filter(res, function(i){return i.type === 'category'})
-      var l2 = _.map(list, function(l){return l.catName})
+      var catlist = _.filter(docs, function(i){return i.type === 'category'})
+      var l2 = _.map(catlist, function(l){return l.catName})
       console.log('%%% get all categories ', l2)
       return l2
     })
     return catList
   }
 
-  function addVerseToCategory(vobj){
+  // add verse to category
+  function addVerseToCategory(vid, catname){
     getDocs()
-    .then(function(res){
-      _.map(vobj.catList, function(catname){
-        //TODO filter docs with catname
-        var cat = _.filter(res, function(c){  c.catName === catname})
-        console.log('%%% add verse to cat',cat)
-        //TODO add vid to vidlist
-        cat.vidList.push(catname)
-        // TODO update category in db
-        // updateCategory(cat, cat.name, cat.name)
+    .then(function(docs){
+      var catlist = _.filter(docs, function(i){return i.type === 'category'})
+      var selectedCat = _.filter(catlist, function(c){return c.catName === catname})
+      selectedCat[0].vidList.push(vid)
+      return selectedCat
+    })
+    .then(function(catobj){
+      // save cat in db with updated vidlist
+      console.log('%%% updating cat', catobj[0])
+      db.get(catobj[0]._id)
+      .then(function(doc){
+        catobj[0]._rev = doc._rev
+        db.put(catobj[0])
+        .then(function(res){console.log('%%% added category',res)})
+        .catch(function(er){ console.log('%%% add category error',er)})
       })
     })
+
   }
 
   // see: http://stackoverflow.com/questions/1674089/what-is-the-idiomatic-way-to-implement-foreign-keys-in-couchdb
   function addCategory(catName){
-    return $q.when(
-      db.get(cid)
-      .then(function(obj){
         // !! means truthy(not falsy), ! means falsy(not true ie null,undefined, empty)
-        if(!catName){
-         catName = Date.toDateString(); // default category is today's date
-        }
-        else{
-          catName = catName;
-        }
-        obj.catlist.push(catName)
-        return obj;
-        })
+    var newcat = {}
+        newcat.catName = catName
+        newcat.type = 'category'
+        newcat.cid = new Date().toISOString()
+        newcat._id = newcat.cid
+        newcat.vidList = []
+    return $q.when(newcat)
       .then(function(obj){
-        db.put(obj);
-        syncToChanges();
-        printDocs()
+        console.log('%%% trying to add', obj.data)
+        db.put(obj)
+        .then(function(res){console.log('%%% added category',res)})
+        .catch(function(er){ console.log('%%% add category error',er)})
       })
-    )
-    }
+      .then(function(){syncToChanges(); })
+      .then(function(){printDocs() })
+  }
 }])

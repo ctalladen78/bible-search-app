@@ -89,21 +89,34 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
   ctrl.verse = $scope.verseId
   ctrl.selectedCategory = '';
   ctrl.verseDetail;
+  ctrl.catList =[]
 
   DbService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse)
   .then(function(res){
     ctrl.verseDetail = res.detail[0]
-    DbService.getCategoryByVid(ctrl.verseDetail.vid)
-    .then(function(cats){ctrl.catList = cats})
-    // .then(function(cats){ctrl.catList = ["test1", "test2"]})
-     DbService.isVidLiked(ctrl.verseDetail.vid)
-    .then(function(like){ctrl.verseDetail.like = like})
+    ctrl.catList = res.catList
+    return DbService.getCategoryByVid(res.detail[0].vid)
+
+  })
+  .then(function(cats){
+    ctrl.catList = cats
+    return DbService.isVidLiked(ctrl.verseDetail.vid)
+  })
+  .then(function(isliked){
+    ctrl.verseDetail.like = isliked
+    // $state.go($state.currentState, {}, {reload:true})
     console.log('%%%% get verse detail', ctrl)
   })
 
   ctrl.toggleLike = function(){
     ctrl.verseDetail.like = !ctrl.verseDetail.like
     console.log('%%% is liked? ', ctrl.verseDetail.like)
+    if(ctrl.verseDetail.like){
+      DbService.addToFavorites(ctrl.verseDetail.vid)
+    }
+    if(!ctrl.verseDetail.like){
+      DbService.removeFromFavorites(ctrl.verseDetail.vid)
+    }
   }
 
   // redirect to prior page
@@ -112,7 +125,7 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
 
     DbService.saveVerse(ctrl.verseDetail)
     .then(function(){
-      $ionicHistory.goBack()
+      $scope.modal.hide()
     })
   }
 

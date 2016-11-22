@@ -23,10 +23,10 @@
 </ion-view>
 
 <script type="text/ng-template" id="verse-detail.html">
-<ion-modal-view   ng-controller="verseDetailCtrl as vm">
+<ion-modal-view cache-view="false"  ng-controller="verseDetailCtrl as vm">
     <!-- header bar https://www.raymondcamden.com/2015/12/18/is-your-ionic-view-title-not-updating/ -->
   <ion-header-bar class="padding bar-positive" >
-    <h4 class="title">{{vm.bookId}} {{vm.chapId}} : {{vm.verse}}</h4>
+    <h4 style="align:center" class="title">{{vm.bookId}} {{vm.chapId}} : {{vm.verse}}</h4>
   </ion-header-bar>
   <!-- main content -->
     <ion-content  class="padding has-header">
@@ -54,11 +54,12 @@
             </span>
           </span>
         </div>
+        <!--
         <button class=" button button-positive  button-block "
         ng-click="vm.saveVerse()">Save Changes</button>
         <!-- redirect back to verse list page -->
         <a  id="editVerse-button9" ng-click="vm.cancel()"
-        class=" button button-positive  button-block ">Cancel</a>
+        class=" button button-positive  button-block ">Close</a>
 
     </ion-content>
   </ion-modal-view>

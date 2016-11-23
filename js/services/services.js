@@ -4,10 +4,8 @@ angular.module('app.services', [])
 
   var db;
   var docs = [];
-  var categoryList = [];
 
   return{
-    docs : docs,
     initDB : initDB,
     getDocs : getDocs,
     getBooks : getBooks,
@@ -19,6 +17,7 @@ angular.module('app.services', [])
     getAllCategoryList : getAllCategoryList,
     saveVerse : saveVerse,
     addVerseToCategory : addVerseToCategory,
+    removeVerseFromCategory :removeVerseFromCategory,
     addCategory: addCategory,
     wordSearch : wordSearch,
     addToFavorites : addToFavorites,
@@ -40,9 +39,6 @@ angular.module('app.services', [])
       // count objects in bible.json
       if(info.doc_count === 0){
         populateDb()
-        .then(function(){
-          initFavorites();
-        })
       }
       else{
         syncToChanges()
@@ -57,23 +53,21 @@ angular.module('app.services', [])
     .catch(function(){
       console.log('%%% db does not exist')
       populateDb()
-      .then(function(){
-        initFavorites();
-      })
     })
   }
 
   function populateDb(){
     return $q.when(
-        bibleScraper.getLocalTestBooks()
-        .then(function(result){
-            // var bibleLength = Object.keys(result).length
-            db.bulkDocs(result)
-        })
-        .then(function(result){
-          console.log('%%% init db:', result)
-        })
-      )
+      bibleScraper.getLocalTestBooks()
+      .then(function(result){
+          // var bibleLength = Object.keys(result).length
+          return db.bulkDocs(result)
+      })
+      .then(function(result){
+        initFavorites();
+        console.log('%%% init db:', result)
+      })
+    )
   }
 
   // return the synced docs cache with db
@@ -110,8 +104,8 @@ angular.module('app.services', [])
     );
   }
 
-  // apply db changes to docs cache
-  // this is done whenever we need to sync the cache with db
+  // detect db change then update the docs cache
+  // not bidirectional so updating the docs cache doesnt affect the db
   function syncToChanges() {
     return $q.when(
       db.changes({
@@ -121,30 +115,23 @@ angular.module('app.services', [])
       })
       .on('change', function(change) {
         if (change.deleted) {
-          // change.id holds the deleted id
-          console.log('%%% deleting:', change.deleted);
+          // change.id has the deleted id
           onDeleted(change.id);
         } else { // updated or inserted doc
-          // change.doc holds the new doc
+          // change.doc has the new doc
           onUpdatedOrInserted(change.doc);
         }
       })
       .on('complete', function(arg){
-        console.log('%%%% changes complete', arg)
+        console.log('%%%% db sync to cache complete', arg)
       })
       .on('error', console.log.bind(console))
     )
   }
 
-  function printDocs(){
-    getDocs()
-    .then(function(docs){
-      console.log('%%% get all docs', docs)
-    })
-  }
-
   // remove from cache
   function onDeleted(id) {
+    console.log('%%% on change delete');
     var index = binarySearch(docs, id);
     var doc = docs[index];
     if (doc && doc._id === id) {
@@ -156,12 +143,19 @@ angular.module('app.services', [])
     var index = binarySearch(docs, newDoc._id);
     var doc = docs[index];
     if (!!doc && doc._id === newDoc._id) { // update
-      console.log('%%% updating: ', doc._id, '  ',newDoc._id);
+      console.log('%%% on change update: ', doc._id, '  ',newDoc._id);
       docs[index] = newDoc;
     } else { // insert newDoc
-      console.log('%%% adding: ', doc);
+      console.log('%%% on change adding: ', doc);
       docs.splice(index, 0, newDoc);
     }
+  }
+
+  function printDocs(){
+    getDocs()
+    .then(function(docs){
+      console.log('%%% get all docs', docs)
+    })
   }
   // helper: return index of docId
   function binarySearch(arr, docId) {
@@ -197,58 +191,48 @@ angular.module('app.services', [])
     return chapList
 
   }
+
   // return list of verse objects
   function getVerseList(bookID, chapID){
-    // best practice use allDocs instead() of query()
-    var verseList = getDocs()
+    return db.allDocs({include_docs:true, startkey:bookID,endkey:bookID})
     .then(function(res){
-      var chaps =_.filter(res, function(i){return i.bookName === bookID})
-      var verses = _.filter(chaps[0].bookList, function(j){return j.chapter === parseInt(chapID)})
+      var book =res.rows[0].doc
+      console.log('%%% get verse list',book)
+      var verses = _.filter(book.bookList, function(j){return j.chapter === parseInt(chapID)})
       return _.map(verses,function(k){
         var obj = {}
         obj.verse = k.verse;
         obj.text = k.text
         return obj;
       })
-
     })
-    return verseList
   }
 
   // return verse detail objects
   function getVerseDetail(bookID, chapID, verseID){
-    var verseObj = getDocs()
-    .then(function(res){
-      console.log('%%% get docs', res)
-      console.log('%%% get verse detail', bookID, chapID, verseID)
-      var chaps =_.filter(res, function(i){return i.bookName === bookID})
-      console.log('%%% get chaps', chaps)
-      var verses = _.filter(chaps[0].bookList, function(j){return j.chapter === parseInt(chapID)})
-      console.log('%%% get verses', verses)
+      var vid = ''+bookID+'-'+chapID+'-'+verseID
       var verseObj ={}
-      verseObj.detail = _.filter(verses,function(k){return k.verse === verseID })
-      console.log('%%% get verse object', verseObj.detail)
-        console.log('%%%% verse obj result', verseObj)
+      getVerseBy(vid)
+      .then(function(res){
+        verseObj.detail = res
+        console.log('%%%% get verse detail', verseObj)
+      })
       return verseObj
-    })
-    return verseObj
   }
 
+  // lookup the book per vid bookname then search all the verses of that book
   function getVerseBy(vid){
-      return getDocs()
+      var str = vid.split('-')
+      var start = str[0]
+      var end = str[0]+'\uffff'
+      return db.allDocs({include_docs:true, startkey:start,endkey:end})
       .then(function(docs){
-        var doc;
-        _.forEach(docs, function(d){
-          if(d.bookList){
-            _.forEach(d.bookList,function(v){
-              if(v.vid === vid){
-                doc = v
-              }
-            })
-          }
+        var book = docs.rows[0].doc
+        var verse = _.filter(book.bookList, function(b){
+          return b.vid === vid
         })
-        console.log('%%% getting verse by', vid, doc.vid)
-        return doc
+        console.log('%%% getting verse by', vid, verse[0])
+        return verse[0]
       })
   }
   // updates the favorites and categories only
@@ -267,51 +251,46 @@ angular.module('app.services', [])
 
   // add vid to favorites.vidList
   function addToFavorites(vid){
-    getDocs()
+    return db.allDocs({include_docs:true,startkey: 'favorite-', endkey: 'favorite-\uffff'})
     .then(function(docs){
-      return _.filter(docs, function(d){ return d.type === 'favorite'})
-    })
-    .then(function(favorites){
-      console.log('%%% add to favorites', favorites[0])
-      favorites[0].vidList.push(vid)
-      db.get(favorites[0]._id)
+      console.log('%%% get favorites',docs.rows)
+      var favorites = docs.rows[0].doc
+      favorites.vidList.push(vid)
+      db.get(favorites._id)
       .then(function(doc){
-        favorites[0]._rev = doc._rev
-        db.put(favorites[0])
+        favorites._rev = doc._rev
+        db.put(favorites)
         .then(function(res){console.log('%%% added vid to favorites',res)})
         .catch(function(er){ console.log('%%% add to fav error',er)})
       })
     })
-
   }
 
   function removeFromFavorites(vid){
-    getDocs()
+    return db.allDocs({include_docs:true,startkey: 'favorite-', endkey: 'favorite-\uffff'})
     .then(function(docs){
-      return _.filter(docs, function(d){ return d.type === 'favorite'})
-    })
-    .then(function(favorites){
-      _.remove(favorites[0].vidList, function(i){return i === vid}) // remove vid from favorites
-      console.log('%%% remove from favorites', favorites[0])
-      db.get(favorites[0]._id)
+      // console.log('%%% get favorites',docs.rows)
+      var favorites = docs.rows[0].doc
+      _.remove(favorites.vidList, function(i){return i === vid}) // remove vid from favorites
+      console.log('%%% remove from favorites', favorites)
+      db.get(favorites._id)
       .then(function(doc){
-        favorites[0]._rev = doc._rev
-        db.put(favorites[0])
+        favorites._rev = doc._rev
+        db.put(favorites)
         .then(function(res){console.log('%%% removed vid to favorites',res)})
         .catch(function(er){ console.log('%%% add to fav error',er)})
       })
     })
-
   }
 
   // return truthy if vid exists in favorites.vidList
   function isVidLiked(vid){
-    return getDocs()
+    return db.allDocs({include_docs:true,startkey: 'favorite-', endkey: 'favorite-\uffff'})
     .then(function(docs){
+      // console.log('%%% get favorites',docs.rows)
+      var favorites = docs.rows[0].doc
       try{
-      var fav =  _.filter(docs, function(d){ return d.type === 'favorite'})
-      console.log('%% all favorites', fav[0].vidList)
-      var isLiked =  _.some(fav[0].vidList, function(f){
+      var isLiked =  _.some(favorites.vidList, function(f){
         return f === vid
       })
       console.log('%%%% is liked', isLiked, vid )
@@ -344,40 +323,38 @@ angular.module('app.services', [])
     // add favorites category to db
     console.log('%%% init favorites')
     var favorite = {}
-    var vidlist = ["John-3-14", "2corinthians-5-17", "Matthew-1-1"]
+    var vidlist = ["John-3-16", "2 Corinthians-5-17", "Matthew-1-1"]
     favorite.type = "favorite"
     var temp = new Date().toISOString()
-    var fid = 'favorite'+temp
+    var fid = 'favorite-'+temp
     favorite._id = fid
-    favorite.vidlist = vidlist
+    favorite.vidList = vidlist
     // init like the verses
     $q.when(
       db.put(favorite)
       .then(function(){
         syncToChanges()
-        printDocs()
+        // printDocs()
        })
      )
   }
   // return a list of verses given favorites id
   // this is for the favorites page
   function getFavoriteList(){
-    return getDocs()
+    return db.allDocs({include_docs:true, startkey: 'favorite-', endkey: 'favorite-\uffff'})
     .then(function(docs){
-
-console.log('%%% docs', docs)
-      var favList = _.filter(docs, function(i){return i.type === "favorite"})
-      console.log('%%% favlist', favList[0].vidList)
-      favList = favList[0].vidList // list of vids
+      console.log('%%% docs', docs)
+      console.log('%%% favlist', docs.rows[0].doc.vidList)
+      favList = docs.rows[0].doc.vidList // list of vids
       var list = [] // list of verses
       _.each(favList, function(i){
         // get verses from vids
           getVerseBy(i)
           .then(function(v){list.push(v); return list})
           .then(function(l){console.log('%%% liked verses',l)})
+          .catch(function(e){console.log('%%% error get verse by vid ', i, e)})
       })
-      // return list
-      return favList
+      return list
     })
   }
 
@@ -406,53 +383,58 @@ console.log('%%% docs', docs)
     })
     */
   }
-  // return a list of category given verse id
+
+  // return a list of categories given verse id
   // this is for displaying what categories per associated verse
   function getCategoryByVid(vid){
-    return getDocs()
-    .then(function(res){
-      var allCats = _.filter(res, function(i){return i.type === 'category'})
-      var tempList = []
+    return db.allDocs({include_docs:true, startkey: 'category-', endkey: 'category-\uffff'})
+    .then(function(docs){
+      console.log('%%% get category by vid', vid, docs.rows)
+      var allCats = docs.rows
+      var catList = []
       _.forEach(allCats, function(c){
-        _.forEach(c.vidList, function(l){
+        _.forEach(c.doc.vidList, function(l){
           if(l === vid){
-            tempList.push(c.catName);
+            catList.push(c.doc.catName);
           }
         })
       })
-      // console.log('%%% category list of ',vid, tempList)
-      return tempList
+      // console.log('%%% category list of ',vid, catList)
+      return catList
     })
   }
 
-// return a list of verses given category id
+  // return a list of verses given category id
   function getVerseByCat(cid){
-    return getDocs()
-    .then(function(res){
-      var allCats = _.filter(res, function(i){return i.type === 'category'})
+    return db.allDocs({include_docs:true,startkey: 'category-', endkey: 'category-\uffff'})
+    .then(function(docs){
+      console.log('%%% get verse by category',cid)
+      var allCats = docs.rows
       // console.log('get all categories', allCats)
       var tempList = []
       _.forEach(allCats, function(c){
-        _.forEach(c.vidList, function(vid){
-          if(c.cid === cid){
+        if(c.doc._id === cid){
+          _.forEach(c.doc.vidList, function(vid){
+            // console.log(c.doc._id, cid)
             getVerseBy(vid)
             .then(function(v){tempList.push(v);})
-            .then(function(v){console.log('%%% verse list of ',c.catName, tempList)})
-          }
-        })
+          })
+        }
       })
+        console.log('%%% verse list of by category', tempList)
        return tempList
     })
   }
   // return list of verses by category id
   // this is for displaying verses per associated category
   function getCategoryByName(catName){
-    return getDocs()
-    .then(function(res){
-      var allCats = _.filter(res, function(i){return i.type === 'category'})
+    return db.allDocs({include_docs:true,startkey: 'category-', endkey: 'category-\uffff'})
+    .then(function(docs){
+      console.log('%%% get category by name',docs.rows)
+      var allCats = docs.rows
       var ret;
       _.forEach(allCats, function(c){
-        if(c.catName === catName){
+        if(c.doc.catName === catName){
            ret = c
          }
       })
@@ -462,11 +444,10 @@ console.log('%%% docs', docs)
   }
   // return all categories for selection
   function getAllCategoryList(){
-    var catList = getDocs()
+    return db.allDocs({include_docs:true,startkey: 'category-', endkey: 'category-\uffff'})
     .then(function(docs){
-      // console.log('%%% get docs ', res)
-      var catlist = _.filter(docs, function(i){return i.type === 'category'})
-      var l2 = _.map(catlist, function(l){return l.catName})
+      console.log('%%% get all categories',docs.rows)
+      var l2 = _.map(docs.rows, function(l){return l.doc.catName})
       // console.log('%%% get all categories ', l2)
       return l2
     })
@@ -475,25 +456,47 @@ console.log('%%% docs', docs)
 
   // add verse to category
   function addVerseToCategory(vid, catname){
-    getDocs()
+    return db.allDocs({include_docs:true, startkey:'category-', endkey: 'category-\uffff'})
     .then(function(docs){
-      var catlist = _.filter(docs, function(i){return i.type === 'category'})
-      var selectedCat = _.filter(catlist, function(c){return c.catName === catname})
-      selectedCat[0].vidList.push(vid)
+      console.log('%%% add verse to categories',docs.rows)
+      var catlist = docs.rows
+      var selectedCat = _.filter(catlist, function(c){return c.doc.catName === catname})
+      selectedCat[0].doc.vidList.push(vid)
       return selectedCat
     })
     .then(function(catobj){
       // save cat in db with updated vidlist
       console.log('%%% updating cat', catobj[0])
-      db.get(catobj[0]._id)
+      db.get(catobj[0].doc._id)
       .then(function(doc){
-        catobj[0]._rev = doc._rev
-        db.put(catobj[0])
+        catobj[0].doc._rev = doc._rev
+        db.put(catobj[0].doc)
         .then(function(res){console.log('%%% added vid to category',res)})
         .catch(function(er){ console.log('%%% add category error',er)})
       })
     })
+  }
 
+  function removeVerseFromCategory(vid, catname){
+    return db.allDocs({include_docs:true, startkey:'category-', endkey: 'category-\uffff'})
+    .then(function(docs){
+      console.log('%%% remove verse from categories',docs.rows)
+      var catlist = docs.rows
+      var selectedCat = _.filter(catlist, function(c){return c.doc.catName === catname})
+      _.remove(selectedCat[0].vidList, function(c){return c === vid})
+      return selectedCat
+    })
+    .then(function(catobj){
+      // save cat in db with updated vidlist
+      console.log('%%% updating cat', catobj[0])
+      db.get(catobj[0].doc._id)
+      .then(function(doc){
+        catobj[0].doc._rev = doc._rev
+        db.put(catobj[0].doc)
+        .then(function(res){console.log('%%% added vid to category',res)})
+        .catch(function(er){ console.log('%%% add category error',er)})
+      })
+    })
   }
 
   // see: http://stackoverflow.com/questions/1674089/what-is-the-idiomatic-way-to-implement-foreign-keys-in-couchdb
@@ -503,7 +506,7 @@ console.log('%%% docs', docs)
         newcat.catName = catName
         newcat.type = 'category'
         var tid = new Date().toISOString()
-        var ccid = 'category'+tid
+        var ccid = 'category-'+tid
         newcat._id = ccid
         newcat.vidList = []
     return $q.when(newcat)
@@ -514,6 +517,6 @@ console.log('%%% docs', docs)
         .catch(function(er){ console.log('%%% add category error',er)})
       })
       .then(function(){syncToChanges(); })
-      .then(function(){printDocs() })
+      // .then(function(){printDocs() })
   }
 }])

@@ -96,10 +96,10 @@ angular.module('app.services')
     'getLocalTestBooks' : function(book, ver){
       return $http.get('./output.json')
       .then(function(res){
-        console.log('%%% initializing', res.data)
+        console.log('%%% initializing', res.data.bible)
         // var bible = JSON.parse(res.data)
         var bible = res.data.bible
-        console.log('%%% initializing', bible)
+        bible = _.forEach(bible, function(b){b._id = b.bookName})
         return bible
       })
     }

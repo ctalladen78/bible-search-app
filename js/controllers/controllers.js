@@ -88,19 +88,14 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
   ctrl.verse = $stateParams.verse;
   ctrl.verse = $scope.verseId
   ctrl.selectedCategory = '';
-  ctrl.verseDetail;
-  ctrl.catList =[]
 
-  DbService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse)
-  .then(function(res){
-    ctrl.verseDetail = res.detail[0]
-    ctrl.catList = res.catList
-    return DbService.getCategoryByVid(res.detail[0].vid)
-
-  })
+  ctrl.verseDetail =   DbService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse)
+  ctrl.catList = []
+  var vid = ''+ctrl.bookId+'-'+ctrl.chapId+'-'+ctrl.verse
+   DbService.getCategoryByVid(vid)
   .then(function(cats){
     ctrl.catList = cats
-    return DbService.isVidLiked(ctrl.verseDetail.vid)
+    return DbService.isVidLiked(vid)
   })
   .then(function(isliked){
     ctrl.verseDetail.like = isliked
@@ -234,7 +229,7 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
 }])
 
 // favorites page master list
-.controller('favoritesCtrl', ['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService) {
+.controller('favoritesCtrl', ['$scope','$stateParams', 'DbService','$ionicModal', function($scope, $stateParams, DbService, $ionicModal) {
   var ctrl = this;
   // return list of verse objects
   ctrl.getVerses = function(){
@@ -248,8 +243,8 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
   }
   // TODO this should autofocus into the verse index page
   ctrl.openModal = function(verseDetail){
-    $scope.verseId = verse
-    console.log('%% open modal with', ctrl.bookId, ctrl.chapId, ctrl.verseId)
+    $scope.verseId = verseDetail.verseId
+    console.log('%% open modal with', verseDetail)
     $ionicModal.fromTemplateUrl('verse-detail.html', {
       scope: $scope,
       backdropClickToClose: false,
@@ -278,7 +273,7 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
     .then(function(docs){
       ctrl.categories = docs
     })
-    .catch(function(){console.log('%%% could not add category')})
+    .catch(function(){console.log('%%% could not get category')})
   }
   return ctrl;
 }])
@@ -291,7 +286,7 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
     DbService.getCategoryByName(ctrl.category)
     .then(function(cat){
       console.log('get category by cid', cat)
-      DbService.getVerseByCat(cat.cid)
+      DbService.getVerseByCat(cat.doc._id)
       .then(function(verses){
         ctrl.verseList = verses
       })

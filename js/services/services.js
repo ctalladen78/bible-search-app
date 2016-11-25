@@ -146,7 +146,7 @@ angular.module('app.services', [])
       console.log('%%% on change update: ', doc._id, '  ',newDoc._id);
       docs[index] = newDoc;
     } else { // insert newDoc
-      console.log('%%% on change adding: ', doc);
+      console.log('%%% on change adding: ', newDoc);
       docs.splice(index, 0, newDoc);
     }
   }
@@ -212,12 +212,12 @@ angular.module('app.services', [])
   function getVerseDetail(bookID, chapID, verseID){
       var vid = ''+bookID+'-'+chapID+'-'+verseID
       var verseObj ={}
-      getVerseBy(vid)
+      return getVerseBy(vid)
       .then(function(res){
         verseObj.detail = res
-        console.log('%%%% get verse detail', verseObj)
+        // console.log('%%%% get verse detail', verseObj)
+        return verseObj
       })
-      return verseObj
   }
 
   // lookup the book per vid bookname then search all the verses of that book
@@ -253,14 +253,15 @@ angular.module('app.services', [])
   function addToFavorites(vid){
     return db.allDocs({include_docs:true,startkey: 'favorite-', endkey: 'favorite-\uffff'})
     .then(function(docs){
-      console.log('%%% get favorites',docs.rows)
       var favorites = docs.rows[0].doc
       favorites.vidList.push(vid)
+      favorites.vidList = _.uniq(favorites.vidList)
+      console.log('%%% added to favorites',vid,favorites)
       db.get(favorites._id)
       .then(function(doc){
         favorites._rev = doc._rev
         db.put(favorites)
-        .then(function(res){console.log('%%% added vid to favorites',res)})
+        // .then(function(res){console.log('%%% added vid to favorites',res)})
         .catch(function(er){ console.log('%%% add to fav error',er)})
       })
     })
@@ -272,7 +273,7 @@ angular.module('app.services', [])
       // console.log('%%% get favorites',docs.rows)
       var favorites = docs.rows[0].doc
       _.remove(favorites.vidList, function(i){return i === vid}) // remove vid from favorites
-      console.log('%%% remove from favorites', favorites)
+      console.log('%%% remove from favorites',vid, favorites)
       db.get(favorites._id)
       .then(function(doc){
         favorites._rev = doc._rev
@@ -349,6 +350,8 @@ angular.module('app.services', [])
       var list = [] // list of verses
       _.each(favList, function(i){
         // get verses from vids
+
+          console.log('%%% docs', i)
           getVerseBy(i)
           .then(function(v){list.push(v); return list})
           .then(function(l){console.log('%%% liked verses',l)})
@@ -389,12 +392,12 @@ angular.module('app.services', [])
   function getCategoryByVid(vid){
     return db.allDocs({include_docs:true, startkey: 'category-', endkey: 'category-\uffff'})
     .then(function(docs){
-      console.log('%%% get category by vid', vid, docs.rows)
+      // console.log('%%% get category by vid', vid, docs.rows)
       var allCats = docs.rows
       var catList = []
       _.forEach(allCats, function(c){
-        _.forEach(c.doc.vidList, function(l){
-          if(l === vid){
+        _.forEach(c.doc.vidList, function(v){
+          if(v === vid){
             catList.push(c.doc.catName);
           }
         })
@@ -446,7 +449,7 @@ angular.module('app.services', [])
   function getAllCategoryList(){
     return db.allDocs({include_docs:true,startkey: 'category-', endkey: 'category-\uffff'})
     .then(function(docs){
-      console.log('%%% get all categories',docs.rows)
+      // console.log('%%% get all categories',docs.rows)
       var l2 = _.map(docs.rows, function(l){return l.doc.catName})
       // console.log('%%% get all categories ', l2)
       return l2
@@ -458,10 +461,11 @@ angular.module('app.services', [])
   function addVerseToCategory(vid, catname){
     return db.allDocs({include_docs:true, startkey:'category-', endkey: 'category-\uffff'})
     .then(function(docs){
-      console.log('%%% add verse to categories',docs.rows)
+      console.log('%%% add verse to categories',vid,docs.rows)
       var catlist = docs.rows
       var selectedCat = _.filter(catlist, function(c){return c.doc.catName === catname})
       selectedCat[0].doc.vidList.push(vid)
+      selectedCat[0].doc.vidList = _.uniq(selectedCat[0].doc.vidList)
       return selectedCat
     })
     .then(function(catobj){
@@ -484,15 +488,12 @@ angular.module('app.services', [])
       var catlist = docs.rows
       var selectedCat = _.filter(catlist, function(c){return c.doc.catName === catname})
       _.remove(selectedCat[0].vidList, function(c){return c === vid})
-      return selectedCat
-    })
-    .then(function(catobj){
       // save cat in db with updated vidlist
-      console.log('%%% updating cat', catobj[0])
-      db.get(catobj[0].doc._id)
+      console.log('%%% updating cat', selectedCat[0])
+      db.get(selectedCat[0].doc._id)
       .then(function(doc){
-        catobj[0].doc._rev = doc._rev
-        db.put(catobj[0].doc)
+        selectedCat[0].doc._rev = doc._rev
+        db.put(selectedCat[0].doc)
         .then(function(res){console.log('%%% added vid to category',res)})
         .catch(function(er){ console.log('%%% add category error',er)})
       })

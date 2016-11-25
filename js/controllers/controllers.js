@@ -83,20 +83,28 @@ function($scope, $stateParams, DbService, $ionicModal, $state, $window, $ionicHi
 function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $ionicLoading) {
   // using routeParams
   var ctrl = this;
-  ctrl.bookId = $stateParams.book;
-  ctrl.chapId = $stateParams.chap;
+  ctrl.bookId = $stateParams.book || $scope.bookId
+  ctrl.chapId = $stateParams.chap || $scope.chapId
   ctrl.verse = $stateParams.verse;
   ctrl.verse = $scope.verseId
   ctrl.selectedCategory = '';
-
-  ctrl.verseDetail =   DbService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse)
   ctrl.catList = []
+  ctrl.verseDetail = {}
   var vid = ''+ctrl.bookId+'-'+ctrl.chapId+'-'+ctrl.verse
-   DbService.getCategoryByVid(vid)
-  .then(function(cats){
-    ctrl.catList = cats
-    return DbService.isVidLiked(vid)
+
+  DbService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse)
+  .then(function(verse){
+    ctrl.verseDetail =  verse.detail
+    console.log('%%% verse detail', ctrl.verseDetail)
   })
+
+  DbService.getCategoryByVid(vid)
+  .then(function(cats){
+    console.log('%%% get category by vid',cats)
+    ctrl.catList = cats
+  })
+
+  DbService.isVidLiked(vid)
   .then(function(isliked){
     ctrl.verseDetail.like = isliked
     // $state.go($state.currentState, {}, {reload:true})
@@ -231,20 +239,34 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
 // favorites page master list
 .controller('favoritesCtrl', ['$scope','$stateParams', 'DbService','$ionicModal', function($scope, $stateParams, DbService, $ionicModal) {
   var ctrl = this;
+  ctrl.showDelete;
+  ctrl.vid;
+  // ctrl.itemCanSwipe = false;
+
   // return list of verse objects
   ctrl.getVerses = function(){
     DbService.getFavoriteList()
     .then(function(docs){
+      console.log('%%% favorite docs', docs)
       ctrl.verses = docs // returns a list of vids
     })
-    .catch(function(){
+    .catch(function(e){
+
+      console.log('%%% favorite docs error', e)
       ctrl.verses = []
     })
   }
+  ctrl.removeVerseFromCategory = function(acat){
+    DbService.removeVerseFromCategory(ctrl.vid, acat)
+  }
   // TODO this should autofocus into the verse index page
-  ctrl.openModal = function(verseDetail){
-    $scope.verseId = verseDetail.verseId
-    console.log('%% open modal with', verseDetail)
+  ctrl.openModal = function(vid){
+    ctrl.vid = vid
+    var vidstring = vid.split('-')
+    $scope.bookId = vidstring[0]
+    $scope.chapId = vidstring[1]
+    $scope.verseId = vidstring[2]
+    console.log('%% open modal with', vidstring)
     $ionicModal.fromTemplateUrl('verse-detail.html', {
       scope: $scope,
       backdropClickToClose: false,
@@ -279,8 +301,9 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
 }])
 
 // category detail page has a list of verses
-.controller('categoryDetailCtrl', ['$scope','$stateParams','DbService', function($scope, $stateParams, DbService){
+.controller('categoryDetailCtrl', ['$scope','$stateParams','DbService','$ionicModal', function($scope, $stateParams, DbService, $ionicModal){
   var ctrl = this;
+  ctrl.vid;
   ctrl.category = $stateParams.categoryId;
   ctrl.getVerses = function(){
     DbService.getCategoryByName(ctrl.category)
@@ -291,6 +314,33 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
         ctrl.verseList = verses
       })
     })
+  }
+  ctrl.removeVerseFromCategory = function(acat){
+    DbService.removeVerseFromCategory(ctrl.vid, acat)
+  }
+  // TODO this should autofocus into the verse index page
+  ctrl.openModal = function(vid){
+    ctrl.vid = vid
+    var vidstring = vid.split('-')
+    $scope.bookId = vidstring[0]
+    $scope.chapId = vidstring[1]
+    $scope.verseId = vidstring[2]
+    console.log('%% open modal with', vidstring)
+    $ionicModal.fromTemplateUrl('verse-detail.html', {
+      scope: $scope,
+      backdropClickToClose: false,
+      animation: 'slide-in-up',
+      hardwareBackButtonClose: true,
+      focusFirstInput: true
+    })
+    // https://medium.com/@saniyusu/create-an-isolate-modal-with-ionic-v1
+    .then(function(modal){
+      $scope.modal = modal
+      // console.log($scope.modal)
+      $scope.modal.show()
+    })
+    // console.log($ionicHistory.viewHistory())
+    // $state.go('menu.verseDetail',{book:ctrl.bookId, chap:ctrl.chapId, verse:ctrl.verseId})
   }
   return ctrl
 }])

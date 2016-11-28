@@ -1,6 +1,6 @@
 angular.module('app.routes', [])
 
-.config(function($stateProvider, $urlRouterProvider) {
+.config(['$stateProvider', '$urlRouterProvider',function($stateProvider, $urlRouterProvider) {
 
   $stateProvider
   .state('menu', {
@@ -46,7 +46,15 @@ angular.module('app.routes', [])
       }
     }
   })
-
+  .state('menu.verseDetail',{
+    url: '/:book/:chap/:verse',
+    views:{
+      'side-menu21': {
+        templateUrl: 'template/bookIndex/verse-detail.html',
+        controller: 'verseDetailCtrl'
+      }
+    }
+  })
   .state('menu.search', {
     url: '/search',
     views: {
@@ -91,30 +99,11 @@ angular.module('app.routes', [])
     url: '/:book/:chap',
     views: {
       'side-menu21': {
-        templateUrl: 'template/search/book-search-results.html',
-        controller: 'bookSearchResultsCtrl'
+        templateUrl: 'template/search/book-search-results.html'
+        // controller: 'bookSearchResultsCtrl'
       }
     }
   })
-/* removed page feature in favor of modal
-  .state('menu.verseDetail', {
-    url: '/detail/:book/:chap/:verse',
-    views: {
-      'side-menu21': {
-        templateUrl: 'template/bookIndex/verse-detail.html',
-        controller: 'verseDetailCtrl'
-      }
-    }
-  })
-  */
-/*
-  .state('editVerse', {
-    url: '/edit/:book/:chap/:verse',
-    templateUrl: 'template/bookIndex/edit-verse.html',
-    controller: 'editVerseCtrl'
-
-  })
-*/
   .state('menu.categoryDetail', {
     url: '/:categoryId',
     views: {
@@ -148,4 +137,4 @@ angular.module('app.routes', [])
 $urlRouterProvider.otherwise('/menu/home')
 
 
-});
+}]);

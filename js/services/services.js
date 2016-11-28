@@ -208,7 +208,7 @@ angular.module('app.services', [])
     })
   }
 
-  // return verse detail objects
+  // return verse detail object from verse index page
   function getVerseDetail(bookID, chapID, verseID){
       var vid = ''+bookID+'-'+chapID+'-'+verseID
       var verseObj ={}
@@ -241,17 +241,18 @@ angular.module('app.services', [])
     // syncToChanges
     console.log('%%% save verse', verseDetail)
       if(verseDetail.like){
-        addToFavorites(verseDetail.vid)
+        return addToFavorites(verseDetail.vid)
       }
       if(!verseDetail.like){
-        removeFromFavorites(verseDetail.vid)
+        return removeFromFavorites(verseDetail.vid)
       }
 
   }
 
   // add vid to favorites.vidList
+  // replace favorites in db
   function addToFavorites(vid){
-    return db.allDocs({include_docs:true,startkey: 'favorite-', endkey: 'favorite-\uffff'})
+    return $q.when(db.allDocs({include_docs:true,startkey: 'favorite-', endkey: 'favorite-\uffff'}))
     .then(function(docs){
       var favorites = docs.rows[0].doc
       favorites.vidList.push(vid)
@@ -268,7 +269,7 @@ angular.module('app.services', [])
   }
 
   function removeFromFavorites(vid){
-    return db.allDocs({include_docs:true,startkey: 'favorite-', endkey: 'favorite-\uffff'})
+    return $q.when(db.allDocs({include_docs:true,startkey: 'favorite-', endkey: 'favorite-\uffff'}))
     .then(function(docs){
       // console.log('%%% get favorites',docs.rows)
       var favorites = docs.rows[0].doc
@@ -286,7 +287,7 @@ angular.module('app.services', [])
 
   // return truthy if vid exists in favorites.vidList
   function isVidLiked(vid){
-    return db.allDocs({include_docs:true,startkey: 'favorite-', endkey: 'favorite-\uffff'})
+    return $q.when(db.allDocs({include_docs:true,startkey: 'favorite-', endkey: 'favorite-\uffff'}))
     .then(function(docs){
       // console.log('%%% get favorites',docs.rows)
       var favorites = docs.rows[0].doc
@@ -342,7 +343,7 @@ angular.module('app.services', [])
   // return a list of verses given favorites id
   // this is for the favorites page
   function getFavoriteList(){
-    return db.allDocs({include_docs:true, startkey: 'favorite-', endkey: 'favorite-\uffff'})
+    return $q.when(db.allDocs({include_docs:true, startkey: 'favorite-', endkey: 'favorite-\uffff'}))
     .then(function(docs){
       console.log('%%% docs', docs)
       console.log('%%% favlist', docs.rows[0].doc.vidList)
@@ -350,11 +351,10 @@ angular.module('app.services', [])
       var list = [] // list of verses
       _.each(favList, function(i){
         // get verses from vids
-
-          console.log('%%% docs', i)
+          // console.log('%%% docs', i)
           getVerseBy(i)
           .then(function(v){list.push(v); return list})
-          .then(function(l){console.log('%%% liked verses',l)})
+          // .then(function(l){console.log('%%% liked verses',l)})
           .catch(function(e){console.log('%%% error get verse by vid ', i, e)})
       })
       return list
@@ -390,7 +390,7 @@ angular.module('app.services', [])
   // return a list of categories given verse id
   // this is for displaying what categories per associated verse
   function getCategoryByVid(vid){
-    return db.allDocs({include_docs:true, startkey: 'category-', endkey: 'category-\uffff'})
+    return $q.when(db.allDocs({include_docs:true, startkey: 'category-', endkey: 'category-\uffff'}))
     .then(function(docs){
       // console.log('%%% get category by vid', vid, docs.rows)
       var allCats = docs.rows
@@ -409,7 +409,7 @@ angular.module('app.services', [])
 
   // return a list of verses given category id
   function getVerseByCat(cid){
-    return db.allDocs({include_docs:true,startkey: 'category-', endkey: 'category-\uffff'})
+    return $q.when(db.allDocs({include_docs:true,startkey: 'category-', endkey: 'category-\uffff'}))
     .then(function(docs){
       console.log('%%% get verse by category',cid)
       var allCats = docs.rows
@@ -431,11 +431,11 @@ angular.module('app.services', [])
   // return list of verses by category id
   // this is for displaying verses per associated category
   function getCategoryByName(catName){
-    return db.allDocs({include_docs:true,startkey: 'category-', endkey: 'category-\uffff'})
+    return $q.when(db.allDocs({include_docs:true,startkey: 'category-', endkey: 'category-\uffff'}))
     .then(function(docs){
       console.log('%%% get category by name',docs.rows)
       var allCats = docs.rows
-      var ret;
+      var ret = []
       _.forEach(allCats, function(c){
         if(c.doc.catName === catName){
            ret = c
@@ -447,7 +447,7 @@ angular.module('app.services', [])
   }
   // return all categories for selection
   function getAllCategoryList(){
-    return db.allDocs({include_docs:true,startkey: 'category-', endkey: 'category-\uffff'})
+    return $q.when(db.allDocs({include_docs:true,startkey: 'category-', endkey: 'category-\uffff'}))
     .then(function(docs){
       // console.log('%%% get all categories',docs.rows)
       var l2 = _.map(docs.rows, function(l){return l.doc.catName})
@@ -459,7 +459,7 @@ angular.module('app.services', [])
 
   // add verse to category
   function addVerseToCategory(vid, catname){
-    return db.allDocs({include_docs:true, startkey:'category-', endkey: 'category-\uffff'})
+    return $q.when(db.allDocs({include_docs:true, startkey:'category-', endkey: 'category-\uffff'}))
     .then(function(docs){
       console.log('%%% add verse to categories',vid,docs.rows)
       var catlist = docs.rows
@@ -475,14 +475,14 @@ angular.module('app.services', [])
       .then(function(doc){
         catobj[0].doc._rev = doc._rev
         db.put(catobj[0].doc)
-        .then(function(res){console.log('%%% added vid to category',res)})
+        .then(function(res){console.log('%%% update append category',res)})
         .catch(function(er){ console.log('%%% add category error',er)})
       })
     })
   }
 
   function removeVerseFromCategory(vid, catname){
-    return db.allDocs({include_docs:true, startkey:'category-', endkey: 'category-\uffff'})
+    return $q.when(db.allDocs({include_docs:true, startkey:'category-', endkey: 'category-\uffff'}))
     .then(function(docs){
       console.log('%%% remove verse from categories',docs.rows)
       var catlist = docs.rows
@@ -494,7 +494,7 @@ angular.module('app.services', [])
       .then(function(doc){
         selectedCat[0].doc._rev = doc._rev
         db.put(selectedCat[0].doc)
-        .then(function(res){console.log('%%% added vid to category',res)})
+        .then(function(res){console.log('%%% update curtailed category',res)})
         .catch(function(er){ console.log('%%% add category error',er)})
       })
     })

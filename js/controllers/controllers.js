@@ -86,11 +86,16 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
   ctrl.bookId = $stateParams.book || $scope.bookId
   ctrl.chapId = $stateParams.chap || $scope.chapId
   ctrl.verse = $stateParams.verse;
-  ctrl.verse = $scope.verseId
+  // ctrl.verse = $scope.verseId
   ctrl.selectedCategory = '';
   ctrl.catList = []
   ctrl.verseDetail = {}
   var vid = ''+ctrl.bookId+'-'+ctrl.chapId+'-'+ctrl.verse
+
+  $scope.$on('$ionicView.beforeEnter', function (event, viewData) {
+    viewData.enableBack = false;
+    console.log('%%% before enter view data',viewData)
+});
 
   DbService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse)
   .then(function(verse){
@@ -116,9 +121,11 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
     console.log('%%% is liked? ', ctrl.verseDetail.like)
     if(ctrl.verseDetail.like){
       DbService.addToFavorites(ctrl.verseDetail.vid)
+      // .then(function(){$scope.$apply()})
     }
     if(!ctrl.verseDetail.like){
       DbService.removeFromFavorites(ctrl.verseDetail.vid)
+      // .then(function(){$scope.$apply()})
     }
   }
 
@@ -128,7 +135,11 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
 
     DbService.saveVerse(ctrl.verseDetail)
     .then(function(){
-      $scope.modal.hide()
+      if($scope.modal)
+    $scope.modal.hide()
+    else
+    $ionicHistory.goBack()
+
     })
   }
 
@@ -146,21 +157,23 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
     DbService.addVerseToCategory(ctrl.verseDetail.vid, ctrl.selectedCategory)
   }
   ctrl.cancel = function(){
+    if($scope.modal)
     $scope.modal.hide()
-    // $ionicHistory.goBack()
+    else
+    $ionicHistory.goBack()
     // console.log($ionicHistory.viewHistory())
   }
-  ctrl.gotoCategories = function(catname){
 
-    $scope.modal.hide()
-    .then(function(){
-
-    $state.go('menu.categoryDetail',{categoryId:catname})
-    })
-  }
-  $scope.$on('$destroy', function(){console.log('modal closed');$scope.modal.remove()})
+  $scope.$on('$destroy', function(){
+    console.log('modal closed');
+    if($scope.modal)
+    $scope.modal.remove()
+  })
   // $scope.$on('modal.removed', function(){console.log('modal closed');$scope.modal.remove()})
 
+  ctrl.removeVerseFromCategory = function(acat){
+    DbService.removeVerseFromCategory(ctrl.vid, acat)
+  }
   return ctrl;
 }])
 
@@ -237,18 +250,30 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
 }])
 
 // favorites page master list
-.controller('favoritesCtrl', ['$scope','$stateParams', 'DbService','$ionicModal', function($scope, $stateParams, DbService, $ionicModal) {
+//https://www.bennadel.com/blog/2852-understanding-how-to-use-scope-watch-with-controller-as-in-angularjs.htm
+// http://www.benlesh.com/2013/10/title.html
+.controller('favoritesCtrl', ['$state','$ionicConfig','$q','$scope','$stateParams', 'DbService','$ionicModal', function($state, $ionicConfig, $q, $scope, $stateParams, DbService, $ionicModal) {
   var ctrl = this;
   ctrl.showDelete;
   ctrl.vid;
+  ctrl.verses = []
   // ctrl.itemCanSwipe = false;
+  //https://www.sitepoint.com/mastering-watch-angularjs/
+  /*
+  console.log('%%% get max cache', $ionicConfig.views.maxCache())
+  $scope.$on('$ionicView.beforeEnter', function (event, viewData) {
+    viewData.enableBack = false;
+    console.log('%%% before enter view data',viewData)
+});
+*/
 
   // return list of verse objects
-  ctrl.getVerses = function(){
+  ctrl.getFavorites = function(){
     DbService.getFavoriteList()
     .then(function(docs){
+      ctrl.verses = docs // returns a list of vids TODO watch apply
       console.log('%%% favorite docs', docs)
-      ctrl.verses = docs // returns a list of vids
+      // $scope.$apply()
     })
     .catch(function(e){
 
@@ -256,9 +281,18 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
       ctrl.verses = []
     })
   }
-  ctrl.removeVerseFromCategory = function(acat){
-    DbService.removeVerseFromCategory(ctrl.vid, acat)
+
+  ctrl.showDelete = function(){
+
   }
+  ctrl.itemCanSwipe = function(){
+
+  }
+  ctrl.reset = function(){
+    console.log('resetting')
+    $state.go($state.current, {}, { reload: true });
+  }
+
   // TODO this should autofocus into the verse index page
   ctrl.openModal = function(vid){
     ctrl.vid = vid
@@ -267,7 +301,8 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
     $scope.chapId = vidstring[1]
     $scope.verseId = vidstring[2]
     console.log('%% open modal with', vidstring)
-    $ionicModal.fromTemplateUrl('verse-detail.html', {
+    /*
+    $ionicModal.fromTemplateUrl('./verse-detail.html', {
       scope: $scope,
       backdropClickToClose: false,
       animation: 'slide-in-up',
@@ -280,8 +315,9 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
       // console.log($scope.modal)
       $scope.modal.show()
     })
+    */
     // console.log($ionicHistory.viewHistory())
-    // $state.go('menu.verseDetail',{book:ctrl.bookId, chap:ctrl.chapId, verse:ctrl.verseId})
+    $state.go('menu.verseDetail',{book:$scope.bookId, chap:$scope.chapId, verse:$scope.verseId})
   }
   return ctrl;
 }])
@@ -290,9 +326,17 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
 .controller('categoriesCtrl', ['$scope','$stateParams','DbService', function($scope, $stateParams, DbService) {
   var ctrl = this;
   ctrl.category = '';
+  ctrl.categories = []
+
+  $scope.$on('$ionicView.beforeEnter', function (event, viewData) {
+    viewData.enableBack = false;
+    console.log('%%%  enter view data',viewData)
+});
+
   ctrl.getCategories = function(){
     DbService.getAllCategoryList() // return list of categories
     .then(function(docs){
+    console.log('%%% get all categories', docs)
       ctrl.categories = docs
     })
     .catch(function(){console.log('%%% could not get category')})
@@ -315,9 +359,7 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
       })
     })
   }
-  ctrl.removeVerseFromCategory = function(acat){
-    DbService.removeVerseFromCategory(ctrl.vid, acat)
-  }
+
   // TODO this should autofocus into the verse index page
   ctrl.openModal = function(vid){
     ctrl.vid = vid
@@ -326,7 +368,7 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
     $scope.chapId = vidstring[1]
     $scope.verseId = vidstring[2]
     console.log('%% open modal with', vidstring)
-    $ionicModal.fromTemplateUrl('verse-detail.html', {
+    $ionicModal.fromTemplateUrl('verse-detail-cat.html', {
       scope: $scope,
       backdropClickToClose: false,
       animation: 'slide-in-up',
@@ -363,6 +405,12 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
 // TODO: parking lot item
 // rename existing category
 .controller('editCategoryCtrl', ['$stateParams','$scope','DbService',function($stateParams, $scope, DbService) {
+  var ctrl = this;
+  // using routeParams write to db
+  return ctrl
+}])
+
+.controller('verseDetailModalCtrl', ['$stateParams','$scope','DbService',function($stateParams, $scope, DbService) {
   var ctrl = this;
   // using routeParams write to db
   return ctrl

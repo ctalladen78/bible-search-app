@@ -1,14 +1,15 @@
-<ion-view title="{{vm.category}}" id="page9" class=" " ng-controller="categoryDetailCtrl as vm">
+<ion-view  title="{{cvm.category}}" id="page9" class=" " ng-controller="categoryDetailCtrl as cvm">
     <ion-content padding="true" class="has-header">
-        <ion-list ng-init="vm.getVerses()"
+        <ion-list ng-init="cvm.getVerses()"
         id="bookSearchResults-list5" class=" "
-        show-delete="vm.showDelete"
-        can-swipe="vm.itemCanSwipe">
-            <div collection-repeat="ver in vm.verseList"
+        show-delete="cvm.showDelete()"
+        can-swipe="cvm.itemCanSwipe()">
+
+            <div collection-repeat="ver in cvm.verseList"
             class="item-text-wrap  "
             id="bookSearchResults-list-item16">
-            <div class="item " style="padding: 5px 5px 5px 15px;">
-            <a class="item-icon-right" ng-click="vm.openModal(ver.vid)"
+            <div class="item" style="padding: 5px 5px 5px 15px;">
+            <a class="item-icon-right" ng-click="cvm.openModal(ver.vid)"
                 <span class="item-note">
                 {{ver.vid}}
                 </span>
@@ -23,8 +24,8 @@
     </ion-content>
 </ion-view>
 
-<script type="text/ng-template" id="verse-detail.html">
-<ion-modal-view cache-view="false"  ng-controller="verseDetailCtrl as vm">
+<script type="text/ng-template" id="verse-detail-cat.html">
+<ion-modal-view   ng-controller="verseDetailCtrl as vm">
     <!-- header bar https://www.raymondcamden.com/2015/12/18/is-your-ionic-view-title-not-updating/ -->
   <ion-header-bar class="padding bar-positive" >
     <h4 style="align:center" class="title">{{vm.bookId}} {{vm.chapId}} : {{vm.verse}}</h4>

@@ -484,12 +484,12 @@ angular.module('app.services', [])
   function removeVerseFromCategory(vid, catname){
     return $q.when(db.allDocs({include_docs:true, startkey:'category-', endkey: 'category-\uffff'}))
     .then(function(docs){
-      console.log('%%% remove verse from categories',docs.rows)
+      console.log('%%% remove verse from categories',vid, docs.rows)
       var catlist = docs.rows
       var selectedCat = _.filter(catlist, function(c){return c.doc.catName === catname})
-      _.remove(selectedCat[0].vidList, function(c){return c === vid})
+      _.remove(selectedCat[0].doc.vidList, function(c){return c === vid})
       // save cat in db with updated vidlist
-      console.log('%%% updating cat', selectedCat[0])
+      console.log('%%% updating cat', selectedCat[0].doc.vidList)
       db.get(selectedCat[0].doc._id)
       .then(function(doc){
         selectedCat[0].doc._rev = doc._rev

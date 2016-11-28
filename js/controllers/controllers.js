@@ -172,7 +172,7 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
   // $scope.$on('modal.removed', function(){console.log('modal closed');$scope.modal.remove()})
 
   ctrl.removeVerseFromCategory = function(acat){
-    DbService.removeVerseFromCategory(ctrl.vid, acat)
+    DbService.removeVerseFromCategory(vid, acat)
   }
   return ctrl;
 }])
@@ -319,6 +319,9 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
     // console.log($ionicHistory.viewHistory())
     $state.go('menu.verseDetail',{book:$scope.bookId, chap:$scope.chapId, verse:$scope.verseId})
   }
+  ctrl.doRefresh = function(){
+    console.log('%%%% pulled to refresh')
+  }
   return ctrl;
 }])
 
@@ -345,7 +348,7 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
 }])
 
 // category detail page has a list of verses
-.controller('categoryDetailCtrl', ['$scope','$stateParams','DbService','$ionicModal', function($scope, $stateParams, DbService, $ionicModal){
+.controller('categoryDetailCtrl', ['$state','$scope','$stateParams','DbService','$ionicModal', function($state, $scope, $stateParams, DbService, $ionicModal){
   var ctrl = this;
   ctrl.vid;
   ctrl.category = $stateParams.categoryId;
@@ -368,7 +371,7 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
     $scope.chapId = vidstring[1]
     $scope.verseId = vidstring[2]
     console.log('%% open modal with', vidstring)
-    $ionicModal.fromTemplateUrl('verse-detail-cat.html', {
+    $ionicModal.fromTemplateUrl('verse-detail.html', {
       scope: $scope,
       backdropClickToClose: false,
       animation: 'slide-in-up',
@@ -376,13 +379,13 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
       focusFirstInput: true
     })
     // https://medium.com/@saniyusu/create-an-isolate-modal-with-ionic-v1
-    .then(function(modal){
-      $scope.modal = modal
+    // .then(function(modal){
+      // $scope.modal = modal
       // console.log($scope.modal)
-      $scope.modal.show()
-    })
+      // $scope.modal.show()
+    // })
     // console.log($ionicHistory.viewHistory())
-    // $state.go('menu.verseDetail',{book:ctrl.bookId, chap:ctrl.chapId, verse:ctrl.verseId})
+    $state.go('menu.verseDetail',{book:$scope.bookId, chap:$scope.chapId, verse:$scope.verseId})
   }
   return ctrl
 }])

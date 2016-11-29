@@ -45,8 +45,8 @@ function($scope, $stateParams, DbService, $ionicModal, $state, $window, $ionicHi
   }
   // issues with modal http://stackoverflow.com/questions/30430160/why-isnt-my-ionic-modal-opening-on-an-android-4-4-device
   ctrl.openModal = function(verse){
-    ctrl.verseId = verse
-    $scope.verseId = verse
+    // ctrl.verseId = verse
+    // $scope.verseId = verse
     console.log('%% open modal with', ctrl.bookId, ctrl.chapId, ctrl.verseId)
     $ionicModal.fromTemplateUrl('verse-detail.html', {
       scope: $scope,
@@ -56,13 +56,13 @@ function($scope, $stateParams, DbService, $ionicModal, $state, $window, $ionicHi
       focusFirstInput: true
     })
     // https://medium.com/@saniyusu/create-an-isolate-modal-with-ionic-v1
-    .then(function(modal){
-      $scope.modal = modal
+    // .then(function(modal){
+      // $scope.modal = modal
       // console.log($scope.modal)
-      $scope.modal.show()
-    })
+      // $scope.modal.show()
+      // })
     // console.log($ionicHistory.viewHistory())
-    // $state.go('menu.verseDetail',{book:ctrl.bookId, chap:ctrl.chapId, verse:ctrl.verseId})
+    $state.go('menu.verseDetail',{book:$scope.bookId, chap:$scope.chapId, verse:verse})
   }
   // http://stackoverflow.com/questions/25854422/using-this-as-scope-when-creating-ionicmodal
   // http://www.gajotres.net/how-to-show-different-native-modal-windows-in-ionic-framework

@@ -292,6 +292,12 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
     console.log('resetting')
     $state.go($state.current, {}, { reload: true });
   }
+  ctrl.doRefresh = function(){
+    console.log('%%%% pulled to refresh')
+    $scope.$apply()
+    //Stop the ion-refresher from spinning
+    $scope.$broadcast('scroll.refreshComplete');
+  }
 
   // TODO this should autofocus into the verse index page
   ctrl.openModal = function(vid){
@@ -319,9 +325,7 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
     // console.log($ionicHistory.viewHistory())
     $state.go('menu.verseDetail',{book:$scope.bookId, chap:$scope.chapId, verse:$scope.verseId})
   }
-  ctrl.doRefresh = function(){
-    console.log('%%%% pulled to refresh')
-  }
+
   return ctrl;
 }])
 

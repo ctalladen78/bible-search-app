@@ -37,7 +37,6 @@ angular.module('app.routes', [])
     }
   })
   .state('menu.verseIndex', {
-    cache: false,
     url: '/:book/:chap',
     views: {
       'side-menu21': {

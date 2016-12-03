@@ -220,6 +220,7 @@ angular.module('app.services', [])
       })
   }
 
+  // returns a promise
   // lookup the book per vid bookname then search all the verses of that book
   function getVerseBy(vid){
       var str = vid.split('-')
@@ -231,7 +232,7 @@ angular.module('app.services', [])
         var verse = _.filter(book.bookList, function(b){
           return b.vid === vid
         })
-        console.log('%%% getting verse by', vid, verse[0])
+        // console.log('%%% getting verse by', vid, verse[0])
         return verse[0]
       })
   }
@@ -345,20 +346,26 @@ angular.module('app.services', [])
   function getFavoriteList(){
     return $q.when(db.allDocs({include_docs:true, startkey: 'favorite-', endkey: 'favorite-\uffff'}))
     .then(function(docs){
-      console.log('%%% docs', docs)
-      console.log('%%% favlist', docs.rows[0].doc.vidList)
+      // console.log('%%% docs', docs)
+      // console.log('%%% favlist', docs.rows[0].doc.vidList)
       favList = docs.rows[0].doc.vidList // list of vids
-      var list = [] // list of verses
-      _.each(favList, function(i){
+      var templist = [] // list of verses
+      _.each(favList, function(fav){
         // get verses from vids
-          // console.log('%%% docs', i)
-          getVerseBy(i)
-          .then(function(v){list.push(v); return list})
-          // .then(function(l){console.log('%%% liked verses',l)})
-          .catch(function(e){console.log('%%% error get verse by vid ', i, e)})
+          // console.log('%%% vid', fav)
+           $q.when(getVerseBy(fav))
+          .then(function(vid){
+            templist.push(vid);
+            // console.log('%%% favorite list ',templist)
+          })
+          // .catch(function(e){console.log('%%% error get verse by vid ', i, e)})
       })
-      return list
+      return templist
     })
+    // .then(function(list){
+        // console.log('%%% returning list of favorites: ', list)
+      // return list
+    // })
   }
 
   function renameCategory(vid, oldCatName,newCatName){

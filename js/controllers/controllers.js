@@ -252,20 +252,41 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
 // favorites page master list
 //https://www.bennadel.com/blog/2852-understanding-how-to-use-scope-watch-with-controller-as-in-angularjs.htm
 // http://www.benlesh.com/2013/10/title.html
-.controller('favoritesCtrl', ['$state','$ionicConfig','$q','$scope','$stateParams', 'DbService','$ionicModal', function($state, $ionicConfig, $q, $scope, $stateParams, DbService, $ionicModal) {
+.controller('favoritesCtrl', ['$ionicLoading','$timeout','$state','$ionicConfig','$q','$scope','$stateParams', 'DbService','$ionicModal', function($ionicLoading,$timeout,$state, $ionicConfig, $q, $scope, $stateParams, DbService, $ionicModal) {
   var ctrl = this;
   ctrl.showDelete;
   ctrl.vid;
-  ctrl.verses = []
+  // ctrl.verses = []
   // ctrl.itemCanSwipe = false;
   //https://www.sitepoint.com/mastering-watch-angularjs/
-  /*
+
   console.log('%%% get max cache', $ionicConfig.views.maxCache())
   $scope.$on('$ionicView.beforeEnter', function (event, viewData) {
     viewData.enableBack = false;
     console.log('%%% before enter view data',viewData)
+    DbService.getFavoriteList()
+    .then(function(docs){
+      ctrl.verses = docs // returns a list of vids TODO watch apply
+      console.log('%%% favorite docs', docs, docs.length)
+      // console.log('%%% favorite test', ctrl.verses, ctrl.verses.length)
+    })
 });
-*/
+  /*
+  $ionicLoading.show({
+    template: '<div><ion-spinner icon="android"></ion-spinner><p>Loading...</p></div>',
+    showBackdrop: true,
+    maxWidth: 200
+    // showDelay: 2  // seconds
+  })
+
+  $timeout(function(){
+    $ionicLoading.hide()
+  },1000)
+  .then(function(){
+    // $scope.$apply()
+    ctrl.getFavorites()
+  })
+  */
 
   // return list of verse objects
   ctrl.getFavorites = function(){
@@ -273,13 +294,8 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
     .then(function(docs){
       ctrl.verses = docs // returns a list of vids TODO watch apply
       console.log('%%% favorite docs', docs)
-      // $scope.$apply()
     })
-    .catch(function(e){
 
-      console.log('%%% favorite docs error', e)
-      ctrl.verses = []
-    })
   }
 
   ctrl.showDelete = function(){
@@ -289,14 +305,15 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
 
   }
   ctrl.reset = function(){
-    console.log('resetting')
-    $state.go($state.current, {}, { reload: true });
+    // console.log('resetting')
+    // $state.go($state.current, {}, { reload: true });
   }
   ctrl.doRefresh = function(){
     console.log('%%%% pulled to refresh')
     $scope.$apply()
     //Stop the ion-refresher from spinning
     $scope.$broadcast('scroll.refreshComplete');
+    console.log('%%%% fav list: ',ctrl.verses)
   }
 
   // TODO this should autofocus into the verse index page

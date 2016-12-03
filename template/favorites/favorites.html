@@ -1,37 +1,27 @@
 <ion-view  id="page2" class="bar-positive"  title="Favorites" ng-controller="favoritesCtrl as fvm">
-  <!--
-  <ion-nav-buttons side="right">
-        <button class="button button-clear button-positive" ng-click="fvm.reset()">
-            Refresh
-        </button>
-    </ion-nav-buttons>
-    <!--  -->
-
     <ion-content padding="true" class="has-header">
       <ion-refresher
     pulling-text="Pull to refresh..."
     on-refresh="fvm.doRefresh()">
-  </ion-refresher>
-        <ion-list ng-init="fvm.getFavorites()"
-        id="bookSearchResults-list5" class=" "
+      </ion-refresher>
+        <ion-list
+        id="bookSearchResults-list5"
         show-delete="fvm.showDelete()"
         can-swipe="fvm.itemCanSwipe()">
-            <!-- ui-sref passes parameters to next page-->
-            <div collection-repeat="ver in fvm.verses"
-            class="item-text-wrap"
+            <ion-item ng-repeat="ver in fvm.verses"
             id="bookSearchResults-list-item16">
-            <div class="item" style="padding: 5px 5px 5px 15px;">
+            <div class="item">
             <a class="item-icon-right" ng-click="fvm.openModal(ver.vid)"
-                <span class="item-note">
+                <span >
                 {{ver.vid}}
                 </span>
                 <i  class="icon ion-more"></i>
               </a>
             </div>
-              <div class="item">
+              <div class="item item-text-wrap">
              <p>{{ver.text}}</p>
            </div>
-         </div>
+         </ion-item>
         </ion-list>
     </ion-content>
 </ion-view>

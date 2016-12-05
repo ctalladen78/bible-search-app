@@ -1,14 +1,14 @@
 <ion-view  title="{{cvm.category}}" id="page9" class=" " ng-controller="categoryDetailCtrl as cvm">
     <ion-content padding="true" class="has-header">
-        <ion-list ng-init="cvm.getVerses()"
+      <ion-list ng-init="cvm.getVerses(cvm.word)"
         id="bookSearchResults-list5" class=" "
         show-delete="cvm.showDelete()"
-        can-swipe="cvm.itemCanSwipe()">
-
+        can-swipe="cvm.itemCanSwipe">
+            <!-- ui-sref passes parameters to next page-->
             <div collection-repeat="ver in cvm.verseList"
-            class="item-text-wrap  "
+            class="list card"
             id="bookSearchResults-list-item16">
-            <div class="item" style="padding: 5px 5px 5px 15px;">
+            <div class="row item" style="padding: 5px 5px 5px 15px;">
             <a class="item-icon-right" ng-click="cvm.openModal(ver.vid)"
                 <span class="item-note">
                 {{ver.vid}}
@@ -16,10 +16,10 @@
                 <i  class="icon ion-more"></i>
               </a>
             </div>
-              <div class="item">
+              <div class="row item item-text-wrap" style="word-wrap:break-word;">
              <p>{{ver.text}}</p>
            </div>
          </div>
         </ion-list>
-    </ion-content>
+      </ion-content>
 </ion-view>

@@ -19,7 +19,7 @@ angular.module('app.services', [])
     addVerseToCategory : addVerseToCategory,
     removeVerseFromCategory :removeVerseFromCategory,
     addCategory: addCategory,
-    wordSearch : wordSearch,
+    wordSearchAllBible : wordSearchAllBible,
     addToFavorites : addToFavorites,
     removeFromFavorites : removeFromFavorites,
     isVidLiked : isVidLiked,
@@ -30,11 +30,14 @@ angular.module('app.services', [])
   // populate db from api endpoint
   function initDB(){
       // instantiate DB
+
+    console.log('%%% checking db for consistency')
+
     db =  new PouchDB('mypouchdb', {
       adapter: 'websql',
       skip_setup: true
     });
-    console.log('%%% checking db for consistency')
+
     db.info(function(err, info){
       // count objects in bible.json
       if(info.doc_count === 0){
@@ -310,15 +313,100 @@ angular.module('app.services', [])
 
   }
 
-  function wordSearch(term){
-    return $q.when(function(){
-      return list = [
-      {"book": "Isiah", "chapter":12, "like":"true","category":[],"verse":14, "text": "For God so loved the world..."},
-      {"book": "Hebrews", "chapter":33, "like":"true","category":[],"verse":15, "text": "That we ought not condemn..."},
-      {"book": "Revelations", "chapter":45, "like":"true","category":[],"verse":16, "text": "When He shall return ..."}
-      ];
-    }
-    )
+  // https://github.com/nolanlawson/pouchdb-quick-search
+  function wordSearchAllBible(term){
+
+    return $q.when(db.allDocs({include_docs:true}))
+    // return $q.when(db.search({
+    //   query: 'Chronicles',
+    //   fields:'bookName',
+    //   include_docs:true,
+    //   highlighting: true,
+    //   highlighting_pre: '<em>',
+    //   highlighting_post: '</em>'
+    // }))
+    .then(function(res){
+      console.log('%%% all docs', res)
+        var retlist = []
+        var count =0
+        $q.when(_.each(res.rows, function(o){
+          var bklist = o.doc.bookList
+          var bkname = o.doc.bookName
+          _.each(bklist, function(i){
+            count++
+            console.log('%%% searching ',count, i)
+            if(i.text.includes(term)) {
+              retlist.push(i)
+            }
+          })
+        })
+      )
+      console.log('%%% search results', retlist)
+      return retlist
+    })
+  }
+  function wordSearchOldTestament(){
+    return $q.when(db.allDocs({include_docs:true}))
+    .then(function(res){
+      console.log('%%% all docs', res)
+        var retlist = []
+        var count =0
+        $q.when(_.each(res.rows, function(o){
+          var bklist = o.doc.bookList
+          var bkname = o.doc.bookName
+          if(isNewTestament(bkname)){
+            _.each(bklist, function(i){
+              count++
+              console.log('%%% searching ',count, i)
+              if(i.text.includes(term)) {
+                retlist.push(i)
+              }
+            })
+        }
+        })
+      )
+      console.log('%%% search results', retlist)
+      return retlist
+    })
+  }
+
+  function wordSearchNewTestament(){
+    return $q.when(db.allDocs({include_docs:true}))
+    .then(function(res){
+      console.log('%%% all docs', res)
+        var retlist = []
+        var count =0
+        $q.when(_.each(res.rows, function(o){
+          var bklist = o.doc.bookList
+          var bkname = o.doc.bookName
+          if(isNewTestament(bkname)){
+            _.each(bklist, function(i){
+              count++
+              console.log('%%% searching ',count, i)
+              if(i.text.includes(term)) {
+                retlist.push(i)
+              }
+            })
+        }
+        })
+      )
+      console.log('%%% search results', retlist)
+      return retlist
+    })
+  }
+
+  function isOldTestament(bookname){
+    var old = bibleScraper.getOldTestamentBooks()
+    old.some(function(b){
+      return b === bookname
+    })
+  }
+
+  function isNewTestament(bookname){
+    var newt = bibleScraper.getOldTestamentBooks()
+    newt.some(function(b){
+      return b === bookname
+    })
   }
   // initialize favorites category as empty list so that it is ready to
   // have verses
@@ -456,12 +544,11 @@ angular.module('app.services', [])
   function getAllCategoryList(){
     return $q.when(db.allDocs({include_docs:true,startkey: 'category-', endkey: 'category-\uffff'}))
     .then(function(docs){
-      // console.log('%%% get all categories',docs.rows)
+      console.log('%%% get all categories',docs.rows)
       var l2 = _.map(docs.rows, function(l){return l.doc.catName})
-      // console.log('%%% get all categories ', l2)
+      console.log('%%% get all categories ', l2)
       return l2
     })
-    return catList
   }
 
   // add verse to category
@@ -508,15 +595,19 @@ angular.module('app.services', [])
   }
 
   // see: http://stackoverflow.com/questions/1674089/what-is-the-idiomatic-way-to-implement-foreign-keys-in-couchdb
-  function addCategory(catName){
+  function addCategory(catName, vidlist){
         // !! means truthy(not falsy), ! means falsy(not true ie null,undefined, empty)
+        // TODO check db for duplicate catnames
     var newcat = {}
         newcat.catName = catName
         newcat.type = 'category'
         var tid = new Date().toISOString()
         var ccid = 'category-'+tid
         newcat._id = ccid
+        if(!vidlist)
         newcat.vidList = []
+        else
+        newcat.vidList = vidlist
     return $q.when(newcat)
       .then(function(obj){
         console.log('%%% trying to add', obj.data)

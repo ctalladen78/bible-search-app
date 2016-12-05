@@ -133,7 +133,7 @@ angular.module('app.routes', [])
       }
   })
 
-$urlRouterProvider.otherwise('/menu/home')
+$urlRouterProvider.otherwise('/menu/book-index')
 
 
 }]);

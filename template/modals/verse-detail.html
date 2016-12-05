@@ -3,7 +3,7 @@
 <script type="text/ng-template" id="verse-detail-fav.html">
 <ion-modal-view   ng-controller="verseDetailModalCtrl as vm">
   <ion-header-bar class="padding bar-positive" >
-    <h4 style="align:center" class="title">{{vm.bookId}} {{vm.chapId}} : {{vm.verse}}</h4>
+    <h4 style="align:center" class="title">Verse Detail Modal{{vm.bookId}} {{vm.chapId}} : {{vm.verse}}</h4>
   </ion-header-bar>
     <ion-content  class="padding has-header">
         <ion-item class="item row" id="verseDetail-list-item19">
@@ -24,8 +24,8 @@
         <div class="item item-text-wrap">
           <h3 class="header">In Categories</h3>
           <span ng-repeat="acat in vm.catList track by $index" class="mdl-chip mdl-chip--contact">
-            <span ng-click="vm.removeVerseFromCategory(acat)">
-              <span class="mdl-chip__contact mdl-color--pink mdl-color-text--white">X</span>
+            <span ng-click="vm.gotoCategory(acat)">
+              <span class="mdl-chip__contact mdl-color--pink mdl-color-text--white">{{vm.getAvatar(acat)}}</span>
               <span class="mdl-chip__text">{{acat}}</span>
             </span>
           </span>

@@ -24,6 +24,18 @@
                     <i class="icon ion-search placeholder-icon"></i>
                     <input type="search" placeholder="Search Term" ng-model="vm.word">
             </label>
+            <label>
+            <input type="radio"  value="Entire Bible" ng-model="vm.searchAllBible" checked="true">
+            Entire Bible
+          </label>
+            <label>
+            <input type="radio"  value="New Testament" ng-model="vm.searchNewTestament">
+            New Testament
+          </label>
+            <label>
+            <input type="radio"  value="Old Testament" ng-model="vm.searchOldTestament">
+            Old Testament
+          </label>
             <button ng-disabled="!vm.word" ui-sref="menu.wordSearchResults({term:vm.word})" id="search-button4" class=" button button-positive  button-block ">Word search</button>
         </form>
     </ion-content>

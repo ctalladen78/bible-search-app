@@ -174,17 +174,31 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
   ctrl.removeVerseFromCategory = function(acat){
     DbService.removeVerseFromCategory(vid, acat)
   }
+
+  ctrl.getAvatar = function(acat){
+    return acat.split('')[0].toUpperCase()
+  }
+  ctrl.gotoCategory = function(cat){
+    //  clear history
+    $ionicHistory.nextViewOptions({
+      disableBack: true
+    });
+    $state.go('menu.categoryDetail', {categoryId: cat})
+  }
   return ctrl;
 }])
 
 
 // dropdown search component
-.controller('searchCtrl', ['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService) {
+.controller('searchCtrl', ['$ionicHistory','$state','$ionicLoading','$scope','$stateParams', 'DbService', function($ionicHistory,$state,$ionicLoading,$scope, $stateParams, DbService) {
   var ctrl = this;
   ctrl.word = ''; // search term
   ctrl.bookId = '';
   ctrl.chapId = '';
-
+  ctrl.searchAllBible;
+  ctrl.searchNewTestament;
+  ctrl.searchOldTestament;
+  
   ctrl.getBooks = function(){
     DbService.getBooks().then(function(res){
     ctrl.bookList = res
@@ -202,63 +216,66 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
         })
     }
   }
-  ctrl.print = function(){
-    //$scope.$apply()
-    console.log('%%% chapter', ctrl.chapId)
-    $stateParams.bookId = ctrl.bookId
-    $stateParams.chapId = ctrl.chapId
-    console.log('%%% params', $stateParams)
-  }
-  /*
-  ctrl.getVerses = function(){
-    if(!ctrl.bookId){
-      console.log('no books selected');
-      ctrl.verseList = [];
-    }
-    else if(!ctrl.chapId){
-      console.log('no chapters selected');
-      ctrl.verseList = [];
-    }
-    else{
-      DbService.getVerseList(bookId, chapId)
-      .then(function(res){
-          console.log('%%% verselist', res)
-            ctrl.verses = res
-      })
-    }
-  }
-  */
+
+
+  ctrl.search = function(){
+      }
   return ctrl;
 }])
 
 // word search page component
-.controller('wordSearchResultsCtrl', ['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService) {
+.controller('wordSearchResultsCtrl', ['$ionicHistory','$state','$ionicLoading','$scope','$stateParams', 'DbService', function($ionicHistory, $state, $ionicLoading, $scope, $stateParams, DbService) {
   // using routeParams return list of verses containing query term
   // highlight the search term in text
   var ctrl = this;
   ctrl.word = $stateParams.term;
+
   ctrl.getVerses = function(word){
-  DbService.wordSearch(ctrl.word) // return list of verse objects
-  .then(function(res){
-    ctrl.verses = res
-
+    $ionicLoading.show({
+    template: '<div><ion-spinner icon="dots"></ion-spinner><p>Loading...</p></div>',
+    showBackdrop: true,
+    maxWidth: 200
+    // showDelay: 2  // seconds
   })
-  .catch(function(){ ctrl.verses = []})
+    DbService.wordSearchAllBible(ctrl.word) // return list of verse objects
+    .then(function(res){
 
+      $ionicLoading.hide()
+      ctrl.verses = res
+      console.log('%%% word search results ', res)
+    })
+    .catch(function(){ ctrl.verses = []})
   }
+
+  ctrl.saveAsCategory = function(){
+
+    // save vids into new category
+    var vidlist = []
+    _.each(ctrl.verses, function(v){
+      vidlist.push(v.vid)
+    })
+    //make new category
+    DbService.addCategory(ctrl.word,vidlist)
+    // save to db
+    // go to category page
+    $ionicHistory.nextViewOptions({
+      disableBack: true
+    });
+    $state.go('menu.categoryDetail', {categoryId: ctrl.word})
+  }
+
   return ctrl;
 }])
 
 // favorites page master list
 //https://www.bennadel.com/blog/2852-understanding-how-to-use-scope-watch-with-controller-as-in-angularjs.htm
 // http://www.benlesh.com/2013/10/title.html
+  //https://www.sitepoint.com/mastering-watch-angularjs/
 .controller('favoritesCtrl', ['$ionicLoading','$timeout','$state','$ionicConfig','$q','$scope','$stateParams', 'DbService','$ionicModal', function($ionicLoading,$timeout,$state, $ionicConfig, $q, $scope, $stateParams, DbService, $ionicModal) {
   var ctrl = this;
   ctrl.showDelete;
   ctrl.vid;
-  // ctrl.verses = []
-  // ctrl.itemCanSwipe = false;
-  //https://www.sitepoint.com/mastering-watch-angularjs/
+  ctrl.itemCanSwipe = true
 
   console.log('%%% get max cache', $ionicConfig.views.maxCache())
   $scope.$on('$ionicView.beforeEnter', function (event, viewData) {
@@ -266,27 +283,11 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
     console.log('%%% before enter view data',viewData)
     DbService.getFavoriteList()
     .then(function(docs){
-      ctrl.verses = docs // returns a list of vids TODO watch apply
+      ctrl.verses = docs
       console.log('%%% favorite docs', docs, docs.length)
-      // console.log('%%% favorite test', ctrl.verses, ctrl.verses.length)
     })
 });
-  /*
-  $ionicLoading.show({
-    template: '<div><ion-spinner icon="android"></ion-spinner><p>Loading...</p></div>',
-    showBackdrop: true,
-    maxWidth: 200
-    // showDelay: 2  // seconds
-  })
 
-  $timeout(function(){
-    $ionicLoading.hide()
-  },1000)
-  .then(function(){
-    // $scope.$apply()
-    ctrl.getFavorites()
-  })
-  */
 
   // return list of verse objects
   ctrl.getFavorites = function(){
@@ -299,9 +300,6 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
   }
 
   ctrl.showDelete = function(){
-
-  }
-  ctrl.itemCanSwipe = function(){
 
   }
   ctrl.reset = function(){
@@ -347,23 +345,38 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
 }])
 
 // categories page master list
-.controller('categoriesCtrl', ['$scope','$stateParams','DbService', function($scope, $stateParams, DbService) {
+.controller('categoriesCtrl', ['$ionicLoading','$scope','$stateParams','DbService', function($ionicLoading, $scope, $stateParams, DbService) {
   var ctrl = this;
   ctrl.category = '';
   ctrl.categories = []
-
+/*
   $scope.$on('$ionicView.beforeEnter', function (event, viewData) {
     viewData.enableBack = false;
     console.log('%%%  enter view data',viewData)
 });
+*/
+    $ionicLoading.show({
+    template: '<div><ion-spinner icon="dots"></ion-spinner><p>Loading...</p></div>',
+    showBackdrop: true,
+    maxWidth: 200
+    // showDelay: 2  // seconds
+  })
 
   ctrl.getCategories = function(){
     DbService.getAllCategoryList() // return list of categories
     .then(function(docs){
+    $ionicLoading.hide()
     console.log('%%% get all categories', docs)
       ctrl.categories = docs
     })
     .catch(function(){console.log('%%% could not get category')})
+  }
+  ctrl.doRefresh = function(){
+    console.log('%%%% pulled to refresh')
+    $scope.$apply()
+    //Stop the ion-refresher from spinning
+    $scope.$broadcast('scroll.refreshComplete');
+    console.log('%%%% cat list: ',ctrl.categories)
   }
   return ctrl;
 }])
@@ -373,6 +386,12 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
   var ctrl = this;
   ctrl.vid;
   ctrl.category = $stateParams.categoryId;
+  ctrl.itemCanSwipe = true
+
+  ctrl.showDelete = function(){
+
+  }
+
   ctrl.getVerses = function(){
     DbService.getCategoryByName(ctrl.category)
     .then(function(cat){

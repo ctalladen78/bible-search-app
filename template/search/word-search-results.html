@@ -1,10 +1,26 @@
 <ion-view title="Search: {{vm.word}}" id="page4" class=" " ng-controller="wordSearchResultsCtrl as vm">
     <ion-content padding="true" class="has-header">
-        <button id="wordSearchResults-button10" class=" button button-positive  button-block ">Save search as category</button>
-        <ion-list id="wordSearchResults-list2" class=" " ng-init="vm.getVerses(vm.word)">
-            <ion-item ng-repeat="ver in vm.verses" class="item-icon-right  " id="wordSearchResults-list-item7" ui-sref="menu.verseDetail({book:ver.book, chap:ver.chapter, verse:ver.verse})">{{ver.book}} {{ver.chapter}} : {{ver.verse}}
-                <i class="icon ion-android-arrow-forward"></i>
+        <button id="wordSearchResults-button10"
+        ng-click="vm.saveAsCategory()"
+        class=" button button-positive  button-block ">
+        Save "{{vm.word}}" as category</button>
+        <ion-list ng-init="vm.getVerses(vm.word)"
+        id="bookSearchResults-list5" class=" list">
+            <div collection-repeat="ver in vm.verses"
+            class=" list card"
+            id="bookSearchResults-list-item16" style="margin-top: 5px; margin-bottom: 5px">
+              <ion-item class="item-divider" style="height:10px">
+                <a class="item-icon-right" ui-sref="menu.verseDetail({book:ver.book, chap:ver.chapter, verse:ver.verse})"
+                  <span class="item-note">
+                  {{ver.vid}}
+                  </span>
+                  <i  class="icon ion-more"></i>
+                </a>
             </ion-item>
+            <ion-item class="item-text-wrap">
+             <p>{{ver.text}}</p>
+           </ion-item>
+         </div>
         </ion-list>
     </ion-content>
 </ion-view>

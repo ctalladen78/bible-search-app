@@ -1,25 +1,23 @@
 <ion-view  title="Edit {{vm.bookId}} {{vm.chapId}} : {{vm.verse}}" id="page6" class=" " ng-controller="verseDetailCtrl as vm">
-  <ion-header-bar class="padding bar-positive" >
-    <h4 style="align:center" class="title">{{vm.bookId}} {{vm.chapId}} : {{vm.verse}}</h4>
-  </ion-header-bar>
-    <ion-content  class="padding has-header">
-        <ion-item class="item row" id="verseDetail-list-item19">
-            <span class="col">Like</span>
-            <button class="col" ng-click="vm.toggleLike()">
-          <i class="icon ion-android-star" ng-class={isactive:vm.verseDetail.isliked}></i>
-        </button>
-        </ion-item>
+    <ion-content  class="mdl-card mdl-shadow--2dp ">
 
-        <form id="editVerse-form2" class="item row">
-                <span class="input-label col">Add to categories</span>
-                <select class="col"
+        <div class="mdl-card__title mdl-card--expand item">
+          <h2 class="mdl-card__title-text">{{vm.bookId}} {{vm.chapId}} : {{vm.verse}}</h2>
+          <input type="button" class="in-between mdl-button mdl-button--fab mdl-button--colored"
+          ng-click="vm.toggleLike()">
+          <i class="icon ion-android-star" ng-class={isactive:vm.verseDetail.isliked}></i>
+        </input>
+      </div>
+
+        <div id="editVerse-form2" class="item row">
+                <span class="input-label col-50">Add to categories</span>
+                <select class="col-50"
                 ng-init="vm.getCategories()" ng-model="vm.selectedCategory"
                 ng-options="cat as cat for cat in vm.categories"
                 ng-change="vm.addVerseToCategory()">
                 </select>
-        </form>
-        <div class="item item-text-wrap">
-          <h3 class="header">In Categories</h3>
+        </div>
+        <div class="item  item-text-wrap">
           <span ng-repeat="acat in vm.catList track by $index" class="mdl-chip mdl-chip--contact">
             <span ng-click="vm.gotoCategory(acat)">
               <span class="mdl-chip__contact mdl-color--pink mdl-color-text--white">{{vm.getAvatar(acat)}}</span>
@@ -27,12 +25,12 @@
             </span>
           </span>
         </div>
-        <!--  
+        <!--
         <button class=" button button-positive  button-block "
         ng-click="vm.saveVerse()">Save Changes</button>
         <!--  -->
-        <a  id="editVerse-button9" ng-click="vm.cancel()"
-        class=" button button-positive  button-block ">Close</a>
+        <input type="button"  id="editVerse-button9" ng-click="vm.cancel()"
+        class=" button button-positive  button-block " value="Close">
 
     </ion-content>
 </ion-view>

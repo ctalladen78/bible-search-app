@@ -1,38 +1,22 @@
 /* Empty. Add your own CSS if you like */
-.loading-container .loading {
-  width: 64px;
-  height: 64px;
-  background: url(../images/icon-invert.svg) no-repeat center center;
-  background-color: transparent;
-  background-size: 64px 64px;
-  margin: 100px auto;
-  -webkit-animation: sk-rotateplane 2s infinite ease-in-out;
-  animation: sk-rotateplane 2s infinite ease-in-out;
-  -webkit-backface-visibility: visible;
-  backface-visibility: visible;
+.mdl-card{
+  width:500px;
+  height:500px;
 }
-.loading-container .loading .spinner { display: none; }
-
-.scroll-refresher .icon-refreshing {
-  width: 40px;
-  height: 40px;
-  margin: auto;
-  background-color: #333;
-  border-radius: 7px;
-  -webkit-animation: sk-rotateplane 1.2s infinite ease-in-out;
-  animation: sk-rotateplane 1.2s infinite ease-in-out;
-  -webkit-backface-visibility: visible;
-  backface-visibility: visible;
+.mdl-card__title{
+  background: url(http://lorempixel.com/500/500/nature);
+  color: #fff;
 }
-.icon-refreshing .spinner { display: none; }
-
-@-webkit-keyframes sk-rotateplane {
-  0% { -webkit-transform: perspective(120px) rotateY(0deg); }
-  50% { -webkit-transform: perspective(120px) rotateY(180deg); }
-  100% { -webkit-transform: perspective(120px) rotateY(360deg); }
+.in-between{
+  position:relative;
+  top: 80px;
+  right: -38%
 }
-@keyframes sk-rotateplane {
-  0% { -webkit-transform: perspective(120px) rotateY(0deg); transform: perspective(120px) rotateY(0deg); }
-  50% { -webkit-transform: perspective(120px) rotateY(180deg); transform: perspective(120px) rotateY(180deg); }
-  100% { -webkit-transform: perspective(120px) rotateY(360deg); transform: perspective(120px) rotateY(360deg); }
+.menu-style{
+  /*height: 500px*/
+  /*background: url(/resources/icon.png)*/
+  background-color: violet
+}
+.bar-custom{
+  background-color: violet
 }

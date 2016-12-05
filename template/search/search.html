@@ -1,14 +1,13 @@
 <ion-view title="search" id="page1" class=" " ng-controller="searchCtrl as vm">
     <ion-content padding="true" class="has-header">
-        <form id="search-form1" class="list ">
-            <label class="item item-select " id="search-select1">
+        <form id="search-form1" class="list row">
+            <label class="item item-select col-33" id="search-select1">
                 <span class="input-label">Book</span>
                 <select ng-init="vm.getBooks()" ng-model="vm.bookId"
                 ng-options="book as book for book in vm.bookList" ng-change="vm.getChaps(vm.bookId)">
                 </select>
             </label>
-            <div class="spacer" style="width: 300px; height: 63px;"></div>
-            <label class="item item-select " id="search-select2">
+            <label class="item item-select col-33" id="search-select2">
                 <span class="input-label">Chapter</span>
                 <select ng-init="vm.getChaps(vm.bookId)" ng-model="vm.chapId" ng-change="vm.print()"
                 ng-options="ch as ch for ch in vm.chapList">
@@ -16,14 +15,15 @@
             </label>
             <button ng-disabled="(vm.bookId && vm.chapId) ? false: true"
             ui-sref="menu.verseIndex({book:vm.bookId,chap:vm.chapId})" id="search-button8"
-            class=" button button-positive  button-block ">Verse search</button>
+            class="col-33 button button-positive  button-block ">Verse search</button>
 
         </form>
-        <form>
+        <form class="row">
             <label class="item item-input">
                     <i class="icon ion-search placeholder-icon"></i>
                     <input type="search" placeholder="Search Term" ng-model="vm.word">
             </label>
+            <!--
             <label>
             <input type="radio"  value="Entire Bible" ng-model="vm.searchAllBible" checked="true">
             Entire Bible
@@ -36,6 +36,7 @@
             <input type="radio"  value="Old Testament" ng-model="vm.searchOldTestament">
             Old Testament
           </label>
+          <!--  -->
             <button ng-disabled="!vm.word" ui-sref="menu.wordSearchResults({term:vm.word})" id="search-button4" class=" button button-positive  button-block ">Word search</button>
         </form>
     </ion-content>

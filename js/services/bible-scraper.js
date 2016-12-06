@@ -94,7 +94,7 @@ angular.module('app.services')
       return promise;
     },
     'getLocalTestBooks' : function(book, ver){
-      return $http.get('./output.json')
+      return $http.get('./output-newtestament.json')
       .then(function(res){
         console.log('%%% initializing', res.data.bible)
         // var bible = JSON.parse(res.data)

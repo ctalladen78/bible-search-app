@@ -79,25 +79,6 @@ angular.module('app.services', [])
       db.allDocs({include_docs:true})
         .then(function(res){
           docs = res.rows.map(function(row){return row.doc;});
-          // console.log('%%% all docs', docs)
-          var obj = {}; // nested object of arrays grouped by chapter
-
-          /*
-          obj = _.groupBy(docs, function(i){
-            return i.chapter;
-          })
-
-          // sort ascending by i.verse
-          for(var key in obj){
-            if(obj.hasOwnProperty(key)){
-              obj[key].sort(function(a,b){
-                return a.verse - b.verse;
-              })
-            }//developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
-          }
-          //console.log('%%%% grouped object', obj[1]);
-          docs = obj[1];
-          */
         })
         .then(function(){
           syncToChanges();
@@ -154,11 +135,8 @@ angular.module('app.services', [])
     }
   }
 
-  function printDocs(){
-    getDocs()
-    .then(function(docs){
-      console.log('%%% get all docs', docs)
-    })
+  function getCachedDocs(){
+    return $q.when(docs)
   }
   // helper: return index of docId
   function binarySearch(arr, docId) {
@@ -341,7 +319,10 @@ angular.module('app.services', [])
           })
         })
       )
-      console.log('%%% search results', retlist)
+      // TODO if exceeds limit of 150 then divide the results into separate categories appended P1..
+      // Message "Warning: Exceeded limit;
+      // This will cause the results to be saved as separate categories"
+      console.log('%%% search results',retlist.length, retlist)
       return retlist
     })
   }
@@ -543,6 +524,7 @@ angular.module('app.services', [])
   // return all categories for selection
   function getAllCategoryList(){
     return $q.when(db.allDocs({include_docs:true,startkey: 'category-', endkey: 'category-\uffff'}))
+    // return getCachedDocs()
     .then(function(docs){
       console.log('%%% get all categories',docs.rows)
       var l2 = _.map(docs.rows, function(l){return l.doc.catName})

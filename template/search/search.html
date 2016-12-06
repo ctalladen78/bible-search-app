@@ -19,7 +19,7 @@
 
         </form>
         <form class="row">
-            <label class="item item-input">
+            <label class="col-66 item item-input">
                     <i class="icon ion-search placeholder-icon"></i>
                     <input type="search" placeholder="Search Term" ng-model="vm.word">
             </label>
@@ -37,7 +37,7 @@
             Old Testament
           </label>
           <!--  -->
-            <button ng-disabled="!vm.word" ui-sref="menu.wordSearchResults({term:vm.word})" id="search-button4" class=" button button-positive  button-block ">Word search</button>
+            <button ng-disabled="!vm.word" ui-sref="menu.wordSearchResults({term:vm.word})" id="search-button4" class="col-33 button button-positive  button-block ">Word search</button>
         </form>
     </ion-content>
 </ion-view>

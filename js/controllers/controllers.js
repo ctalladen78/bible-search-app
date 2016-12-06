@@ -198,7 +198,7 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
   ctrl.searchAllBible;
   ctrl.searchNewTestament;
   ctrl.searchOldTestament;
-  
+
   ctrl.getBooks = function(){
     DbService.getBooks().then(function(res){
     ctrl.bookList = res
@@ -250,13 +250,29 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
   ctrl.saveAsCategory = function(){
 
     // save vids into new category
+    // TODO make new category after 150 items
     var vidlist = []
+    var count =0
+    while(ctrl.verses.length >150){
+      var verseLen = ctrl.verses.length
+      count++
+      _.times(verseLen, function(i){
+        // console.log('%%%% breaking up category',ctrl.verses[i].vid)
+        vidlist.push(ctrl.verses[i].vid)
+      })
+      console.log('%%% breaking up category',count,vidlist.length,verseLen )
+      var str = ''+ctrl.word+' Part '+count
+      DbService.addCategory(str,vidlist)
+      ctrl.verses.splice(0,150)//reduce by 150 items
+      vidlist = []
+    }
+    console.log('%%% big search reduced', ctrl.verses.length)
+    // ctrl.verses now reduced to less than 150
     _.each(ctrl.verses, function(v){
       vidlist.push(v.vid)
     })
     //make new category
     DbService.addCategory(ctrl.word,vidlist)
-    // save to db
     // go to category page
     $ionicHistory.nextViewOptions({
       disableBack: true

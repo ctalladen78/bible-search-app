@@ -24,7 +24,9 @@ angular.module('app.services', [])
     removeFromFavorites : removeFromFavorites,
     isVidLiked : isVidLiked,
     getVerseByCat : getVerseByCat,
-    getCategoryByName : getCategoryByName
+    getCategoryByName : getCategoryByName,
+    deleteCategory : deleteCategory,
+    renameCategory : renameCategory
   }
 // https://www.npmjs.com/package/angular-file-upload
   // populate db from api endpoint
@@ -431,36 +433,42 @@ angular.module('app.services', [])
       })
       return templist
     })
-    // .then(function(list){
-        // console.log('%%% returning list of favorites: ', list)
-      // return list
-    // })
   }
 
-  function renameCategory(vid, oldCatName,newCatName){
-    /*
-    db.get(cat.cid where cat.vid === vid)
-    .then(function(res){
-      res.catlist.map(function(i){
-        if(i.catName === oldCatName){
-          i.catName = newCatName
-        }
+  function renameCategory(oldCatName,newCatName){
+    return $q.when(db.allDocs({include_docs:true, startkey: 'category-', endkey: 'category-\uffff'}))
+    .then(function(docs){
+      console.log('%%% get category',docs.rows)
+      var category = _.filter(docs.rows, function(d){return d.catName === oldCatName})
+      category = category[0]
+      category.catName = newCatName
+      console.log('%%% rename  category',vid, category)
+      db.get(category._id)
+      .then(function(doc){
+        category._rev = doc._rev
+        db.put(category)
+        .then(function(res){console.log('%%% removed vid to category',res)})
+        .catch(function(er){ console.log('%%% add to fav error',er)})
       })
-      return res
     })
-    .then(function(i){db.put(res)})
-    .then(function(){
-      syncToChanges()
-    })
-    */
   }
-  function deleteCategory(vid, catName){
-    //db.get(vid).then(function(res){db.delete(vid)})
-    /*
-    .then(function(){
-      syncToChanges()
+
+  // delete category by name
+  function deleteCategory(catname){
+    return $q.when(db.allDocs({include_docs:true, startkey: 'category-', endkey: 'category-\uffff'}))
+    .then(function(docs){
+      console.log('%%% get category',docs.rows)
+      var category = _.filter(docs.rows, function(d){return d.doc.catName === catname})
+      category = category[0].doc
+      console.log('%%% deleting category',catname, category)
+      $q.when(db.get(category._id))
+      .then(function(doc){
+        category._rev = doc._rev
+        db.remove(category)
+        .then(function(res){console.log('%%% removed vid to category',res)})
+        .catch(function(er){ console.log('%%% add to fav error',er)})
+      })
     })
-    */
   }
 
   // return a list of categories given verse id

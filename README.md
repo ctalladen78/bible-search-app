@@ -7,6 +7,7 @@
 -[ ] cordova native notifications
 -[X] favorites refresh
 -[ ] category icons show/hide
+-[ ] category loading 
 -[ ] add art splash page, background, side menu, verse detail
 -[ ] add history db document {verseList, date, }
 -[ ] history object {list: book,chapter, date}

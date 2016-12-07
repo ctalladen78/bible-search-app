@@ -1,13 +1,17 @@
 <ion-view  id="page2" class="bar-positive"  title="Favorites" ng-controller="favoritesCtrl as fvm">
+  <ion-header-bar>
+    <div class="buttons">
+      <input type="button" class="button button-icon icon ion-ios-minus-outline"
+      ng-click="fvm.showDelete = !fvm.showDelete"></input>
+    </div>
+  </ion-header-bar>
     <ion-content padding="true" class="has-header">
       <ion-refresher
-    pulling-text="Pull to refresh..."
-    on-refresh="fvm.doRefresh()">
-  </ion-refresher>
+        pulling-text="Pull to refresh..."
+        on-refresh="fvm.doRefresh()">
+      </ion-refresher>
         <ion-list ng-init="fvm.getFavorites()"
-        id="bookSearchResults-list5" class=" "
-        show-delete="fvm.showDelete()"
-        can-swipe="fvm.itemCanSwipe">
+        id="bookSearchResults-list5" class=" ">
             <div collection-repeat="ver in fvm.verses"
             class="list card"
             id="bookSearchResults-list-item16">

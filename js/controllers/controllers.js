@@ -96,6 +96,12 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
     viewData.enableBack = false;
     console.log('%%% before enter view data',viewData)
 });
+    $ionicLoading.show({
+    template: '<div><ion-spinner icon="dots"></ion-spinner><p>Loading</p><p>categories...</p></div>',
+    showBackdrop: true,
+    maxWidth: 200
+    // showDelay: 2  // seconds
+  })
 
   DbService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse)
   .then(function(verse){
@@ -107,12 +113,13 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
   .then(function(cats){
     console.log('%%% get category by vid',cats)
     ctrl.catList = cats
+    $ionicLoading.hide()
   })
 
   DbService.isVidLiked(vid)
   .then(function(isliked){
     ctrl.verseDetail.like = isliked
-    // $state.go($state.currentState, {}, {reload:true})
+    $state.reload()
     console.log('%%%% get verse detail', ctrl)
   })
 
@@ -125,7 +132,7 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
     }
     if(!ctrl.verseDetail.like){
       DbService.removeFromFavorites(ctrl.verseDetail.vid)
-      // .then(function(){$scope.$apply()})
+      .then(function(){$state.reload()})
     }
   }
 
@@ -250,20 +257,19 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
   ctrl.saveAsCategory = function(){
 
     // save vids into new category
-    // TODO make new category after 150 items
     var vidlist = []
     var count =0
-    while(ctrl.verses.length >150){
-      var verseLen = ctrl.verses.length
+    while(ctrl.verses.length >75){
       count++
-      _.times(verseLen, function(i){
+      _.times(75, function(i){
         // console.log('%%%% breaking up category',ctrl.verses[i].vid)
         vidlist.push(ctrl.verses[i].vid)
       })
-      console.log('%%% breaking up category',count,vidlist.length,verseLen )
+      console.log('%%% breaking up category',count,vidlist.length)
       var str = ''+ctrl.word+' Part '+count
       DbService.addCategory(str,vidlist)
-      ctrl.verses.splice(0,150)//reduce by 150 items
+      ctrl.verses.splice(0,75)//reduce by 75 items
+      console.log('%%% search results length ',ctrl.verses.length)
       vidlist = []
     }
     console.log('%%% big search reduced', ctrl.verses.length)
@@ -277,7 +283,7 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
     $ionicHistory.nextViewOptions({
       disableBack: true
     });
-    $state.go('menu.categoryDetail', {categoryId: ctrl.word})
+    $state.go('menu.categories')
   }
 
   return ctrl;
@@ -289,7 +295,7 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
   //https://www.sitepoint.com/mastering-watch-angularjs/
 .controller('favoritesCtrl', ['$ionicLoading','$timeout','$state','$ionicConfig','$q','$scope','$stateParams', 'DbService','$ionicModal', function($ionicLoading,$timeout,$state, $ionicConfig, $q, $scope, $stateParams, DbService, $ionicModal) {
   var ctrl = this;
-  ctrl.showDelete;
+  ctrl.showDelete = false;
   ctrl.vid;
   ctrl.itemCanSwipe = true
 
@@ -303,7 +309,9 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
       console.log('%%% favorite docs', docs, docs.length)
     })
 });
-
+ctrl.removeFromFavorites = function(vid){
+    //DbService.removeFromFavorites(vid)
+  }
 
   // return list of verse objects
   ctrl.getFavorites = function(){
@@ -315,13 +323,6 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
 
   }
 
-  ctrl.showDelete = function(){
-
-  }
-  ctrl.reset = function(){
-    // console.log('resetting')
-    // $state.go($state.current, {}, { reload: true });
-  }
   ctrl.doRefresh = function(){
     console.log('%%%% pulled to refresh')
     $scope.$apply()
@@ -361,8 +362,9 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
 }])
 
 // categories page master list
-.controller('categoriesCtrl', ['$ionicLoading','$scope','$stateParams','DbService', function($ionicLoading, $scope, $stateParams, DbService) {
+.controller('categoriesCtrl', ['$state','$ionicLoading','$scope','$stateParams','DbService', function($state,$ionicLoading, $scope, $stateParams, DbService) {
   var ctrl = this;
+  ctrl.showDelete = false;
   ctrl.category = '';
   ctrl.categories = []
 /*
@@ -377,6 +379,19 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
     maxWidth: 200
     // showDelay: 2  // seconds
   })
+
+  ctrl.deleteCategory = function(cat){
+    // if(cat.length === 0) return
+          // var index = ctrl.categories.findIndex(function(){return cat})
+      // ctrl.categories.splice(index,1)
+      _.remove(ctrl.categories, function(c){return c === cat})
+      console.log('%%% categories after delete', ctrl.categories)
+    DbService.deleteCategory(cat)
+    .then(function(){
+      // $state.reload()
+      // ctrl.getCategories()
+    })
+  }
 
   ctrl.getCategories = function(){
     DbService.getAllCategoryList() // return list of categories
@@ -402,11 +417,7 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
   var ctrl = this;
   ctrl.vid;
   ctrl.category = $stateParams.categoryId;
-  ctrl.itemCanSwipe = true
-
-  ctrl.showDelete = function(){
-
-  }
+  ctrl.showDelete = false
 
   ctrl.getVerses = function(){
     DbService.getCategoryByName(ctrl.category)
@@ -417,6 +428,17 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
         ctrl.verseList = verses
       })
     })
+  }
+
+  ctrl.deleteCategoryItem = function(vid){
+      // TODO get index of vid then splice array
+      var index = ctrl.verseList.findIndex(function(){return vid})
+      ctrl.verseList.splice(index,1)
+      DbService.removeVerseFromCategory(vid, ctrl.category)
+      .then(function(){
+        $state.reload();
+        // ctrl.getVerses()
+      })
   }
 
   // TODO this should autofocus into the verse index page
@@ -464,12 +486,6 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
 // TODO: parking lot item
 // rename existing category
 .controller('editCategoryCtrl', ['$stateParams','$scope','DbService',function($stateParams, $scope, DbService) {
-  var ctrl = this;
-  // using routeParams write to db
-  return ctrl
-}])
-
-.controller('verseDetailModalCtrl', ['$stateParams','$scope','DbService',function($stateParams, $scope, DbService) {
   var ctrl = this;
   // using routeParams write to db
   return ctrl

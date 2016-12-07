@@ -1,11 +1,15 @@
 <ion-view  title="{{cvm.category}}" id="page9" class=" " ng-controller="categoryDetailCtrl as cvm">
+    <ion-nav-buttons side="right">
+    <div class="">
+      <ion-toggle ng-model="cvm.showDelete"></ion-toggle>
+    </div>
+  </ion-nav-buttons>
     <ion-content padding="true" class="has-header">
       <ion-list ng-init="cvm.getVerses(cvm.word)"
         id="bookSearchResults-list5" class=" "
-        show-delete="cvm.showDelete()"
-        can-swipe="cvm.itemCanSwipe">
+        show-delete="cvm.showDelete">
             <!-- ui-sref passes parameters to next page-->
-            <div collection-repeat="ver in cvm.verseList"
+            <ion-item collection-repeat="ver in cvm.verseList"
             class="list card"
             id="bookSearchResults-list-item16">
             <div class="row item" style="padding: 5px 5px 5px 15px;">
@@ -16,10 +20,11 @@
                 <i  class="icon ion-more"></i>
               </a>
             </div>
-              <div class="row item item-text-wrap" style="word-wrap:break-word;">
+              <div class="row item item-text-wrap " style="flex:1;display:flex;overflow:auto;">
              <p>{{ver.text}}</p>
+                <ion-delete-button class="ion-minus-circled" ng-click="cvm.deleteCategoryItem(ver.vid)"></ion-delete-button>
            </div>
-         </div>
+         </ion-item>
         </ion-list>
       </ion-content>
 </ion-view>

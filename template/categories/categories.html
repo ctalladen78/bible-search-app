@@ -1,16 +1,20 @@
 <ion-view title="Categories" id="page3" cache-view="false" class=" " ng-controller="categoriesCtrl as vm">
+    <ion-nav-buttons side="right">
+    <div class="">
+      <ion-toggle ng-model="vm.showDelete"></ion-toggle>
+    </div>
+  </ion-nav-buttons>
     <ion-content padding="true" class="">
       <ion-refresher
         pulling-text="Pull to refresh..."
         on-refresh="vm.doRefresh()">
       </ion-refresher>
         <ion-list id="categories-list4" class=" "
-        show-delete="vm.showDelete()"
-        can-swipe="vm.itemCanSwipe"
+        show-delete="vm.showDelete"
         ng-init="vm.getCategories()">
-            <ion-item ng-repeat="cat in vm.categories track by $index" class="item-icon-right  " id="categories-list-item13"
-            ui-sref="menu.categoryDetail({categoryId:cat})">{{cat}}
-                <i class="icon ion-android-arrow-forward"></i>
+            <ion-item collection-repeat="cat in vm.categories track by $index" class="item-icon-right  " id="categories-list-item13">{{cat}}
+                <i class="icon ion-android-arrow-forward" ui-sref="menu.categoryDetail({categoryId:cat})"></i>
+                <ion-delete-button class="ion-minus-circled" ng-click="vm.deleteCategory(cat)"></ion-delete-button>
             </ion-item>
         </ion-list>
         <a ui-sref="menu.addCategory"

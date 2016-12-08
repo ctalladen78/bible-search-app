@@ -382,14 +382,11 @@ ctrl.removeFromFavorites = function(vid){
 
   ctrl.deleteCategory = function(cat){
     // if(cat.length === 0) return
-          // var index = ctrl.categories.findIndex(function(){return cat})
-      // ctrl.categories.splice(index,1)
       _.remove(ctrl.categories, function(c){return c === cat})
       console.log('%%% categories after delete', ctrl.categories)
     DbService.deleteCategory(cat)
     .then(function(){
       // $state.reload()
-      // ctrl.getCategories()
     })
   }
 
@@ -431,13 +428,10 @@ ctrl.removeFromFavorites = function(vid){
   }
 
   ctrl.deleteCategoryItem = function(vid){
-      // TODO get index of vid then splice array
-      var index = ctrl.verseList.findIndex(function(){return vid})
-      ctrl.verseList.splice(index,1)
+      _.remove(ctrl.verseList, function(c){return c === vid})
       DbService.removeVerseFromCategory(vid, ctrl.category)
       .then(function(){
         $state.reload();
-        // ctrl.getVerses()
       })
   }
 

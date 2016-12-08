@@ -15,13 +15,11 @@
             <div collection-repeat="ver in fvm.verses"
             class="list card"
             id="bookSearchResults-list-item16">
-            <div class="row item" style="padding: 5px 5px 5px 15px;">
-            <a class="item-icon-right" ng-click="fvm.openModal(ver.vid)"
-                <span class="item-note">
+            <div class="row item item-note item-icon-right" style="padding: 5px 5px 5px 15px;">
+              <a class="" ng-click="fvm.gotoVerseIndexPage(ver.vid)">
                 {{ver.vid}}
-                </span>
-                <i  class="icon ion-more"></i>
               </a>
+                <i  ng-click="fvm.openModal(ver.vid)" class="icon ion-more"></i>
             </div>
               <div class="row item item-text-wrap" style="word-wrap:break-word;">
              <p>{{ver.text}}</p>

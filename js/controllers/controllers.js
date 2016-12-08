@@ -27,8 +27,8 @@ angular.module('app.controllers', ['app.services'])
   return ctrl;
 }])
 // verse list search results master list
-.controller('bookSearchResultsCtrl', ['$scope','$stateParams', 'DbService','$ionicModal','$state','$window','$ionicHistory',
-function($scope, $stateParams, DbService, $ionicModal, $state, $window, $ionicHistory) {
+.controller('bookSearchResultsCtrl', ['$http','$scope','$stateParams', 'DbService','$ionicModal','$state','$window','$ionicHistory',
+function($http, $scope, $stateParams, DbService, $ionicModal, $state, $window, $ionicHistory) {
   // using routeParams
   var ctrl = this;
   $scope.bookId = $stateParams.book;
@@ -42,6 +42,40 @@ function($scope, $stateParams, DbService, $ionicModal, $state, $window, $ionicHi
     console.log('%%% verselist', res)
       ctrl.verses = res
     })
+  }
+
+  ctrl.gotoNextChapter = function(){
+    // if next chapter is null then get next book
+    var hasnext;
+    return $http.get('./static-new-testament.json')
+    .then(function(res){
+      var booklist = res.data
+      hasnext = _.find(booklist, function(bk){
+        var nextch = $scope.chapId
+        nextch++
+        // console.log('%%%% bk', bk, nextch)
+        return bk.book === $scope.bookId && bk.chapter ===nextch
+      })
+      if(!hasnext){
+        var index = _.findLastIndex(booklist, function(bk){
+          console.log('%%%% bk', bk.book,bk.chapter, $scope.bookId, $scope.chapId)
+          var ch = parseInt($scope.chapId)
+          return bk.book === $scope.bookId && bk.chapter ===ch
+        })
+        index++
+        var nextbook = booklist[index]
+        console.log('%%% next book ', nextbook, index)
+        $state.go('menu.verseIndex',{book:nextbook.book, chap:nextbook.chapter})
+      }else{
+        console.log('%%% has next chapter ', hasnext)
+        var nextchapter = hasnext.chapter
+        $scope.bookId = hasnext.book
+        $scope.chapId = hasnext.chapter
+        // $state.reload()
+        $state.go('menu.verseIndex',{book:$scope.bookId, chap:$scope.chapId})
+      }
+    })
+
   }
   // issues with modal http://stackoverflow.com/questions/30430160/why-isnt-my-ionic-modal-opening-on-an-android-4-4-device
   ctrl.openModal = function(verse){
@@ -79,8 +113,8 @@ function($scope, $stateParams, DbService, $ionicModal, $state, $window, $ionicHi
 }])
 
 // verse detail
-.controller('verseDetailCtrl', ['$scope','$stateParams', 'DbService','$state','$ionicModal','$ionicHistory','$ionicLoading',
-function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $ionicLoading) {
+.controller('verseDetailCtrl', ['$q','$scope','$stateParams', 'DbService','$state','$ionicModal','$ionicHistory','$ionicLoading',
+function($q, $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $ionicLoading) {
   // using routeParams
   var ctrl = this;
   ctrl.bookId = $stateParams.book || $scope.bookId
@@ -128,7 +162,6 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
     console.log('%%% is liked? ', ctrl.verseDetail.like)
     if(ctrl.verseDetail.like){
       DbService.addToFavorites(ctrl.verseDetail.vid)
-      // .then(function(){$scope.$apply()})
     }
     if(!ctrl.verseDetail.like){
       DbService.removeFromFavorites(ctrl.verseDetail.vid)
@@ -162,6 +195,10 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
   ctrl.addVerseToCategory = function(){
     console.log('%%% add to category', ctrl.verseDetail.vid, ctrl.selectedCategory)
     DbService.addVerseToCategory(ctrl.verseDetail.vid, ctrl.selectedCategory)
+    .then(function(){
+      $state.reload()
+      // $state.go('menu.verseDetail',{book:ctrl.bookId, chap:ctrl.chapId, verse:ctrl.verse})
+    })
   }
   ctrl.cancel = function(){
     if($scope.modal)
@@ -299,6 +336,14 @@ function( $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $
   ctrl.vid;
   ctrl.itemCanSwipe = true
 
+  ctrl.gotoVerseIndexPage = function(vid){
+    var vidstring = vid.split('-')
+    $scope.bookId = vidstring[0]
+    $scope.chapId = vidstring[1]
+    $scope.verseId = vidstring[2]
+    $state.go('menu.verseIndex',{book:$scope.bookId,chap:$scope.chapId})
+  }
+
   console.log('%%% get max cache', $ionicConfig.views.maxCache())
   $scope.$on('$ionicView.beforeEnter', function (event, viewData) {
     viewData.enableBack = false;
@@ -333,12 +378,10 @@ ctrl.removeFromFavorites = function(vid){
 
   // TODO this should autofocus into the verse index page
   ctrl.openModal = function(vid){
-    ctrl.vid = vid
     var vidstring = vid.split('-')
     $scope.bookId = vidstring[0]
     $scope.chapId = vidstring[1]
     $scope.verseId = vidstring[2]
-    console.log('%% open modal with', vidstring)
     /*
     $ionicModal.fromTemplateUrl('./verse-detail.html', {
       scope: $scope,
@@ -423,12 +466,13 @@ ctrl.removeFromFavorites = function(vid){
       DbService.getVerseByCat(cat.doc._id)
       .then(function(verses){
         ctrl.verseList = verses
+        console.log('%%% verse list', ctrl.verseList)
       })
     })
   }
 
   ctrl.deleteCategoryItem = function(vid){
-      _.remove(ctrl.verseList, function(c){return c === vid})
+      _.remove(ctrl.verseList, function(c){return c.vid === vid})
       DbService.removeVerseFromCategory(vid, ctrl.category)
       .then(function(){
         $state.reload();

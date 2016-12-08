@@ -2,16 +2,17 @@
 -[ ] verse detail page design
 -[X] word search function limit 100
 -[X] save search as category
+-[X] next chapter button
 -[ ] fonts
--[ ] swipe left to delete categories, unlike favorites
+-[X] swipe left to delete categories, unlike favorites
 -[ ] cordova native notifications
 -[X] favorites refresh
 -[ ] category icons show/hide
--[ ] category loading 
+-[X] category loading
 -[ ] add art splash page, background, side menu, verse detail
--[ ] add history db document {verseList, date, }
--[ ] history object {list: book,chapter, date}
--[ ] it is added when user navigates to verse index page
+-[ ] add history db document 
+- history object {list: book,chapter, date}
+- it is added when user navigates to verse index page
 -[ ] homepage dashboard
 { category count, chapters read count & percent progress, last 10 chapters read history}
 

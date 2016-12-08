@@ -1,4 +1,7 @@
 <ion-view title="{{vm.bookId}} {{vm.chapId}}" id="page7" class=" " ng-controller="bookSearchResultsCtrl as vm">
+  <ion-nav-buttons side="right">
+      <input type="button" value="Next" ng-click="vm.gotoNextChapter()"></input>
+  </ion-nav-buttons>
     <ion-content padding="true" class="has-header">
         <ion-list ng-init="vm.getVerses(vm.bookId, vm.chapId)"
         id="bookSearchResults-list5" class=" " >

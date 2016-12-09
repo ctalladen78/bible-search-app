@@ -56,15 +56,21 @@ function($http, $scope, $stateParams, DbService, $ionicModal, $state, $window, $
         // console.log('%%%% bk', bk, nextch)
         return bk.book === $scope.bookId && bk.chapter ===nextch
       })
+      // this should happen once at the end of revelation
       if(!hasnext){
         var index = _.findLastIndex(booklist, function(bk){
-          console.log('%%%% bk', bk.book,bk.chapter, $scope.bookId, $scope.chapId)
+          console.log('%%%% end of book', bk.book,bk.chapter, $scope.bookId, $scope.chapId)
           var ch = parseInt($scope.chapId)
           return bk.book === $scope.bookId && bk.chapter ===ch
         })
         index++
         var nextbook = booklist[index]
         console.log('%%% next book ', nextbook, index)
+        if(!nextbook){
+          nextbook = {}
+          nextbook.book = "Matthew"
+          nextbook.chapter = 1
+        }
         $state.go('menu.verseIndex',{book:nextbook.book, chap:nextbook.chapter})
       }else{
         console.log('%%% has next chapter ', hasnext)

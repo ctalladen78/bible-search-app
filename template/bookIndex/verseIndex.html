@@ -1,4 +1,10 @@
-<ion-view title="{{vm.bookId}} {{vm.chapId}}" id="page7" class=" " ng-controller="bookSearchResultsCtrl as vm">
+<!-- <ion-view title="{{vm.bookId}} {{vm.chapId}}" id="page7" class=" " ng-controller="bookSearchResultsCtrl as vm"> -->
+    <ion-view ng-controller="bookSearchResultsCtrl as vm">
+  <ion-nav-title>
+    <center>
+      {{vm.bookId}} {{vm.chapId}}
+    </center>
+  </ion-nav-title>
   <ion-nav-buttons side="right">
       <input type="button" value="Next" ng-click="vm.gotoNextChapter()"></input>
   </ion-nav-buttons>

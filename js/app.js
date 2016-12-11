@@ -5,7 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services', 'app.directives'])
+angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services', 'app.directives', 'ionic-material'])
 
 .run(['DbService','$ionicPlatform', function( DbService, $ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -30,4 +30,8 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
 
   // note that you can also chain configs
   // $ionicConfigProvider.backButton.text('Go Back').icon('ion-chevron-left');
+    // Turn off back button text
+    $ionicConfigProvider.backButton.previousTitleText(false);
+$ionicConfigProvider.backButton.icon('ion-chevron-left');
+  $ionicConfigProvider.backButton.text('')
 });

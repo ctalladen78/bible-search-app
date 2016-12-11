@@ -1,4 +1,10 @@
-<ion-view title="Book Index" id="bindexPage" class=" " ng-controller="bookIndexCtrl as vm">
+<!-- <ion-view title="Book Index" id="bindexPage" class=" " ng-controller="bookIndexCtrl as vm"> -->
+    <ion-view ng-controller="bookIndexCtrl as vm">
+  <ion-nav-title>
+    <center class="center">
+      Bible Index
+    </center>
+  </ion-nav-title>
     <ion-content padding="true" class="has-header">
         <ion-list  id="bookIndex" class=" " >
             <ion-item ng-repeat="bk in vm.bookList track by $index" class="item-icon-right  " id="bookSearchResults-list-item16" ui-sref="menu.chapterIndex({book:bk})">

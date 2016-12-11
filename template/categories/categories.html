@@ -1,8 +1,12 @@
-<ion-view title="Categories" id="page3" cache-view="false" class=" " ng-controller="categoriesCtrl as vm">
+<!-- <ion-view title="Categories" id="page3" cache-view="false" class=" " ng-controller="categoriesCtrl as vm"> -->
+  <ion-view ng-controller="categoriesCtrl as vm">
+  <ion-nav-title>
+    <center>
+    Categories
+    </center>
+  </ion-nav-title>
     <ion-nav-buttons side="right">
-    <div class="">
-      <ion-toggle ng-model="vm.showDelete"></ion-toggle>
-    </div>
+      <ion-toggle style="padding: 0px 30px;border: none;background: transparent;" ng-model="vm.showDelete"></ion-toggle>
   </ion-nav-buttons>
     <ion-content padding="true" class="">
       <ion-refresher
@@ -14,12 +18,12 @@
         ng-init="vm.getCategories()">
             <ion-item collection-repeat="cat in vm.categories track by $index" class="item-icon-right  " id="categories-list-item13">{{cat}}
                 <i class="icon ion-android-arrow-forward" ui-sref="menu.categoryDetail({categoryId:cat})"></i>
-                <ion-delete-button class="ion-minus-circled" ng-click="vm.deleteCategory(cat)"></ion-delete-button>
+                <ion-delete-button style="box-shadow:none;" class="ion-minus-circled" ng-click="vm.deleteCategory(cat)"></ion-delete-button>
             </ion-item>
         </ion-list>
         <a ui-sref="menu.addCategory"
         style="position:absolute;bottom:10px;right:10px;z-index:9999"
-        class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored">
+        class="">
           <i class="material-icons">+</i>
         </a>
     </ion-content>

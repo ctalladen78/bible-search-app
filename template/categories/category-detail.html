@@ -1,8 +1,12 @@
-<ion-view  title="{{cvm.category}}" id="page9" class=" " ng-controller="categoryDetailCtrl as cvm">
+<!-- <ion-view  title="{{cvm.category}}" id="page9" class=" " ng-controller="categoryDetailCtrl as cvm"> -->
+<ion-view  ng-controller="categoryDetailCtrl as cvm">
+  <ion-nav-title>
+    <center>
+      {{cvm.category}}
+    </center>
+  </ion-nav-title>
     <ion-nav-buttons side="right">
-    <div class="">
-      <ion-toggle ng-model="cvm.showDelete"></ion-toggle>
-    </div>
+      <ion-toggle style="padding: 0px 30px;border: none;background: transparent;" ng-model="cvm.showDelete"></ion-toggle>
   </ion-nav-buttons>
     <ion-content padding="true" class="has-header">
       <ion-list ng-init="cvm.getVerses(cvm.word)"
@@ -12,7 +16,7 @@
             <ion-item collection-repeat="ver in cvm.verseList"
             class="list card"
             id="bookSearchResults-list-item16">
-            <div class="row item" style="padding: 5px 5px 5px 15px;">
+            <div class="row item" style="">
             <a class="item-icon-right" ng-click="cvm.openModal(ver.vid)"
                 <span class="item-note">
                 {{ver.vid}}
@@ -20,7 +24,7 @@
                 <i  class="icon ion-more"></i>
               </a>
             </div>
-              <div class="row item item-text-wrap " style="flex:1;display:flex;overflow:auto;">
+              <div class="row item item-text-wrap " style="">
              <p>{{ver.text}}</p>
                 <ion-delete-button class="ion-minus-circled" ng-click="cvm.deleteCategoryItem(ver.vid)"></ion-delete-button>
            </div>

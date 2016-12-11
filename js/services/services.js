@@ -600,7 +600,7 @@ angular.module('app.services', [])
         newcat.vidList = vidlist
     return $q.when(newcat)
       .then(function(obj){
-        console.log('%%% trying to add', obj.data)
+        console.log('%%% trying to add', obj)
         db.put(obj)
         .then(function(res){console.log('%%% added category',res)})
         .catch(function(er){ console.log('%%% add category error',er)})

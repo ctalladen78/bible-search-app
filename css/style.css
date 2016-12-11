@@ -1,25 +1,12 @@
-/* Empty. Add your own CSS if you like */
-.mdl-card{
-  width:500px;
-  height:500px;
+
+.toggle{
+  padding: 0px 30px;
+border: none;
+background: transparent;
 }
-.mdl-card__title{
-  background: url(http://lorempixel.com/500/500/nature);
-  color: #fff;
+.center{
+  margin-right: 50px;
 }
-.in-between{
-  position:relative;
-  top: 80px;
-  right: -38%
-}
-.menu-style{
-  /*height: 500px*/
-  /*background: url(/resources/icon.png)*/
-  background-color: violet
-}
-.bar-custom{
-  background-color: violet
-}
-.scroll{
-  height:100%
+.item a.item-content{
+  background-color:transparent; !important
 }

@@ -80,7 +80,7 @@ angular.module('app.routes', [])
       'side-menu21': {
         templateUrl: 'template/categories/categories.html',
         controller: 'categoriesCtrl'
-      }
+      },
     }
   })
 

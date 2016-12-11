@@ -1,12 +1,16 @@
-<ion-view  title="Edit {{vm.bookId}} {{vm.chapId}} : {{vm.verse}}" id="page6" class=" " ng-controller="verseDetailCtrl as vm">
-    <ion-content  class="mdl-card mdl-shadow--2dp ">
+<!-- <ion-view  title="Edit {{vm.bookId}} {{vm.chapId}} : {{vm.verse}}" id="page6" class=" " ng-controller="verseDetailCtrl as vm"> -->
+  <ion-view ng-controller="verseDetailCtrl as vm">
+  <ion-nav-buttons side="right">
+      <!-- <input type="button" value="Next" ng-click="vm.gotoNextChapter()"></input> -->
+    <input type="button"   ng-click="vm.cancel()" value="Close">
+  </ion-nav-buttons>
+    <ion-content  class=" ">
 
-        <div class="mdl-card__title mdl-card--expand item">
-          <h2 class="mdl-card__title-text">{{vm.bookId}} {{vm.chapId}} : {{vm.verse}}</h2>
-          <input type="button" class="in-between mdl-button mdl-button--fab mdl-button--colored"
-          ng-click="vm.toggleLike()">
-          <i class="icon ion-android-star" ng-class={isactive:vm.verseDetail.isliked}></i>
-        </input>
+        <div class="row item" style="display:flex;flex-direction:column;height:33%;background: url('img/profile-bg.jpg'); background-size: cover;">
+          <h2 class="col-33" style="margin-top: auto;color:#fff;">{{vm.bookId}} {{vm.chapId}} : {{vm.verse}}</h2>
+        <button id="fab-profile" ng-class={isactive:vm.verseDetail.isliked} ng-click="vm.toggleLike()"
+        class="button button-fab button-fab-bottom-right button-energized-900">
+          <i class="icon ion-heart"></i></button>
       </div>
 
         <div id="editVerse-form2" class="item row">
@@ -18,10 +22,10 @@
                 </select>
         </div>
         <div class="item  item-text-wrap">
-          <span ng-repeat="acat in vm.catList track by $index" class="mdl-chip mdl-chip--contact">
+          <span ng-repeat="acat in vm.catList track by $index" class="">
             <span ng-click="vm.gotoCategory(acat)">
-              <span class="mdl-chip__contact mdl-color--pink mdl-color-text--white">{{vm.getAvatar(acat)}}</span>
-              <span class="mdl-chip__text">{{acat}}</span>
+              <span class="">{{vm.getAvatar(acat)}}</span>
+              <span class="">{{acat}}</span>
             </span>
           </span>
         </div>
@@ -29,8 +33,7 @@
         <button class=" button button-positive  button-block "
         ng-click="vm.saveVerse()">Save Changes</button>
         <!--  -->
-        <input type="button"  id="editVerse-button9" ng-click="vm.cancel()"
-        class=" button button-positive  button-block " value="Close">
+
 
     </ion-content>
 </ion-view>

@@ -5,12 +5,12 @@
 -[X] next chapter button
 -[ ] fonts
 -[X] swipe left to delete categories, unlike favorites
--[ ] cordova native notifications
+-[ ] ionic-native cordova native notifications http://stackoverflow.com/questions/38683421/how-to-import-ionic-native-js-in-ionic-v1-angular-1-x
 -[X] favorites refresh
 -[ ] category icons show/hide
 -[X] category loading
 -[ ] add art splash page, background, side menu, verse detail
--[ ] add history db document 
+-[ ] add history db document
 - history object {list: book,chapter, date}
 - it is added when user navigates to verse index page
 -[ ] homepage dashboard

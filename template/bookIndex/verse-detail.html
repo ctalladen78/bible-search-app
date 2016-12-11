@@ -1,30 +1,30 @@
 <!-- <ion-view  title="Edit {{vm.bookId}} {{vm.chapId}} : {{vm.verse}}" id="page6" class=" " ng-controller="verseDetailCtrl as vm"> -->
   <ion-view ng-controller="verseDetailCtrl as vm">
-  <ion-nav-buttons side="right">
-      <!-- <input type="button" value="Next" ng-click="vm.gotoNextChapter()"></input> -->
-    <input type="button"   ng-click="vm.cancel()" value="Close">
+  <ion-nav-buttons side="right" >
+    <input type="button" class="cancel"  ng-click="vm.cancel()" value="Close">
   </ion-nav-buttons>
     <ion-content  class=" ">
-
-        <div class="row item" style="display:flex;flex-direction:column;height:33%;background: url('img/profile-bg.jpg'); background-size: cover;">
-          <h2 class="col-33" style="margin-top: auto;color:#fff;">{{vm.bookId}} {{vm.chapId}} : {{vm.verse}}</h2>
-        <button id="fab-profile" ng-class={isactive:vm.verseDetail.isliked} ng-click="vm.toggleLike()"
+<!-- hero section -->
+        <div class="row item" style="display:flex;flex-direction:column;height:43%;background: url('img/profile-bg.jpg'); background-size: cover;">
+          <h2 class="" style="font-size:x-large;margin-top: 55%;color:#fff;">{{vm.bookId}} {{vm.chapId}} : {{vm.verse}}</h2>
+        <button  ng-class={isactive:vm.verseDetail.isliked} ng-click="vm.toggleLike()"
         class="button button-fab button-fab-bottom-right button-energized-900">
           <i class="icon ion-heart"></i></button>
       </div>
+<!-- select dropdown -->
 
-        <div id="editVerse-form2" class="item row">
-                <span class="input-label col-50">Add to categories</span>
-                <select class="col-50"
-                ng-init="vm.getCategories()" ng-model="vm.selectedCategory"
-                ng-options="cat as cat for cat in vm.categories"
-                ng-change="vm.addVerseToCategory()">
-                </select>
-        </div>
-        <div class="item  item-text-wrap">
+  <div class="row item" style="background-color:snow;">
+    <h2 class="col-50 padding" style="margin-top:5px;">Add To Categories</h2>
+    <div class="col-50 padding" ng-click="openPopover($event)">
+    <i class="ion button-icon icon ion-more" style="float:right;"></i>
+  </div>
+  </div>
+
+        <!--  category list-->
+        <div class="item  item-text-wrap " style="background-color:snow">
           <span ng-repeat="acat in vm.catList track by $index" class="">
-            <span ng-click="vm.gotoCategory(acat)">
-              <span class="">{{vm.getAvatar(acat)}}</span>
+            <span class="chip" ng-click="vm.gotoCategory(acat)">
+              <span class="tag"><h2>{{vm.getAvatar(acat)}}</h2></span>
               <span class="">{{acat}}</span>
             </span>
           </span>
@@ -34,6 +34,25 @@
         ng-click="vm.saveVerse()">Save Changes</button>
         <!--  -->
 
-
+        <script id="versedetail-popover.html" type="text/ng-template">
+          <ion-popover-view>
+            <ion-content>
+<div id="editVerse-form2" class="item row " style="background-color:snow">
+                <div class="list" style="width:100%;" ng-init="vm.getCategories()">
+                  <span class="item" style="border-bottom: 2px solid dimgrey;" ng-repeat="cat in vm.categories">
+                    <a ng-click="vm.addVerseToCategory(cat)" >{{cat}}</a>
+                  </span>
+                </div>
+                <!--
+                <select class="col-50"
+                ng-init="vm.getCategories()" ng-model="vm.selectedCategory"
+                ng-options="cat as cat for cat in vm.categories"
+                ng-change="vm.addVerseToCategory()">
+                </select>
+                <!--  -->
+        </div>
+      </ion-content>
+      </ion-popover-view>
+        </script>
     </ion-content>
 </ion-view>

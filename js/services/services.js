@@ -545,9 +545,10 @@ angular.module('app.services', [])
   function addVerseToCategory(vid, catname){
     return $q.when(db.allDocs({include_docs:true, startkey:'category-', endkey: 'category-\uffff'}))
     .then(function(docs){
-      console.log('%%% add verse to categories',vid,docs.rows)
+      console.log('%%% add verse to categories',vid, catname, docs.rows)
       var catlist = docs.rows
       var selectedCat = _.filter(catlist, function(c){return c.doc.catName === catname})
+      console.log('%%% found category ',selectedCat)
       selectedCat[0].doc.vidList.push(vid)
       selectedCat[0].doc.vidList = _.uniq(selectedCat[0].doc.vidList)
       return selectedCat

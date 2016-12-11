@@ -119,8 +119,8 @@ function($http, $scope, $stateParams, DbService, $ionicModal, $state, $window, $
 }])
 
 // verse detail
-.controller('verseDetailCtrl', ['$q','$scope','$stateParams', 'DbService','$state','$ionicModal','$ionicHistory','$ionicLoading',
-function($q, $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $ionicLoading) {
+.controller('verseDetailCtrl', ['$ionicPopover','$q','$scope','$stateParams', 'DbService','$state','$ionicModal','$ionicHistory','$ionicLoading',
+function($ionicPopover, $q, $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $ionicLoading) {
   // using routeParams
   var ctrl = this;
   ctrl.bookId = $stateParams.book || $scope.bookId
@@ -198,10 +198,11 @@ function($q, $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory
     })
   }
   // add vid to category.catList
-  ctrl.addVerseToCategory = function(){
+  ctrl.addVerseToCategory = function(cat){
     console.log('%%% add to category', ctrl.verseDetail.vid, ctrl.selectedCategory)
-    DbService.addVerseToCategory(ctrl.verseDetail.vid, ctrl.selectedCategory)
+    DbService.addVerseToCategory(ctrl.verseDetail.vid, cat)
     .then(function(){
+    $scope.popover.hide();
       $state.reload()
       // $state.go('menu.verseDetail',{book:ctrl.bookId, chap:ctrl.chapId, verse:ctrl.verse})
     })
@@ -235,6 +236,32 @@ function($q, $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory
     });
     $state.go('menu.categoryDetail', {categoryId: cat})
   }
+  //versedetail-popover.html
+  $ionicPopover.fromTemplateUrl('versedetail-popover.html', {
+    scope: $scope
+  }).then(function(popover) {
+    $scope.popover = popover;
+  });
+
+  $scope.popover;
+  $scope.openPopover = function($event) {
+    $scope.popover.show($event);
+  };
+  $scope.closePopover = function() {
+    $scope.popover.hide();
+  };
+  //Cleanup the popover when we're done with it!
+  $scope.$on('$destroy', function() {
+    $scope.popover.remove();
+  });
+  // Execute action on hidden popover
+  $scope.$on('popover.hidden', function() {
+    // Execute action
+  });
+  // Execute action on remove popover
+  $scope.$on('popover.removed', function() {
+    // Execute action
+  });
   return ctrl;
 }])
 
@@ -459,11 +486,12 @@ ctrl.removeFromFavorites = function(vid){
 }])
 
 // category detail page has a list of verses
-.controller('categoryDetailCtrl', ['$state','$scope','$stateParams','DbService','$ionicModal', function($state, $scope, $stateParams, DbService, $ionicModal){
+.controller('categoryDetailCtrl', ['$ionicPopover','$state','$scope','$stateParams','DbService','$ionicModal', function($ionicPopover,$state, $scope, $stateParams, DbService, $ionicModal){
   var ctrl = this;
   ctrl.vid;
   ctrl.category = $stateParams.categoryId;
   ctrl.showDelete = false
+  ctrl.newCategoryName;
 
   ctrl.getVerses = function(){
     DbService.getCategoryByName(ctrl.category)
@@ -483,6 +511,14 @@ ctrl.removeFromFavorites = function(vid){
       .then(function(){
         $state.reload();
       })
+  }
+  ctrl.open = function(){
+
+  }
+  ctrl.renameCategoryItem = function(vid, oldname){
+    //openPopover to get new name
+    // get newCategoryName
+    //closePopover
   }
 
   // TODO this should autofocus into the verse index page
@@ -509,6 +545,33 @@ ctrl.removeFromFavorites = function(vid){
     // console.log($ionicHistory.viewHistory())
     $state.go('menu.verseDetail',{book:$scope.bookId, chap:$scope.chapId, verse:$scope.verseId})
   }
+
+  //rename-popover.html
+  $ionicPopover.fromTemplateUrl('rename-popover.html', {
+    scope: $scope
+  }).then(function(popover) {
+    $scope.popover = popover;
+  });
+
+  $scope.popover;
+  $scope.openPopover = function($event) {
+    $scope.popover.show($event);
+  };
+  $scope.closePopover = function() {
+    $scope.popover.hide();
+  };
+  //Cleanup the popover when we're done with it!
+  $scope.$on('$destroy', function() {
+    $scope.popover.remove();
+  });
+  // Execute action on hidden popover
+  $scope.$on('popover.hidden', function() {
+    // Execute action
+  });
+  // Execute action on remove popover
+  $scope.$on('popover.removed', function() {
+    // Execute action
+  });
   return ctrl
 }])
 

@@ -443,13 +443,19 @@ ctrl.removeFromFavorites = function(vid){
   ctrl.showDelete = false;
   ctrl.category = '';
   ctrl.categories = []
-/*
+
   $scope.$on('$ionicView.beforeEnter', function (event, viewData) {
+    $scope.isCategory = true
     viewData.enableBack = false;
     console.log('%%%  enter view data',viewData)
-});
-*/
-    $ionicLoading.show({
+  });
+
+  $scope.$on('$ionicView.leave', function (event, viewData) {
+    $scope.isCategory = false
+    console.log('%%%  leaving view data',$scope.isCategory)
+  })
+
+  $ionicLoading.show({
     template: '<div><ion-spinner icon="dots"></ion-spinner><p>Loading...</p></div>',
     showBackdrop: true,
     maxWidth: 200

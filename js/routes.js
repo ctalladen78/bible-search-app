@@ -77,6 +77,7 @@ angular.module('app.routes', [])
   .state('menu.categories', {
     url: '/categories',
     views: {
+      
       'side-menu21': {
         templateUrl: 'template/categories/categories.html',
         controller: 'categoriesCtrl'

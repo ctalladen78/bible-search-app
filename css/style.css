@@ -41,6 +41,17 @@ ion-content{
 #categories-list-item13 div.item-content.ng-binding {
     background-color: snow;
 }
+#fab-cat{
+    background-color: deepskyblue;
+    z-index: 9999;
+    transform: translate3d(0%, 0px, 0px);
+    opacity: 1;
+    /* bottom: 0px; */
+    position: absolute;
+    top: 90%;
+    /* right: 10%; */
+    left: 80%;
+}
 .item-complex.item-icon-right .item-content {
     padding-right: 54px;
     background-color: snow;
@@ -59,3 +70,4 @@ ion-content{
     border: none;
     border-radius: 5px;
     margin: 7px 17px 3px 5px;
+}

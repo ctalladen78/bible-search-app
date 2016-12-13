@@ -11,11 +11,12 @@
     <ion-content padding="true" class="has-header">
       <ion-list ng-init="cvm.getVerses(cvm.word)"
         id="bookSearchResults-list5" class=" "
+        style="display:table;"
         show-delete="cvm.showDelete">
             <!-- ui-sref passes parameters to next page-->
             <ion-item collection-repeat="ver in cvm.verseList"
             class="list card"
-            id="bookSearchResults-list-item16" on-hold="openPopover($event)">
+            id="bookSearchResults-list-item16" >
                 <ion-delete-button class="ion-minus-circled" ng-click="cvm.deleteCategoryItem(ver.vid)"></ion-delete-button>
             <div class="row item" style="">
             <a class="item-icon-right" ng-click="cvm.openModal(ver.vid)"
@@ -29,19 +30,6 @@
              <p>{{ver.text}}</p>
            </div>
          </ion-item>
-
-        <script id="rename-popover.html" type="text/ng-template">
-          <ion-popover-view>
-            <ion-content>
-              <div  class="item row " style="background-color:snow">
-                <input type="text" ng-model="cvm.newCategoryName" placeholder="Rename category..."/>
-                <input type="button" ng-click="cvm.renameCategoryItem(ver.vid, ver.text)" value="Submit"/>
-              </div>
-            </ion-content>
-          </ion-popover-view>
-        </script>
-
       </ion-list>
-
       </ion-content>
 </ion-view>

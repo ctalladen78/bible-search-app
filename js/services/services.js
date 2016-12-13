@@ -439,14 +439,16 @@ angular.module('app.services', [])
     return $q.when(db.allDocs({include_docs:true, startkey: 'category-', endkey: 'category-\uffff'}))
     .then(function(docs){
       console.log('%%% get category',docs.rows)
-      var category = _.filter(docs.rows, function(d){return d.catName === oldCatName})
+      var category = _.filter(docs.rows, function(d){return d.doc.catName === oldCatName})
+      // console.log(category, oldCatName)
       category = category[0]
-      category.catName = newCatName
-      console.log('%%% rename  category',vid, category)
-      db.get(category._id)
+      console.log('%%%% category obj', category)
+      db.get(category.doc._id)
       .then(function(doc){
-        category._rev = doc._rev
-        db.put(category)
+        category.doc._rev = doc._rev
+      console.log('%%%% category obj', doc, category.doc)
+        category.doc.catName = newCatName
+        db.put(category.doc)
         .then(function(res){console.log('%%% removed vid to category',res)})
         .catch(function(er){ console.log('%%% add to fav error',er)})
       })
@@ -532,12 +534,9 @@ angular.module('app.services', [])
   // return all categories for selection
   function getAllCategoryList(){
     return $q.when(db.allDocs({include_docs:true,startkey: 'category-', endkey: 'category-\uffff'}))
-    // return getCachedDocs()
     .then(function(docs){
       console.log('%%% get all categories',docs.rows)
-      var l2 = _.map(docs.rows, function(l){return l.doc.catName})
-      console.log('%%% get all categories ', l2)
-      return l2
+      return $q.when(_.map(docs.rows, function(l){return l.doc.catName}))
     })
   }
 

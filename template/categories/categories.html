@@ -16,14 +16,28 @@
         <ion-list id="categories-list4" class=" "
         show-delete="vm.showDelete"
         ng-init="vm.getCategories()">
-            <ion-item collection-repeat="cat in vm.categories track by $index" class="item-icon-right  " id="categories-list-item13">{{cat}}
-                <i class="icon ion-android-arrow-forward" ui-sref="menu.categoryDetail({categoryId:cat})"></i>
+            <ion-item collection-repeat="cat in vm.categories track by $index" class="item-icon-right  "
+            id="categories-list-item13" ui-sref="menu.categoryDetail({categoryId:cat})"
+            on-hold="openPopover($event)"
+            style="display:table;">
+              {{cat}}
+                <i class="icon ion-android-arrow-forward" ></i>
                 <ion-delete-button style="box-shadow:none;" class="ion-minus-circled" ng-click="vm.deleteCategory(cat)"></ion-delete-button>
             </ion-item>
+            <script id="rename-popover.html" type="text/ng-template">
+              <ion-popover-view style="height:60px;width:90%;">
+                <ion-content>
+                  <div  class="item row " style="background-color:snow">
+                    <input class="col-66" line-height:2 type="text" ng-model="vm.newCategoryName" placeholder="Rename category..."/>
+                    <input class="col-33 button button-positive" style="height:100%;" type="button" ng-click="vm.renameCategoryItem()" value="Submit"/>
+                  </div>
+                </ion-content>
+              </ion-popover-view>
+            </script>
         </ion-list>
     </ion-content>
-    <button ui-sref="menu.addCategory"
-class="button button-fab button-fab-bottom-right button-energized-900" style="background-color:deepskyblue;">
-<i class="icon ion-ios-pricetag"></i>
-</button
+    <button ui-sref="menu.addCategory" class="button button-fab button-fab-bottom-right "
+    style="background-color:deepskyblue;">
+      <i class="icon ion-ios-pricetag"></i>
+    </button>
 </ion-view>

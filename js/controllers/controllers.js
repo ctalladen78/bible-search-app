@@ -325,8 +325,7 @@ function($ionicPopover, $q, $scope, $stateParams, DbService, $state, $ionicModal
   }
 
   ctrl.saveAsCategory = function(){
-
-    // save vids into new category
+    // save vids as new category
     var vidlist = []
     var count =0
     while(ctrl.verses.length >75){
@@ -336,7 +335,7 @@ function($ionicPopover, $q, $scope, $stateParams, DbService, $state, $ionicModal
         vidlist.push(ctrl.verses[i].vid)
       })
       console.log('%%% breaking up category',count,vidlist.length)
-      var str = ''+ctrl.word+' Part '+count
+      var str = ' '+ctrl.word+' (saved search '+count+')'
       DbService.addCategory(str,vidlist)
       ctrl.verses.splice(0,75)//reduce by 75 items
       console.log('%%% search results length ',ctrl.verses.length)
@@ -380,7 +379,7 @@ function($ionicPopover, $q, $scope, $stateParams, DbService, $state, $ionicModal
   console.log('%%% get max cache', $ionicConfig.views.maxCache())
   $scope.$on('$ionicView.beforeEnter', function (event, viewData) {
     // viewData.enableBack = false;
-    console.log('%%% before enter view data',viewData)
+    console.log('%%% before enter favorites view ',viewData)
     DbService.getFavoriteList()
     .then(function(docs){
       ctrl.verses = docs
@@ -438,22 +437,33 @@ ctrl.removeFromFavorites = function(vid){
 }])
 
 // categories page master list
-.controller('categoriesCtrl', ['$state','$ionicLoading','$scope','$stateParams','DbService', function($state,$ionicLoading, $scope, $stateParams, DbService) {
+.controller('categoriesCtrl', ['$timeout','$q','$ionicPopover','$state','$ionicLoading','$scope','$stateParams','DbService', function($timeout, $q, $ionicPopover, $state,$ionicLoading, $scope, $stateParams, DbService) {
   var ctrl = this;
   ctrl.showDelete = false;
-  ctrl.category = '';
-  ctrl.categories = []
+  ctrl.newCategoryName;
+  ctrl.categories;
+  var oldCatName;
 
   $scope.$on('$ionicView.beforeEnter', function (event, viewData) {
     $scope.isCategory = true
-    viewData.enableBack = false;
-    console.log('%%%  enter view data',viewData)
+    // viewData.enableBack = false;
+    ctrl.getCategories()
+    console.log('%%%  enter categories view ',viewData)
   });
 
   $scope.$on('$ionicView.leave', function (event, viewData) {
     $scope.isCategory = false
-    console.log('%%%  leaving view data',$scope.isCategory)
+    console.log('%%%  leaving categories view ',$scope.isCategory)
   })
+  ctrl.renameCategoryItem = function(){
+    DbService.renameCategory(oldCatName,ctrl.newCategoryName)
+    .then(function(){$scope.closePopover();reloadView()})
+  }
+  reloadView = function(){
+  $timeout(function(){
+    ctrl.getCategories()
+    },100);
+  }
 
   $ionicLoading.show({
     template: '<div><ion-spinner icon="dots"></ion-spinner><p>Loading...</p></div>',
@@ -478,9 +488,11 @@ ctrl.removeFromFavorites = function(vid){
     $ionicLoading.hide()
     console.log('%%% get all categories', docs)
       ctrl.categories = docs
+      $q.when(ctrl.categories)
     })
     .catch(function(){console.log('%%% could not get category')})
   }
+
   ctrl.doRefresh = function(){
     console.log('%%%% pulled to refresh')
     $scope.$apply()
@@ -488,6 +500,34 @@ ctrl.removeFromFavorites = function(vid){
     $scope.$broadcast('scroll.refreshComplete');
     console.log('%%%% cat list: ',ctrl.categories)
   }
+
+  //rename-popover.html
+  $ionicPopover.fromTemplateUrl('rename-popover.html', {
+    scope: $scope
+  }).then(function(popover) {
+    $scope.popover = popover;
+  });
+
+  $scope.openPopover = function($event) {
+    $scope.popover.show($event)
+    oldCatName = $event.srcElement.innerText
+    console.log('%%% old cat', oldCatName, typeof(oldCatName))
+  };
+  $scope.closePopover = function() {
+    $scope.popover.hide();
+  };
+  //Cleanup the popover when we're done with it!
+  $scope.$on('$destroy', function() {
+    $scope.popover.remove();
+  });
+  // Execute action on hidden popover
+  $scope.$on('popover.hidden', function() {
+    // Execute action
+  });
+  // Execute action on remove popover
+  $scope.$on('popover.removed', function() {
+    // Execute action
+  });
   return ctrl;
 }])
 
@@ -518,14 +558,8 @@ ctrl.removeFromFavorites = function(vid){
         $state.reload();
       })
   }
-  ctrl.open = function(){
 
-  }
-  ctrl.renameCategoryItem = function(vid, oldname){
-    //openPopover to get new name
-    // get newCategoryName
-    //closePopover
-  }
+
 
   // TODO this should autofocus into the verse index page
   ctrl.openModal = function(vid){
@@ -552,32 +586,6 @@ ctrl.removeFromFavorites = function(vid){
     $state.go('menu.verseDetail',{book:$scope.bookId, chap:$scope.chapId, verse:$scope.verseId})
   }
 
-  //rename-popover.html
-  $ionicPopover.fromTemplateUrl('rename-popover.html', {
-    scope: $scope
-  }).then(function(popover) {
-    $scope.popover = popover;
-  });
-
-  $scope.popover;
-  $scope.openPopover = function($event) {
-    $scope.popover.show($event);
-  };
-  $scope.closePopover = function() {
-    $scope.popover.hide();
-  };
-  //Cleanup the popover when we're done with it!
-  $scope.$on('$destroy', function() {
-    $scope.popover.remove();
-  });
-  // Execute action on hidden popover
-  $scope.$on('popover.hidden', function() {
-    // Execute action
-  });
-  // Execute action on remove popover
-  $scope.$on('popover.removed', function() {
-    // Execute action
-  });
   return ctrl
 }])
 

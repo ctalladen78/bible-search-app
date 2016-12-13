@@ -1,5 +1,5 @@
 <ion-view title="Search: {{vm.word}}" id="page4" class=" " ng-controller="wordSearchResultsCtrl as vm">
-    <ion-content padding="true" class="has-header">
+    <ion-content  class="has-header">
         <button id="wordSearchResults-button10"
         ng-click="vm.saveAsCategory()"
         class=" button button-positive  button-block ">
@@ -7,7 +7,7 @@
         <ion-list ng-init="vm.getVerses(vm.word)"
         id="bookSearchResults-list5" class=" list">
             <div collection-repeat="ver in vm.verses"
-            class=" list card"
+            class=" list "
             id="bookSearchResults-list-item16" style="margin-top: 5px; margin-bottom: 5px">
               <ion-item class="item-divider" style="height:10px">
                 <a class="item-icon-right" ui-sref="menu.verseDetail({book:ver.book, chap:ver.chapter, verse:ver.verse})"

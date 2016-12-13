@@ -258,12 +258,12 @@ angular.module('app.services', [])
       // console.log('%%% get favorites',docs.rows)
       var favorites = docs.rows[0].doc
       _.remove(favorites.vidList, function(i){return i === vid}) // remove vid from favorites
-      console.log('%%% remove from favorites',vid, favorites)
+      // console.log('%%% remove from favorites',vid, favorites)
       db.get(favorites._id)
       .then(function(doc){
         favorites._rev = doc._rev
         db.put(favorites)
-        .then(function(res){console.log('%%% removed vid to favorites',res)})
+        .then(function(res){console.log('%%% removed vid from db favorites',res)})
         .catch(function(er){ console.log('%%% add to fav error',er)})
       })
     })

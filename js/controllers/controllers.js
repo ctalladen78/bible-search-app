@@ -119,8 +119,8 @@ function($http, $scope, $stateParams, DbService, $ionicModal, $state, $window, $
 }])
 
 // verse detail
-.controller('verseDetailCtrl', ['$ionicPopover','$q','$scope','$stateParams', 'DbService','$state','$ionicModal','$ionicHistory','$ionicLoading',
-function($ionicPopover, $q, $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $ionicLoading) {
+.controller('verseDetailCtrl', ['$timeout','$ionicPopover','$q','$scope','$stateParams', 'DbService','$state','$ionicModal','$ionicHistory','$ionicLoading',
+function($timeout,$ionicPopover, $q, $scope, $stateParams, DbService, $state, $ionicModal, $ionicHistory, $ionicLoading) {
   // using routeParams
   var ctrl = this;
   ctrl.bookId = $stateParams.book || $scope.bookId
@@ -130,48 +130,75 @@ function($ionicPopover, $q, $scope, $stateParams, DbService, $state, $ionicModal
   ctrl.selectedCategory = '';
   ctrl.catList = []
   ctrl.verseDetail = {}
+
   var vid = ''+ctrl.bookId+'-'+ctrl.chapId+'-'+ctrl.verse
 
   $scope.$on('$ionicView.beforeEnter', function (event, viewData) {
     // viewData.enableBack = false;
     console.log('%%% before enter view data',viewData)
-});
+    showLoading()
+    initView()
+  });
+
+  showLoading = function(){
     $ionicLoading.show({
-    template: '<div><ion-spinner icon="dots"></ion-spinner><p>Loading</p><p>categories...</p></div>',
-    showBackdrop: true,
-    maxWidth: 200
-    // showDelay: 2  // seconds
-  })
+      template: '<div><ion-spinner icon="dots"></ion-spinner><p>Loading</p><p>categories...</p></div>',
+      showBackdrop: true,
+      maxWidth: 200
+      // showDelay: 2  // seconds
+    })
+  }
 
-  DbService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse)
-  .then(function(verse){
-    ctrl.verseDetail =  verse.detail
-    console.log('%%% verse detail', ctrl.verseDetail)
-  })
+  initView = function(){
+    console.log('%%% init view ')
+    DbService.getVerseDetail(ctrl.bookId, ctrl.chapId, ctrl.verse)
+    .then(function(verse){
+      ctrl.verseDetail =  verse.detail
+      // console.log('%%% verse detail', ctrl.verseDetail)
+    })
 
-  DbService.getCategoryByVid(vid)
-  .then(function(cats){
-    console.log('%%% get category by vid',cats)
-    ctrl.catList = cats
-    $ionicLoading.hide()
-  })
+    DbService.getCategoryByVid(vid)
+    .then(function(cats){
+      // console.log('%%% get category by vid',cats)
+      ctrl.catList = cats
+      $ionicLoading.hide()
+    })
 
-  DbService.isVidLiked(vid)
-  .then(function(isliked){
-    ctrl.verseDetail.like = isliked
-    $state.reload()
-    console.log('%%%% get verse detail', ctrl)
-  })
+    DbService.isVidLiked(vid)
+    .then(function(isliked){
+      ctrl.verseDetail.like = isliked
+      // $state.reload()
+      // console.log('%%%% get verse detail', ctrl)
+    })
+  }
+  showLoading()
+  initView()
+
+  reloadView = function(){
+    $timeout(function(){
+      showLoading()
+      initView()
+      },100);
+  }
 
   ctrl.toggleLike = function(){
     ctrl.verseDetail.like = !ctrl.verseDetail.like
-    console.log('%%% is liked? ', ctrl.verseDetail.like)
-    if(ctrl.verseDetail.like){
+    console.log('%%% is liked pressed to ', ctrl.verseDetail.like)
+    if(ctrl.verseDetail.like === true){
       DbService.addToFavorites(ctrl.verseDetail.vid)
+      .then(function(){
+        showLoading()
+        initView()
+        reloadView()
+      })
     }
-    if(!ctrl.verseDetail.like){
+    if(ctrl.verseDetail.like === false){
       DbService.removeFromFavorites(ctrl.verseDetail.vid)
-      .then(function(){$state.reload()})
+      .then(function(){
+        showLoading()
+        initView()
+        reloadView()
+      })
     }
   }
 
@@ -243,7 +270,6 @@ function($ionicPopover, $q, $scope, $stateParams, DbService, $state, $ionicModal
     $scope.popover = popover;
   });
 
-  $scope.popover;
   $scope.openPopover = function($event) {
     $scope.popover.show($event);
   };
@@ -257,6 +283,9 @@ function($ionicPopover, $q, $scope, $stateParams, DbService, $state, $ionicModal
   // Execute action on hidden popover
   $scope.$on('popover.hidden', function() {
     // Execute action
+    showLoading()
+    initView()
+    reloadView()
   });
   // Execute action on remove popover
   $scope.$on('popover.removed', function() {
@@ -335,7 +364,7 @@ function($ionicPopover, $q, $scope, $stateParams, DbService, $state, $ionicModal
         vidlist.push(ctrl.verses[i].vid)
       })
       console.log('%%% breaking up category',count,vidlist.length)
-      var str = ' '+ctrl.word+' (saved search '+count+')'
+      var str = ctrl.word+' (saved search '+count+')'
       DbService.addCategory(str,vidlist)
       ctrl.verses.splice(0,75)//reduce by 75 items
       console.log('%%% search results length ',ctrl.verses.length)
@@ -461,9 +490,9 @@ ctrl.removeFromFavorites = function(vid){
     .then(function(){$scope.closePopover();reloadView()})
   }
   reloadView = function(){
-  $timeout(function(){
-    ctrl.getCategories()
-    },100);
+    $timeout(function(){
+      ctrl.getCategories()
+      },100);
   }
 
   $ionicLoading.show({

@@ -60,13 +60,12 @@ ion-content{
     border: none;
     min-height: 48px;
     text-align: left;
-    background-color: snow;
+    background-color:white;
 }
 .cancel {
     right: 20px;
     background-color: skyblue;
     padding-right: 7px;
-    /* top: 20px; */
     border: none;
     border-radius: 5px;
     margin: 7px 17px 3px 5px;
@@ -85,4 +84,22 @@ i.icon.positive.ion-more.col-50{
   position: absolute;
   right: 20px;
   font-size: 200%;
+}
+.item-text-wrap .item, .item-text-wrap .item-content, .item-text-wrap, .item-text-wrap h1, .item-text-wrap h2, .item-text-wrap h3, .item-text-wrap h4, .item-text-wrap h5, .item-text-wrap h6, .item-text-wrap p, .item-complex.item-text-wrap .item-content, .item-body h1, .item-body h2, .item-body h3, .item-body h4, .item-body h5, .item-body h6, .item-body p {
+    overflow: visible;
+    white-space: normal;
+}
+.item-left-editable .item-content, .item-right-editable .item-content {
+  background-color: snow;
+}
+.item-delete .button.icon{
+  border: none;
+    box-shadow: none;
+    background-color: white;
+}
+.card .item:last-child, .list-inset .item:last-child{
+    background-color:inherit;
+}
+#like-button .liked{
+  background-color: dodgerblue;
 }

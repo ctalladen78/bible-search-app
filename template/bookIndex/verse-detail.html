@@ -7,8 +7,8 @@
 <!-- hero section -->
         <div class="row item" style="display:flex;flex-direction:column;height:43%;background: url('img/profile-bg.jpg'); background-size: cover;">
           <h2 class="" style="font-size:x-large;color:#fff;position:absolute;top:80%;left:5%;">{{vm.bookId}} {{vm.chapId}} : {{vm.verse}}</h2>
-        <button  id="like-button" ng-class="" ng-click="vm.toggleLike()"
-        class="button button-fab button-fab-bottom-right ng-class:{'liked': vm.verseDetail.liked};">
+        <button  id="like-button" ng-class="{'liked':vm.verseDetail.like}" ng-click="vm.toggleLike()"
+        class="button button-fab button-fab-bottom-right ">
           <i class="icon ion-heart"></i></button>
       </div>
 <!-- select dropdown -->

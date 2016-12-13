@@ -100,6 +100,6 @@ i.icon.positive.ion-more.col-50{
 .card .item:last-child, .list-inset .item:last-child{
     background-color:inherit;
 }
-#like-button .liked{
-  background-color: dodgerblue;
+button#like-button.button.button-fab.button-fab-bottom-right.liked{
+  background-color: salmon;
 }

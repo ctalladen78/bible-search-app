@@ -28,8 +28,10 @@
               <ion-popover-view style="height:60px;width:90%;">
                 <ion-content>
                   <div  class="item row " style="background-color:snow">
-                    <input class="col-66" line-height:2 type="text" ng-model="vm.newCategoryName" placeholder="Rename category..."/>
-                    <input class="col-33 button button-positive" style="height:100%;" type="button" ng-click="vm.renameCategoryItem()" value="Submit"/>
+                    <input class="col-80" style="padding:8% 5px;margin-right:10px;" type="text" ng-model="vm.newCategoryName" placeholder="Rename category..."/>
+                    <button class="button button-positive" style="height:80%;width:50px;" type="button" ng-click="vm.renameCategoryItem()">
+                    <i class="icon ion-checkmark"></i>
+                  </button>
                   </div>
                 </ion-content>
               </ion-popover-view>

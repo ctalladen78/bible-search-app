@@ -456,6 +456,7 @@ ctrl.removeFromFavorites = function(vid){
     console.log('%%%  leaving categories view ',$scope.isCategory)
   })
   ctrl.renameCategoryItem = function(){
+    if(ctrl.newCategoryName.length === 0)return
     DbService.renameCategory(oldCatName,ctrl.newCategoryName)
     .then(function(){$scope.closePopover();reloadView()})
   }
@@ -559,7 +560,13 @@ ctrl.removeFromFavorites = function(vid){
       })
   }
 
-
+  ctrl.gotoVerseIndexPage = function(vid){
+    var vidstring = vid.split('-')
+    $scope.bookId = vidstring[0]
+    $scope.chapId = vidstring[1]
+    $scope.verseId = vidstring[2]
+    $state.go('menu.verseIndex',{book:$scope.bookId,chap:$scope.chapId})
+  }
 
   // TODO this should autofocus into the verse index page
   ctrl.openModal = function(vid){
@@ -595,6 +602,7 @@ ctrl.removeFromFavorites = function(vid){
   // using routeParams write to db
   ctrl.catName =''
   ctrl.addCategory = function(){
+    if(ctrl.catName.length===0)return
     DbService.addCategory(ctrl.catName)
     .then(function(){$ionicHistory.goBack()})
   }
@@ -603,7 +611,7 @@ ctrl.removeFromFavorites = function(vid){
   }
   return ctrl
 }])
-
+/*
 // from the ionic-material theme
 .controller('AppCtrl', function($scope, $ionicModal, $ionicPopover, $timeout) {
     // Form data for the login modal
@@ -688,6 +696,7 @@ ctrl.removeFromFavorites = function(vid){
         }
     };
 })
+*/
 // TODO: parking lot item
 // rename existing category
 .controller('editCategoryCtrl', ['$stateParams','$scope','DbService',function($stateParams, $scope, DbService) {

@@ -71,3 +71,18 @@ ion-content{
     border-radius: 5px;
     margin: 7px 17px 3px 5px;
 }
+
+i.positive.icon.ion-android-more-vertical{
+  display: table-cell;
+    font-size: 200%;
+    position: absolute;
+    top: 30%;
+    right: 10%;
+}
+
+
+i.icon.positive.ion-more.col-50{
+  position: absolute;
+  right: 20px;
+  font-size: 200%;
+}

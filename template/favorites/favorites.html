@@ -19,17 +19,18 @@
         <ion-list ng-init="fvm.getFavorites()"
         id="bookSearchResults-list5" class=" ">
             <div collection-repeat="ver in fvm.verses"
-            class="list card"
+            class="list card item-text-wrap"
             id="bookSearchResults-list-item16">
-            <div class="row item item-note item-icon-right" style="padding: 5px 5px 5px 15px;">
-              <a class="" ng-click="fvm.gotoVerseIndexPage(ver.vid)">
+            <ion-list-header class="row" style="padding: 5px 5px 5px 15px;">
+              <a class="col-50" ng-click="fvm.gotoVerseIndexPage(ver.vid)">
                 {{ver.vid}}
               </a>
-                <i  ng-click="fvm.openModal(ver.vid)" class="icon ion-more"></i>
-            </div>
-              <div class="row item item-text-wrap" style="word-wrap:break-word;">
+                <i  ng-click="fvm.openModal(ver.vid)" class="icon positive ion-more col-50"></i>
+            </ion-list-header>
+              <ion-item class="" style="">
              <p>{{ver.text}}</p>
-           </div>
+           </ion-item>
+              <ion-item style=""></ion-item>
          </div>
         </ion-list>
     </ion-content>

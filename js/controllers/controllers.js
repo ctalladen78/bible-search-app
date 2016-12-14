@@ -405,29 +405,21 @@ function($timeout,$ionicPopover, $q, $scope, $stateParams, DbService, $state, $i
     $state.go('menu.verseIndex',{book:$scope.bookId,chap:$scope.chapId})
   }
 
-  console.log('%%% get max cache', $ionicConfig.views.maxCache())
-  $scope.$on('$ionicView.beforeEnter', function (event, viewData) {
-    // viewData.enableBack = false;
-    console.log('%%% before enter favorites view ',viewData)
-    DbService.getFavoriteList()
-    .then(function(docs){
-      ctrl.verses = docs
-      console.log('%%% favorite docs', docs, docs.length)
-    })
-});
-ctrl.removeFromFavorites = function(vid){
-    //DbService.removeFromFavorites(vid)
-  }
-
   // return list of verse objects
   ctrl.getFavorites = function(){
     DbService.getFavoriteList()
     .then(function(docs){
-      ctrl.verses = docs // returns a list of vids TODO watch apply
-      console.log('%%% favorite docs', docs)
+      ctrl.verses = docs
+      // console.log('%%% favorite docs', docs, docs.length)
     })
-
   }
+
+  console.log('%%% get max cache', $ionicConfig.views.maxCache())
+  $scope.$on('$ionicView.beforeEnter', function (event, viewData) {
+    // viewData.enableBack = false;
+    console.log('%%% before enter favorites view ',viewData)
+    ctrl.getFavorites()
+  });
 
   ctrl.doRefresh = function(){
     console.log('%%%% pulled to refresh')
@@ -484,15 +476,20 @@ ctrl.removeFromFavorites = function(vid){
     $scope.isCategory = false
     console.log('%%%  leaving categories view ',$scope.isCategory)
   })
-  ctrl.renameCategoryItem = function(){
-    if(ctrl.newCategoryName.length === 0)return
-    DbService.renameCategory(oldCatName,ctrl.newCategoryName)
-    .then(function(){$scope.closePopover();reloadView()})
-  }
+
   reloadView = function(){
     $timeout(function(){
       ctrl.getCategories()
       },100);
+  }
+
+  ctrl.renameCategoryItem = function(){
+    if(ctrl.newCategoryName.length === 0)return
+    DbService.renameCategory(oldCatName,ctrl.newCategoryName)
+    .then(function(){
+      $scope.closePopover();
+      reloadView()
+    })
   }
 
   $ionicLoading.show({
@@ -517,7 +514,7 @@ ctrl.removeFromFavorites = function(vid){
     .then(function(docs){
     $ionicLoading.hide()
     console.log('%%% get all categories', docs)
-      ctrl.categories = docs
+      ctrl.categories = _.reverse(docs)
       $q.when(ctrl.categories)
     })
     .catch(function(){console.log('%%% could not get category')})
@@ -562,12 +559,20 @@ ctrl.removeFromFavorites = function(vid){
 }])
 
 // category detail page has a list of verses
-.controller('categoryDetailCtrl', ['$ionicPopover','$state','$scope','$stateParams','DbService','$ionicModal', function($ionicPopover,$state, $scope, $stateParams, DbService, $ionicModal){
+.controller('categoryDetailCtrl', ['$ionicLoading','$ionicPopover','$state','$scope','$stateParams','DbService','$ionicModal',
+ function($ionicLoading,$ionicPopover,$state, $scope, $stateParams, DbService, $ionicModal){
   var ctrl = this;
   ctrl.vid;
   ctrl.category = $stateParams.categoryId;
   ctrl.showDelete = false
   ctrl.newCategoryName;
+
+  $ionicLoading.show({
+    template: '<div><ion-spinner icon="dots"></ion-spinner><p>Loading...</p></div>',
+    showBackdrop: true,
+    maxWidth: 200
+    // showDelay: 2  // seconds
+  })
 
   ctrl.getVerses = function(){
     DbService.getCategoryByName(ctrl.category)
@@ -575,6 +580,7 @@ ctrl.removeFromFavorites = function(vid){
       console.log('get category by cid', cat)
       DbService.getVerseByCat(cat.doc._id)
       .then(function(verses){
+        $ionicLoading.hide()
         ctrl.verseList = verses
         console.log('%%% verse list', ctrl.verseList)
       })

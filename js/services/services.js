@@ -427,7 +427,8 @@ angular.module('app.services', [])
            $q.when(getVerseBy(fav))
           .then(function(vid){
             templist.push(vid);
-            // console.log('%%% favorite list ',templist)
+            _.reverse(templist)
+            console.log('%%% favorite list ',templist)
           })
           // .catch(function(e){console.log('%%% error get verse by vid ', i, e)})
       })

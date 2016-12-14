@@ -103,3 +103,44 @@ i.icon.positive.ion-more.col-50{
 button#like-button.button.button-fab.button-fab-bottom-right.liked{
   background-color: salmon;
 }
+div#search-dropdown{
+  height:75px;
+}
+label#search-select1{
+  width:50%;
+  background-color: #2196F3;
+  /*#0a9dc7#11c1f3*/
+  border-radius: 10px;
+  margin:5px;
+}
+#search-select1 > select{
+  width:5%;
+  background-color: snow;
+  padding:30px;
+}
+label#search-select2{
+  width:50%;
+  background-color: #2196F3;
+  /*#0a9dc7#11c1f3*/
+  border-radius: 10px;
+  margin:5px;
+}
+#search-select1 .input-label{
+  padding:0px;
+}
+#search-select2 .input-label{
+  padding:0px;
+}
+#search-select2 > select{
+  width:5%;
+  background-color: snow;
+  padding:30px;
+}
+#search-dropdown > button{
+}
+button#search-button8{
+  background-color: #2196F3;
+}
+form#searchbar{
+
+}

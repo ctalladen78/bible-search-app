@@ -133,13 +133,6 @@ function($timeout,$ionicPopover, $q, $scope, $stateParams, DbService, $state, $i
 
   var vid = ''+ctrl.bookId+'-'+ctrl.chapId+'-'+ctrl.verse
 
-  $scope.$on('$ionicView.beforeEnter', function (event, viewData) {
-    // viewData.enableBack = false;
-    console.log('%%% before enter view data',viewData)
-    showLoading()
-    initView()
-  });
-
   showLoading = function(){
     $ionicLoading.show({
       template: '<div><ion-spinner icon="dots"></ion-spinner><p>Loading</p><p>categories...</p></div>',
@@ -148,6 +141,15 @@ function($timeout,$ionicPopover, $q, $scope, $stateParams, DbService, $state, $i
       // showDelay: 2  // seconds
     })
   }
+
+  $scope.$on('$ionicView.beforeEnter', function (event, viewData) {
+    // viewData.enableBack = false;
+    console.log('%%% before enter view data',viewData)
+    showLoading()
+    initView()
+  });
+
+
 
   initView = function(){
     console.log('%%% init view ')
@@ -465,10 +467,26 @@ function($timeout,$ionicPopover, $q, $scope, $stateParams, DbService, $state, $i
   ctrl.categories;
   var oldCatName;
 
+  showLoading = function(){
+    $ionicLoading.show({
+      template: '<div><ion-spinner icon="dots"></ion-spinner><p>Loading...</p></div>',
+      showBackdrop: true,
+      maxWidth: 200
+      // showDelay: 2  // seconds
+    })
+  }
+
+  reloadView = function(){
+    $timeout(function(){
+      ctrl.getCategories()
+      },100);
+  }
+
   $scope.$on('$ionicView.beforeEnter', function (event, viewData) {
     $scope.isCategory = true
     // viewData.enableBack = false;
-    ctrl.getCategories()
+    showLoading()
+    reloadView()
     console.log('%%%  enter categories view ',viewData)
   });
 
@@ -477,27 +495,17 @@ function($timeout,$ionicPopover, $q, $scope, $stateParams, DbService, $state, $i
     console.log('%%%  leaving categories view ',$scope.isCategory)
   })
 
-  reloadView = function(){
-    $timeout(function(){
-      ctrl.getCategories()
-      },100);
-  }
-
   ctrl.renameCategoryItem = function(){
     if(ctrl.newCategoryName.length === 0)return
     DbService.renameCategory(oldCatName,ctrl.newCategoryName)
     .then(function(){
       $scope.closePopover();
+      showLoading()
       reloadView()
     })
   }
 
-  $ionicLoading.show({
-    template: '<div><ion-spinner icon="dots"></ion-spinner><p>Loading...</p></div>',
-    showBackdrop: true,
-    maxWidth: 200
-    // showDelay: 2  // seconds
-  })
+
 
   ctrl.deleteCategory = function(cat){
     // if(cat.length === 0) return
@@ -550,6 +558,8 @@ function($timeout,$ionicPopover, $q, $scope, $stateParams, DbService, $state, $i
   // Execute action on hidden popover
   $scope.$on('popover.hidden', function() {
     // Execute action
+    showLoading()
+    reloadView()
   });
   // Execute action on remove popover
   $scope.$on('popover.removed', function() {

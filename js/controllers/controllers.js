@@ -298,7 +298,8 @@ function($timeout,$ionicPopover, $q, $scope, $stateParams, DbService, $state, $i
 
 
 // dropdown search component
-.controller('searchCtrl', ['$ionicHistory','$state','$ionicLoading','$scope','$stateParams', 'DbService', function($ionicHistory,$state,$ionicLoading,$scope, $stateParams, DbService) {
+.controller('searchCtrl', ['admobSvc','$ionicHistory','$state','$ionicLoading','$scope','$stateParams', 'DbService',
+ function(admobSvc, $ionicHistory, $state, $ionicLoading, $scope, $stateParams, DbService) {
   var ctrl = this;
   ctrl.word = ''; // search term
   ctrl.bookId = '';
@@ -306,6 +307,15 @@ function($timeout,$ionicPopover, $q, $scope, $stateParams, DbService, $state, $i
   ctrl.searchAllBible;
   ctrl.searchNewTestament;
   ctrl.searchOldTestament;
+
+  console.log('%%%% admoSvc options ',admobSvc)
+  // admob.createBannerView(options, successCallback, failCallback);
+  // admobSvc.AD_SIZE.BANNER
+  // admobSvc.AD_TYPE.BANNER
+  var adOptions = {}
+  var adSuccess = function(){}
+  var adFailed = function(){}
+  admobSvc.createBannerView();
 
   ctrl.getBooks = function(){
     DbService.getBooks().then(function(res){

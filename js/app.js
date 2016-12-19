@@ -1,11 +1,25 @@
-// Ionic Starter App
+angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services', 'app.directives', 'ionic-material','admobModule'])
 
-// angular.module is a global place for creating, registering and retrieving Angular modules
-// 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
-// the 2nd parameter is an array of 'requires'
-// 'starter.services' is found in services.js
-// 'starter.controllers' is found in controllers.js
-angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services', 'app.directives', 'ionic-material'])
+// https://github.com/appfeel/admob-google-cordova
+// https://github.com/appfeel/admob-google-cordova/wiki/Setup
+.config(['$ionicConfigProvider','admobSvcProvider', function($ionicConfigProvider,admobSvcProvider) {
+  // $ionicConfigProvider.views.maxCache(50);
+
+  // Turn off back button text
+  $ionicConfigProvider.backButton.previousTitleText(false);
+  $ionicConfigProvider.backButton.icon('ion-chevron-left').text('');
+
+  // config admob options
+  // implement in controllers
+  admobSvcProvider.setOptions({
+    // this is the banner id it is required
+    publisherId: "ca-app-pub-2768773976387970/9812391648"
+    // App ID ca-app-pub-2768773976387970~6858925240
+    //  banner Ad unit ID: ca-app-pub-2768773976387970/9812391648
+    // interstitial id if setup in  admob account
+    // interstitialAdId : "ca-app-pub-"
+  })
+}])
 
 .run(['DbService','$ionicPlatform', function( DbService, $ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -24,14 +38,3 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
     //DbService.destroyDB();
   });
 }])
-
-.config(function($ionicConfigProvider) {
-  // $ionicConfigProvider.views.maxCache(50);
-
-  // note that you can also chain configs
-  // $ionicConfigProvider.backButton.text('Go Back').icon('ion-chevron-left');
-    // Turn off back button text
-    $ionicConfigProvider.backButton.previousTitleText(false);
-$ionicConfigProvider.backButton.icon('ion-chevron-left');
-  $ionicConfigProvider.backButton.text('')
-});

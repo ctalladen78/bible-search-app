@@ -11,7 +11,7 @@
             <ion-item ng-repeat="ch in vm.chapList" class="item-icon-right  "
             id="chapList-list-item16"
             ui-sref="menu.verseIndex({book:vm.bookId,chap:ch.chapter})">
-                {{ch.chapter}} {{ch.chapterheading}}
+                <span class="amasis" style="font-size:18px;">{{ch.chapter}} {{ch.chapterheading}}</span>
                 <i class="icon ion-android-arrow-forward"></i>
             </ion-item>
         </ion-list>

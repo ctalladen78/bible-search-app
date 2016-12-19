@@ -2,7 +2,6 @@
   <ion-view ng-controller="searchCtrl as vm">
   <ion-nav-title>
     <center class="center">
-    Search
     </center>
   </ion-nav-title>
     <ion-content  class="has-header">
@@ -21,16 +20,21 @@
             </label>
 
         </div>
-        
-<button ng-disabled="(vm.bookId && vm.chapId) ? false: true"
+      <div class="row">
+        <button type="button" ng-disabled="(vm.bookId && vm.chapId) ? false: true"
             ui-sref="menu.verseIndex({book:vm.bookId,chap:vm.chapId})" id="search-button8"
-            class=" button button-positive  button-block ">Verse search</button>
-        <form id="searchbar" class="row">
-            <label class="col-66 item item-input">
+            class=" button-positive   "  >Search
+          </button>
+      </div>
+        <div id="searchbar" class="row">
+            <div class="col-65 item item-input">
                     <i class="icon ion-search placeholder-icon"></i>
-                    <input type="search" placeholder="Search Term" ng-model="vm.word">
-            </label>
-            <button ng-disabled="!vm.word" ui-sref="menu.wordSearchResults({term:vm.word})" id="search-button4" class="col-33 button button-positive  button-block ">Word search</button>
-        </form>
+                    <input type="search" placeholder="Search term..." ng-model="vm.word">
+            </div>
+            <button ng-disabled="!vm.word" ui-sref="menu.wordSearchResults({term:vm.word})"
+            id="search-button4" class="col-20 button button-positive  button-block ">
+              <i class="icon ion-android-arrow-forward"></i>
+          </button>
+        </div>
     </ion-content>
 </ion-view>

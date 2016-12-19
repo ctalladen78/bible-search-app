@@ -1,4 +1,14 @@
 
+@font-face {
+  font-family: 'Amasis';
+  src: url('./AmasisMTStd.ttf') format('truetype');
+  /*font-weight: normal;*/
+  /*font-style: normal;*/
+}
+
+.amasis {
+  font-family: 'Amasis';
+}
 .toggle{
   padding: 0px 30px;
 border: none;
@@ -64,11 +74,13 @@ ion-content{
 }
 .cancel {
     right: 20px;
-    background-color: skyblue;
+    background-color: #2196F3;
+    /*2196F3 skyblue*/
     padding-right: 7px;
     border: none;
     border-radius: 5px;
     margin: 7px 17px 3px 5px;
+    color:snow;
 }
 
 i.positive.icon.ion-android-more-vertical{
@@ -76,7 +88,7 @@ i.positive.icon.ion-android-more-vertical{
     font-size: 200%;
     position: absolute;
     top: 30%;
-    right: 10%;
+    right: 5%;
 }
 
 
@@ -108,39 +120,72 @@ div#search-dropdown{
 }
 label#search-select1{
   width:50%;
-  background-color: #2196F3;
-  /*#0a9dc7#11c1f3*/
+  background-color: #11c1f3;
   border-radius: 10px;
   margin:5px;
+  border: 2px solid #777  ;
 }
 #search-select1 > select{
   width:5%;
   background-color: snow;
   padding:30px;
+  border-radius: 0px;
 }
 label#search-select2{
   width:50%;
-  background-color: #2196F3;
-  /*#0a9dc7#11c1f3*/
+  background-color: #11c1f3;
   border-radius: 10px;
   margin:5px;
+  border: 2px solid #777  ;
 }
 #search-select1 .input-label{
   padding:0px;
+  color:snow
 }
 #search-select2 .input-label{
   padding:0px;
+  color:snow
 }
 #search-select2 > select{
   width:5%;
   background-color: snow;
   padding:30px;
+  border-radius: 0px;
 }
 #search-dropdown > button{
 }
 button#search-button8{
   background-color: #2196F3;
+  margin: 5px 5px;
+  border-radius: 9px;
+  width: 100%;
+  border: none;
+  border-radius: 5px;
+  margin: 5px 5px;
+  height: 45px;
+  font-size: 20px;
 }
-form#searchbar{
+div#searchbar{
+  height: 75px;
+  /*margin-right:10px ;*/
+}
 
+#searchbar div{
+  height: 47px;
+  padding: 5px 0px 5px 10px;
+  align-self: center;
+  margin: 5px 0px 5px 5px;
+
+}
+i.icon.ion-search.placeholder-icon{
+  /*margin-right:10px;*/
+  font-size:30px;
+}
+#search-button4{
+  align-self: center;
+  background-color: #11c1f3;
+  margin-right:5px;
+}
+#bookSearchResults-list-item16 p{
+  font-size:13px;
 }

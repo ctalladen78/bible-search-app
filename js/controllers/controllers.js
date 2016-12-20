@@ -130,6 +130,9 @@ function($timeout,$ionicPopover, $q, $scope, $stateParams, DbService, $state, $i
   ctrl.selectedCategory = '';
   ctrl.catList = []
   ctrl.verseDetail = {}
+  // img/1Peter.jpg replaced spaces
+  var imgurl = ctrl.bookId.replace(/\s/g,'')
+  ctrl.backgroundImg = 'img/'+imgurl+'.jpg'
 
   var vid = ''+ctrl.bookId+'-'+ctrl.chapId+'-'+ctrl.verse
 

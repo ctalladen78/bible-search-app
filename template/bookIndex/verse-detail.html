@@ -5,7 +5,7 @@
   </ion-nav-buttons>
     <ion-content  class=" ">
 <!-- hero section -->
-        <div class="row item" style="display:flex;flex-direction:column;height:43%;background: url('img/profile-bg.jpg'); background-size: cover;">
+        <div class="row item" id="verseDetailBackground" back-img="{{vm.backgroundImg}}">
           <h2 class="" style="font-size:x-large;color:#fff;position:absolute;top:80%;left:5%;">{{vm.bookId}} {{vm.chapId}} : {{vm.verse}}</h2>
         <button  id="like-button" ng-class="{'liked':vm.verseDetail.like}" ng-click="vm.toggleLike()"
         class="button button-fab button-fab-bottom-right ">

@@ -1,8 +1,8 @@
-angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services', 'app.directives', 'ionic-material','admobModule'])
+angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services', 'app.directives', 'ionic-material'])
 
 // https://github.com/appfeel/admob-google-cordova
 // https://github.com/appfeel/admob-google-cordova/wiki/Setup
-.config(['$ionicConfigProvider','admobSvcProvider', function($ionicConfigProvider,admobSvcProvider) {
+.config(['$ionicConfigProvider', function($ionicConfigProvider) {
   // $ionicConfigProvider.views.maxCache(50);
 
   // Turn off back button text
@@ -11,6 +11,7 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
 
   // config admob options
   // implement in controllers
+  /*
   admobSvcProvider.setOptions({
     // this is the banner id it is required
     publisherId: "ca-app-pub-2768773976387970/9812391648"
@@ -19,6 +20,7 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
     // interstitial id if setup in  admob account
     // interstitialAdId : "ca-app-pub-"
   })
+  */
 }])
 
 .run(['DbService','$ionicPlatform', function( DbService, $ionicPlatform) {

@@ -24,6 +24,9 @@
  * Bookmark section shows date of last activity
  * Reading history
  * Home page shows inspiring images and verses
+ -[X] upload app to amazon S3 for static hosting
+ https://www.linkedin.com/pulse/host-ionic-app-aws-s3-bucket-using-serverless-wendy-sanarwanto
+
 
 ## How to use this template
  *This is the contents of the www/ folder in Ionic

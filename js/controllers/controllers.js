@@ -7,39 +7,50 @@ angular.module('app.controllers', ['app.services'])
 // book index component
 .controller('bookIndexCtrl', ['$scope','$stateParams', 'DbService','$q', function($scope, $stateParams, DbService, $q){
   var ctrl = this;
-   DbService.getBooks().then(function(res){
+  DbService.getBooks().then(function(res){
     ctrl.bookList = res
     //console.log('%%% ctrl bookList: ', ctrl.bookList);
    })
   return ctrl;
 }])
 // chapter list
-.controller('chapterIndexCtrl',['$scope','$stateParams', 'DbService', function($scope, $stateParams, DbService){
+.controller('chapterIndexCtrl',['$scope','$stateParams', 'DbService', function( $scope, $stateParams, DbService){
   var ctrl = this;
   ctrl.bookId = $stateParams.book;
+
   DbService.getChapterList($stateParams.book).then(function(res){
 //    ctrl.chapList = _.map(res, function(i){return i.chapterheading})
     ctrl.chapList = res
     console.log('%%% ctrl chapter list: ', ctrl.chapList);
-    // TODO there is a memory leak because of large data set
   })
 
   return ctrl;
 }])
 // verse list search results master list
-.controller('bookSearchResultsCtrl', ['$http','$scope','$stateParams', 'DbService','$ionicModal','$state','$window','$ionicHistory',
-function($http, $scope, $stateParams, DbService, $ionicModal, $state, $window, $ionicHistory) {
+.controller('bookSearchResultsCtrl', ['$ionicLoading','$http','$scope','$stateParams', 'DbService','$ionicModal','$state','$window','$ionicHistory',
+function($ionicLoading, $http, $scope, $stateParams, DbService, $ionicModal, $state, $window, $ionicHistory) {
   // using routeParams
   var ctrl = this;
   $scope.bookId = $stateParams.book;
   $scope.chapId = $stateParams.chap;
   ctrl.bookId = $scope.bookId
   ctrl.chapId = $scope.chapId
-
   ctrl.verses = [];
+
+  showLoading = function(){
+    $ionicLoading.show({
+      template: '<div><ion-spinner icon="dots"></ion-spinner><p>Loading</p><p>Verses...</p></div>',
+      showBackdrop: true,
+      maxWidth: 200
+      // showDelay: 2  // seconds
+    })
+  }
+  showLoading()
+
   ctrl.getVerses = function(book, chap){
     DbService.getVerseList(book, chap).then(function(res){
-    console.log('%%% verselist', res)
+    // console.log('%%% verselist', res)
+      $ionicLoading.hide()
       ctrl.verses = res
     })
   }
@@ -81,8 +92,8 @@ function($http, $scope, $stateParams, DbService, $ionicModal, $state, $window, $
         $state.go('menu.verseIndex',{book:$scope.bookId, chap:$scope.chapId})
       }
     })
-
   }
+
   // issues with modal http://stackoverflow.com/questions/30430160/why-isnt-my-ionic-modal-opening-on-an-android-4-4-device
   ctrl.openModal = function(verse){
     // ctrl.verseId = verse
@@ -138,7 +149,7 @@ function($timeout,$ionicPopover, $q, $scope, $stateParams, DbService, $state, $i
 
   showLoading = function(){
     $ionicLoading.show({
-      template: '<div><ion-spinner icon="dots"></ion-spinner><p>Loading</p><p>categories...</p></div>',
+      template: '<div><ion-spinner icon="dots"></ion-spinner><p>Loading</p></div>',
       showBackdrop: true,
       maxWidth: 200
       // showDelay: 2  // seconds
@@ -307,9 +318,6 @@ function($timeout,$ionicPopover, $q, $scope, $stateParams, DbService, $state, $i
   ctrl.word = ''; // search term
   ctrl.bookId = '';
   ctrl.chapId = '';
-  ctrl.searchAllBible;
-  ctrl.searchNewTestament;
-  ctrl.searchOldTestament;
 
   // admob.createBannerView(options, successCallback, failCallback);
   // admobSvc.AD_SIZE.BANNER
@@ -319,11 +327,21 @@ function($timeout,$ionicPopover, $q, $scope, $stateParams, DbService, $state, $i
   var adFailed = function(){}
   // admobSvc.createBannerView();
 
+  $scope.$on('$ionicView.beforeEnter', function (event, viewData) {
+    // viewData.enableBack = false;
+    console.log('%%% before enter favorites view ',viewData)
+    ctrl.bookId =''
+    ctrl.chapId =''
+    ctrl.chapList = []
+    console.log('%%%% vm ', ctrl.bookId, ctrl.chapId, ctrl.bookList, ctrl.chapList)
+  });
+
   ctrl.getBooks = function(){
     DbService.getBooks().then(function(res){
     ctrl.bookList = res
    })
   }
+
   ctrl.getChaps = function(){
     if(!ctrl.bookId){
       console.log('no books selected');
@@ -336,15 +354,17 @@ function($timeout,$ionicPopover, $q, $scope, $stateParams, DbService, $state, $i
         })
     }
   }
+  ctrl.gotoVerse = function(){
+    if(ctrl.bookId.length === 0 || ctrl.chapId.length === 0) return
+    $state.go('menu.verseIndex',{book:ctrl.bookId,chap:ctrl.chapId})
+  }
 
-
-  ctrl.search = function(){
-      }
   return ctrl;
 }])
 
 // word search page component
-.controller('wordSearchResultsCtrl', ['$ionicHistory','$state','$ionicLoading','$scope','$stateParams', 'DbService', function($ionicHistory, $state, $ionicLoading, $scope, $stateParams, DbService) {
+.controller('wordSearchResultsCtrl', ['$ionicHistory','$state','$ionicLoading','$scope','$stateParams', 'DbService',
+ function($ionicHistory, $state, $ionicLoading, $scope, $stateParams, DbService) {
   // using routeParams return list of verses containing query term
   // highlight the search term in text
   var ctrl = this;
@@ -359,12 +379,11 @@ function($timeout,$ionicPopover, $q, $scope, $stateParams, DbService, $state, $i
   })
     DbService.wordSearchAllBible(ctrl.word) // return list of verse objects
     .then(function(res){
-
       $ionicLoading.hide()
       ctrl.verses = res
       console.log('%%% word search results ', res)
     })
-    .catch(function(){ ctrl.verses = []})
+    // .catch(function(){ ctrl.verses = []})
   }
 
   ctrl.saveAsCategory = function(){
@@ -431,13 +450,13 @@ function($timeout,$ionicPopover, $q, $scope, $stateParams, DbService, $state, $i
   console.log('%%% get max cache', $ionicConfig.views.maxCache())
   $scope.$on('$ionicView.beforeEnter', function (event, viewData) {
     // viewData.enableBack = false;
-    console.log('%%% before enter favorites view ',viewData)
+    // console.log('%%% before enter favorites view ',viewData)
     ctrl.getFavorites()
   });
 
   ctrl.doRefresh = function(){
     console.log('%%%% pulled to refresh')
-    $scope.$apply()
+    // $state.reload()
     //Stop the ion-refresher from spinning
     $scope.$broadcast('scroll.refreshComplete');
     console.log('%%%% fav list: ',ctrl.verses)
@@ -754,10 +773,3 @@ function($timeout,$ionicPopover, $q, $scope, $stateParams, DbService, $state, $i
     };
 })
 */
-// TODO: parking lot item
-// rename existing category
-.controller('editCategoryCtrl', ['$stateParams','$scope','DbService',function($stateParams, $scope, DbService) {
-  var ctrl = this;
-  // using routeParams write to db
-  return ctrl
-}])

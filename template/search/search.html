@@ -14,18 +14,13 @@
             </label>
             <label class="item item-select " id="search-select2">
                 <span class="input-label">Chapter</span>
-                <select ng-init="vm.getChaps(vm.bookId)" ng-model="vm.chapId" ng-change="vm.print()"
+                <select ng-init="vm.getChaps(vm.bookId)" ng-model="vm.chapId" ng-change="vm.gotoVerse()"
                 ng-options="ch as ch for ch in vm.chapList">
                 </select>
             </label>
 
         </div>
-      <div class="row">
-        <button type="button" ng-disabled="(vm.bookId && vm.chapId) ? false: true"
-            ui-sref="menu.verseIndex({book:vm.bookId,chap:vm.chapId})" id="search-button8"
-            class=" button-positive   "  >Search
-          </button>
-      </div>
+      
         <div id="searchbar" class="row">
             <div class="col-65 item item-input">
                     <i class="icon ion-search placeholder-icon"></i>

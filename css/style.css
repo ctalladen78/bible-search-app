@@ -123,7 +123,7 @@ label#search-select1{
   background-color: #11c1f3;
   border-radius: 10px;
   margin:5px;
-  border: 2px solid #777  ;
+  /*border: 2px solid #777  ;*/
 }
 #search-select1 > select{
   width:5%;
@@ -136,7 +136,7 @@ label#search-select2{
   background-color: #11c1f3;
   border-radius: 10px;
   margin:5px;
-  border: 2px solid #777  ;
+  /*border: 2px solid #777  ;*/
 }
 #search-select1 .input-label{
   padding:0px;

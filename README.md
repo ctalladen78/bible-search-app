@@ -1,3 +1,6 @@
+## Demo
+https://ctalladen78.github.io/bible-search-offline/#/menu/book-index
+
 ### Todo
 -[ ] verse detail page design
 -[X] word search function limit 100
@@ -36,5 +39,3 @@ To use this, either create a new ionic project using the ionic node.js utility, 
 ### launch from cloud9
 `ionic serve -p $PORT -nolivereload`
 
-## Demo
-http://plnkr.co/edit/0RXSDB?p=preview

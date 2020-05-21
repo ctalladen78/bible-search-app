@@ -1,5 +1,5 @@
 ## Demo
-https://ctalladen78.github.io/bible-search-offline/#/menu/book-index
+https://ctalladen78.github.io/bible-search-app/
 
 ### Todo
 -[ ] verse detail page design
